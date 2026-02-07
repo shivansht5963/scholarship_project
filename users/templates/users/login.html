@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock title %}
+
+{% block content %}
+    <h1 style="text-align: center;">Welcome to ScholarMatch</h1>
+    <h2 style="text-align: center;">Account Login</h2>
+    
+    <div style="width: 300px; margin: 20px auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; background: white;">
+        
+        {% if form.errors %}
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <p style="color: red;">{{ error }}</p>
+                {% endfor %}
+            {% endfor %}
+            <p style="color: red;">Your username and password didn't match. Please try again.</p>
+        {% endif %}
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">Username:</label>
+                {{ form.username }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.password.id_for_label }}">Password:</label>
+                {{ form.password }}
+            </div>
+            
+            <button type="submit" class="button-primary" style="width: 100%; margin-top: 15px;">Log In</button>
+        </form>
+    </div>
+{% endblock content %}

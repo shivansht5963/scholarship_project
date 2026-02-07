@@ -1,0 +1,32 @@
+{% extends "base.html" %} 
+
+{% block title %}Mod Dashboard{% endblock title %}
+
+{% block content %}
+    <h1>Moderator Dashboard 👋</h1>
+    <p>Welcome, {{ user.username }}. Here are your key metrics:</p>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Unassigned Applications</h3>
+            <p style="font-size: 2em; color: #007bff;">{{ total_unassigned_apps }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>My Pending Tasks</h3>
+            <p style="font-size: 2em; color: #ffc107;">{{ my_pending_tasks }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Scholarships to Verify</h3>
+            <p style="font-size: 2em; color: #dc3545;">{{ scholarships_to_verify }}</p>
+        </div>
+    </div>
+    
+    <hr>
+    
+    {% comment %} <h2>Quick Actions</h2>
+    <div style="margin-top: 20px;">
+        <a href="{% url 'moderator_add_scholarship' %}" class="button-primary">➕ Add New Scholarship</a>
+        <a href="{% url 'admin:index' %}" class="button-primary" style="background-color: #6c757d;">🔗 Open Full Admin Panel</a>
+    </div> {% endcomment %}
+
+{% endblock content %}

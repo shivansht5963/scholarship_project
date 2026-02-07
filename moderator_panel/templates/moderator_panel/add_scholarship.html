@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Add Scholarship{% endblock title %}
+
+{% block content %}
+    <h1>Add New Scholarship</h1>
+    <p>Use this form to add a scholarship found from an external source.</p>
+    
+    <form method="post">
+        {% csrf_token %} {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <small style="color: #666;">{{ field.help_text }}</small>
+                {% endif %}
+                {% for error in field.errors %}
+                    <p style="color: red; margin: 0;">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        
+        <button type="submit" class="button-primary" style="padding: 12px 20px;">Save and Publish</button>
+        <a href="{% url 'moderator_dashboard' %}" style="margin-left: 10px;">Cancel</a>
+    </form>
+    
+    <hr>
+    <p><a href="{% url 'moderator_dashboard' %}">← Back to Dashboard</a></p>
+
+{% endblock content %}
