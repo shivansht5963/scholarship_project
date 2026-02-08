@@ -1,0 +1,596 @@
+{% extends 'base.html' %}
+
+{% block title %}Review Application - {{ application.scholarship.name }}{% endblock %}
+
+{% block content %}
+<style>
+    /* === SCHOLARMATCH THEME VARIABLES === */
+    :root {
+        --sm-yellow: #FFD700;
+        --sm-black: #000000;
+        --sm-white: #FFFFFF;
+        --sm-blue: #0066FF;
+        --sm-green: #00C853;
+        --sm-purple: #9C27B0;
+        --sm-red: #FF3333;
+        --sm-orange: #FF9800;
+        --sm-gray: #757575;
+        --sm-light-gray: #F5F5F5;
+        --sm-border-width: 3px;
+    }
+
+    /* === DOTTED BACKGROUND === */
+    .review-page-wrapper {
+        background: 
+            radial-gradient(circle, #00000008 1px, transparent 1px);
+        background-size: 20px 20px;
+        background-color: var(--sm-white);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .review-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+
+    /* === REVIEW HEADER === */
+    .review-header {
+        background: var(--sm-yellow);
+        border: var(--sm-border-width) solid var(--sm-black);
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 8px 8px 0 var(--sm-black);
+    }
+
+    .review-header h1 {
+        margin: 0 0 0.5rem 0;
+        font-size: 3rem;
+        font-weight: 900;
+        font-style: italic;
+        color: var(--sm-black);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .review-header p {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--sm-black);
+        opacity: 0.8;
+    }
+
+    /* === WARNING/SUCCESS BOXES === */
+    .warning-box,
+    .success-box {
+        border: var(--sm-border-width) solid var(--sm-black);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 6px 6px 0 var(--sm-black);
+    }
+
+    .warning-box {
+        background: var(--sm-orange);
+        border-left-width: 8px;
+    }
+
+    .success-box {
+        background: var(--sm-green);
+        border-left-width: 8px;
+    }
+
+    .warning-box h3,
+    .success-box h3 {
+        margin: 0 0 0.75rem 0;
+        font-size: 1.5rem;
+        font-weight: 900;
+        font-style: italic;
+        color: var(--sm-white);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .warning-box p,
+    .success-box p {
+        margin: 0 0 0.5rem 0;
+        color: var(--sm-white);
+        font-weight: 600;
+        font-size: 1.05rem;
+    }
+
+    .warning-box a {
+        color: var(--sm-white);
+        font-weight: 900;
+        text-decoration: underline;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* === COLLAPSIBLE REVIEW SECTIONS === */
+    .review-section {
+        background: var(--sm-white);
+        border: var(--sm-border-width) solid var(--sm-black);
+        margin-bottom: 1.5rem;
+        box-shadow: 6px 6px 0 var(--sm-black);
+        overflow: hidden;
+    }
+
+    .review-section-header {
+        padding: 1.75rem 2rem;
+        background: var(--sm-white);
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: var(--sm-border-width) solid var(--sm-black);
+        transition: background 0.2s;
+        user-select: none;
+    }
+
+    .review-section-header:hover {
+        background: var(--sm-light-gray);
+    }
+
+    .review-section.collapsed .review-section-header {
+        border-bottom: none;
+    }
+
+    .review-section-header h2 {
+        margin: 0;
+        font-size: 1.8rem;
+        font-weight: 900;
+        font-style: italic;
+        color: var(--sm-black);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .toggle-arrow {
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: var(--sm-black);
+        transition: transform 0.3s;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--sm-yellow);
+        border: var(--sm-border-width) solid var(--sm-black);
+    }
+
+    .review-section.collapsed .toggle-arrow {
+        transform: rotate(-90deg);
+    }
+
+    .review-section-content {
+        padding: 2rem;
+        max-height: 2000px;
+        opacity: 1;
+        transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease;
+    }
+
+    .review-section.collapsed .review-section-content {
+        max-height: 0;
+        opacity: 0;
+        padding: 0 2rem;
+        overflow: hidden;
+    }
+
+    /* === INFO GRID === */
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem;
+    }
+
+    .info-item {
+        padding: 1.25rem;
+        background: var(--sm-white);
+        border: var(--sm-border-width) solid var(--sm-black);
+        transition: all 0.2s;
+    }
+
+    .info-item:hover {
+        background: var(--sm-light-gray);
+    }
+
+    .info-label {
+        font-size: 0.75rem;
+        font-weight: 900;
+        color: var(--sm-gray);
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .info-value {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--sm-black);
+        word-wrap: break-word;
+    }
+
+    /* === DOCUMENT LIST === */
+    .document-list {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .document-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        background: var(--sm-yellow);
+        border: var(--sm-border-width) solid var(--sm-black);
+        border-left-width: 8px;
+        transition: all 0.2s;
+    }
+
+    .document-item:hover {
+        transform: translateX(3px);
+    }
+
+    .doc-info h4 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.1rem;
+        font-weight: 900;
+        color: var(--sm-black);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .doc-status {
+        color: var(--sm-black);
+        font-weight: 700;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .no-documents {
+        text-align: center;
+        padding: 3rem;
+        color: var(--sm-gray);
+        font-weight: 700;
+        font-size: 1.1rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* === COUNT BADGE === */
+    .count-badge {
+        display: inline-block;
+        background: var(--sm-yellow);
+        color: var(--sm-black);
+        padding: 0.25rem 0.75rem;
+        border: 2px solid var(--sm-black);
+        font-weight: 900;
+        font-size: 0.9rem;
+        margin-left: 0.5rem;
+        text-transform: uppercase;
+    }
+
+    /* === ACTION BUTTONS === */
+    .action-buttons {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        margin-top: 3rem;
+        padding-top: 3rem;
+        border-top: var(--sm-border-width) solid var(--sm-black);
+    }
+
+    .btn-submit,
+    .btn-back {
+        padding: 1.25rem 3rem;
+        border: var(--sm-border-width) solid var(--sm-black);
+        font-weight: 900;
+        font-size: 1.1rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-block;
+        box-shadow: 4px 4px 0 var(--sm-black);
+    }
+
+    .btn-submit {
+        background: var(--sm-green);
+        color: var(--sm-white);
+    }
+
+    .btn-submit:hover {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 var(--sm-black);
+    }
+
+    .btn-submit:active {
+        transform: translate(4px, 4px);
+        box-shadow: 0 0 0 var(--sm-black);
+    }
+
+    .btn-submit:disabled {
+        background: var(--sm-gray);
+        border-color: var(--sm-gray);
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+        opacity: 0.6;
+    }
+
+    .btn-back {
+        background: var(--sm-white);
+        color: var(--sm-black);
+    }
+
+    .btn-back:hover {
+        background: var(--sm-light-gray);
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 var(--sm-black);
+    }
+
+    /* === EMOJI ICONS === */
+    .icon-emoji {
+        font-style: normal;
+        font-size: 1.5rem;
+        margin-right: 0.5rem;
+    }
+
+    /* === EXPAND/COLLAPSE ALL === */
+    .controls-bar {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-toggle-all {
+        background: var(--sm-black);
+        color: var(--sm-white);
+        border: var(--sm-border-width) solid var(--sm-black);
+        padding: 0.75rem 1.5rem;
+        font-weight: 900;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        box-shadow: 3px 3px 0 var(--sm-yellow);
+        transition: all 0.2s;
+    }
+
+    .btn-toggle-all:hover {
+        transform: translate(1px, 1px);
+        box-shadow: 2px 2px 0 var(--sm-yellow);
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 768px) {
+        .review-page-wrapper {
+            padding: 1rem 0;
+        }
+
+        .review-container {
+            padding: 0 1rem;
+        }
+
+        .review-header {
+            padding: 1.5rem;
+            box-shadow: 4px 4px 0 var(--sm-black);
+        }
+
+        .review-header h1 {
+            font-size: 2rem;
+        }
+
+        .review-header p {
+            font-size: 0.95rem;
+        }
+
+        .review-section {
+            box-shadow: 4px 4px 0 var(--sm-black);
+        }
+
+        .review-section-header {
+            padding: 1.25rem 1.5rem;
+        }
+
+        .review-section-header h2 {
+            font-size: 1.3rem;
+        }
+
+        .toggle-arrow {
+            width: 26px;
+            height: 26px;
+            font-size: 1.2rem;
+        }
+
+        .review-section-content {
+            padding: 1.5rem;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .btn-submit,
+        .btn-back {
+            width: 100%;
+            text-align: center;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+        }
+
+        .warning-box,
+        .success-box {
+            padding: 1.5rem;
+            box-shadow: 4px 4px 0 var(--sm-black);
+        }
+
+        .controls-bar {
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="review-page-wrapper">
+    <div class="review-container">
+        <!-- HEADER -->
+        <div class="review-header">
+            <h1><span class="icon-emoji">📋</span>Review Application</h1>
+            <p>Please review all information before submitting</p>
+        </div>
+
+        <!-- WARNING OR SUCCESS MESSAGE -->
+        {% if not all_uploaded %}
+        <div class="warning-box">
+            <h3><span class="icon-emoji">⚠️</span>Missing Documents</h3>
+            <p>You need to upload all required documents before submitting your application.</p>
+            <a href="{% url 'applications:upload_documents' pk=application.pk %}">← Go back to upload documents</a>
+        </div>
+        {% else %}
+        <div class="success-box">
+            <h3><span class="icon-emoji">✅</span>All Documents Uploaded</h3>
+            <p>Great! You've uploaded all {{ uploaded_docs.count }} required documents.</p>
+        </div>
+        {% endif %}
+
+        <!-- EXPAND/COLLAPSE ALL CONTROL -->
+        <div class="controls-bar">
+            <button class="btn-toggle-all" id="toggleAll">Collapse All Sections</button>
+        </div>
+
+        <!-- SCHOLARSHIP INFORMATION SECTION -->
+        <div class="review-section" id="section1">
+            <div class="review-section-header" onclick="toggleSection('section1')">
+                <h2><span class="icon-emoji">🎓</span>Scholarship Information</h2>
+                <div class="toggle-arrow">▼</div>
+            </div>
+            <div class="review-section-content">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Scholarship Name</div>
+                        <div class="info-value">{{ application.scholarship.name }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Organization</div>
+                        <div class="info-value">{{ application.scholarship.organization }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Award Amount</div>
+                        <div class="info-value">₹{{ application.scholarship.award_amount }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Application Deadline</div>
+                        <div class="info-value">{{ application.scholarship.deadline|date:"F d, Y" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- YOUR INFORMATION SECTION -->
+        <div class="review-section" id="section2">
+            <div class="review-section-header" onclick="toggleSection('section2')">
+                <h2><span class="icon-emoji">👤</span>Your Information</h2>
+                <div class="toggle-arrow">▼</div>
+            </div>
+            <div class="review-section-content">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Full Name</div>
+                        <div class="info-value">{{ student.full_name }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Email</div>
+                        <div class="info-value">{{ student.user.email }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- UPLOADED DOCUMENTS SECTION -->
+        <div class="review-section" id="section3">
+            <div class="review-section-header" onclick="toggleSection('section3')">
+                <h2>
+                    <span class="icon-emoji">📄</span>Uploaded Documents
+                    <span class="count-badge">{{ uploaded_docs.count }}</span>
+                </h2>
+                <div class="toggle-arrow">▼</div>
+            </div>
+            <div class="review-section-content">
+                <div class="document-list">
+                    {% for doc in uploaded_docs %}
+                    <div class="document-item">
+                        <div class="doc-info">
+                            <h4>{{ doc.document_type.document_name }}</h4>
+                            <div class="doc-status">✓ Uploaded {{ doc.uploaded_at|date:"M d, Y" }}</div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="no-documents">No documents uploaded yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="action-buttons">
+            <a href="{% url 'applications:upload_documents' pk=application.pk %}" class="btn-back">
+                ← Back to Documents
+            </a>
+
+            {% if all_uploaded %}
+            <form method="post" action="{% url 'applications:submit_application' pk=application.pk %}" style="margin: 0;">
+                {% csrf_token %}
+                <button type="submit" class="btn-submit">
+                    <span class="icon-emoji">🚀</span>Submit Application
+                </button>
+            </form>
+            {% else %}
+            <button class="btn-submit" disabled>
+                Complete Uploads First
+            </button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- COLLAPSIBLE SECTIONS JAVASCRIPT -->
+<script>
+    // Toggle individual section
+    function toggleSection(sectionId) {
+        const section = document.getElementById(sectionId);
+        section.classList.toggle('collapsed');
+    }
+
+    // Toggle all sections
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleAllBtn = document.getElementById('toggleAll');
+        const sections = document.querySelectorAll('.review-section');
+        let allCollapsed = false;
+
+        toggleAllBtn.addEventListener('click', function() {
+            allCollapsed = !allCollapsed;
+            
+            sections.forEach(section => {
+                if (allCollapsed) {
+                    section.classList.add('collapsed');
+                } else {
+                    section.classList.remove('collapsed');
+                }
+            });
+
+            // Update button text
+            toggleAllBtn.textContent = allCollapsed ? 'Expand All Sections' : 'Collapse All Sections';
+        });
+    });
+</script>
+
+{% endblock %}

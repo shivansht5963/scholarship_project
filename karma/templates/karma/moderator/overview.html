@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Moderate Submissions - Karma - Scholar Match{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>🔍 Pending Scholarship Submissions</h2>
+    </div>
+
+    {% if page_obj %}
+    <div
+        style="background: var(--neon-green); border: 3px solid var(--black); padding: 1rem; margin-bottom: 1.5rem; text-align: center;">
+        <strong style="font-size: 1.1rem;">{{ total_pending }} Pending Submissions</strong>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th>Scholarship</th>
+                <th>Organization</th>
+                <th>Submitted</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for submission in page_obj %}
+            <tr>
+                <td><strong>{{ submission.submitted_by.full_name }}</strong></td>
+                <td>{{ submission.scholarship_name }}</td>
+                <td>{{ submission.organization }}</td>
+                <td>{{ submission.submitted_at|date:"M d, Y" }}</td>
+                <td>
+                    <a href="{% url 'karma:verify_submission' submission.id %}" class="btn"
+                        style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                        Review
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div style="margin-top: 2rem; text-align: center;">
+        <div style="display: inline-flex; gap: 0.5rem; align-items: center;">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline"
+                style="padding: 0.6rem 1rem;">Previous</a>
+            {% endif %}
+
+            <span style="padding: 0.6rem 1rem; font-weight: 700;">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline"
+                style="padding: 0.6rem 1rem;">Next</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+    {% else %}
+    <p style="text-align: center; padding: 2rem; color: var(--text-gray);">
+        No pending submissions to review. Great work!
+    </p>
+    {% endif %}
+</div>
+
+<div style="text-align: center; margin-top: 2rem;">
+    <a href="{% url 'moderator_dashboard' %}" class="btn btn-outline">Back to Dashboard</a>
+</div>
+
+{% endblock %}

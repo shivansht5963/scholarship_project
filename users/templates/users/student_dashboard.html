@@ -1,0 +1,953 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Dashboard - Scholar Match{% endblock %}
+
+{% block content %}
+<style>
+    /* === SCHOLARMATCH THEME VARIABLES === */
+    :root {
+        --sm-yellow: #FFD700;
+        --sm-black: #000000;
+        --sm-white: #FFFFFF;
+        --sm-blue: #0066FF;
+        --sm-green: #00C853;
+        --sm-purple: #9C27B0;
+        --sm-red: #FF3333;
+        --sm-orange: #FF9800;
+        --sm-gray: #757575;
+        --sm-light-gray: #F5F5F5;
+        --sm-border-width: 3px;
+    }
+
+    /* === DOTTED BACKGROUND === */
+    .dashboard-page-wrapper {
+        background: 
+            radial-gradient(circle, #00000008 1px, transparent 1px);
+        background-size: 20px 20px;
+        background-color: var(--sm-white);
+        min-height: 100vh;
+        padding: 3rem 0;
+    }
+
+    .dashboard-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+
+    /* === WELCOME HEADER === */
+    .welcome-header {
+        margin-bottom: 3rem;
+        position: relative;
+    }
+
+    .welcome-header h1 {
+        margin: 0 0 1rem 0;
+        font-size: 4.5rem;
+        font-weight: 900;
+        color: var(--sm-black);
+        text-transform: uppercase;
+        letter-spacing: -2px;
+        line-height: 0.95;
+    }
+
+    .welcome-subtitle {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--sm-gray);
+        margin: 0;
+    }
+
+    .welcome-subtitle u {
+        text-decoration-thickness: 3px;
+        text-decoration-color: var(--sm-black);
+        text-underline-offset: 4px;
+    }
+
+    /* === PROGRESS BAR === */
+    .progress-section {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 3rem;
+        padding-bottom: 2rem;
+        border-bottom: 3px solid var(--sm-black);
+    }
+
+    .progress-info {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    .progress-label {
+        font-size: 0.85rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--sm-black);
+    }
+
+    .progress-bar-container {
+        width: 300px;
+        height: 40px;
+        border: 3px solid var(--sm-black);
+        background: var(--sm-white);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .progress-bar-fill {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        background: var(--sm-yellow);
+        transition: width 0.5s ease;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding-right: 12px;
+    }
+
+    .progress-percentage {
+        font-size: 1rem;
+        font-weight: 900;
+        color: var(--sm-black);
+        position: relative;
+        z-index: 1;
+    }
+
+    .milestone-btn {
+        background: var(--sm-blue);
+        color: var(--sm-white);
+        border: 3px solid var(--sm-black);
+        padding: 0.85rem 2rem;
+        font-size: 0.85rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.2s;
+        box-shadow: 4px 4px 0 var(--sm-black);
+    }
+
+    .milestone-btn:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 var(--sm-black);
+    }
+
+    /* === MAIN GRID LAYOUT === */
+    .dashboard-main-grid {
+        display: grid;
+        grid-template-columns: 1fr 580px;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    /* === PLATFORM INSIGHTS === */
+    .insights-card {
+        background: var(--sm-white);
+        border: 3px solid var(--sm-black);
+        padding: 0;
+        box-shadow: 6px 6px 0 var(--sm-black);
+        margin-bottom: 2rem;
+    }
+
+    .insights-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.75rem 2rem;
+        border-bottom: 3px solid var(--sm-black);
+        background: var(--sm-white);
+    }
+
+    .insights-title {
+        font-size: 1.3rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin: 0;
+        color: var(--sm-black);
+    }
+
+    .insights-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--sm-blue);
+        border: 3px solid var(--sm-black);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        color: var(--sm-white);
+    }
+
+    .insights-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        background: var(--sm-white);
+    }
+
+    .insight-item {
+        padding: 2.5rem 1.5rem;
+        text-align: center;
+        border-right: 3px solid var(--sm-black);
+        border-bottom: 3px solid var(--sm-black);
+        transition: all 0.2s;
+    }
+
+    .insight-item:nth-child(4) {
+        border-right: none;
+    }
+
+    .insight-item:nth-child(n+5) {
+        border-bottom: none;
+    }
+
+    .insight-item:hover {
+        background: var(--sm-light-gray);
+    }
+
+    .insight-value {
+        font-size: 3.5rem;
+        font-weight: 900;
+        color: var(--sm-black);
+        margin: 0 0 0.5rem 0;
+        line-height: 1;
+    }
+
+    .insight-value.highlight {
+        color: var(--sm-blue);
+    }
+
+    .insight-label {
+        font-size: 0.75rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--sm-gray);
+    }
+
+    /* === ACTION BUTTONS === */
+    .action-buttons {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .action-card {
+        background: var(--sm-white);
+        border: 3px solid var(--sm-black);
+        padding: 3rem 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        box-shadow: 4px 4px 0 var(--sm-black);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .action-card:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 var(--sm-black);
+        background: var(--sm-yellow);
+    }
+
+    .action-card-icon {
+        width: 60px;
+        height: 60px;
+        border: 3px solid var(--sm-black);
+        background: var(--sm-black);
+        color: var(--sm-white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .action-card-title {
+        font-size: 1.1rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--sm-black);
+        margin: 0;
+    }
+
+    /* === RECOMMENDATIONS SECTION === */
+    .recommendations-section {
+        background: var(--sm-white);
+        border: 3px solid var(--sm-black);
+        box-shadow: 6px 6px 0 var(--sm-black);
+    }
+
+    .recommendations-header {
+        padding: 1.75rem 2rem;
+        border-bottom: 3px solid var(--sm-black);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .recommendations-title {
+        font-size: 1.3rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin: 0;
+        color: var(--sm-black);
+    }
+
+    .season-badge {
+        background: var(--sm-black);
+        color: var(--sm-white);
+        padding: 0.5rem 1.25rem;
+        font-size: 0.7rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border: 3px solid var(--sm-black);
+    }
+
+    .recommendations-table {
+        width: 100%;
+    }
+
+    .recommendations-table thead {
+        background: var(--sm-white);
+        border-bottom: 3px solid var(--sm-black);
+    }
+
+    .recommendations-table th {
+        padding: 1.25rem 2rem;
+        text-align: left;
+        font-size: 0.75rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--sm-black);
+    }
+
+    .recommendations-table tbody tr {
+        border-bottom: 3px solid var(--sm-black);
+        transition: all 0.2s;
+    }
+
+    .recommendations-table tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    .recommendations-table tbody tr:hover {
+        background: var(--sm-light-gray);
+    }
+
+    .recommendations-table td {
+        padding: 2rem;
+        font-weight: 700;
+        color: var(--sm-black);
+    }
+
+    .match-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        font-size: 0.7rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: 3px solid var(--sm-black);
+    }
+
+    .match-badge.high {
+        background: var(--sm-yellow);
+        color: var(--sm-black);
+    }
+
+    .match-badge.medium {
+        background: var(--sm-blue);
+        color: var(--sm-white);
+    }
+
+    /* === SIDEBAR === */
+    .sidebar-card {
+        background: var(--sm-white);
+        border: 3px solid var(--sm-black);
+        box-shadow: 6px 6px 0 var(--sm-black);
+        margin-bottom: 2rem;
+    }
+
+    .sidebar-header {
+        padding: 1.5rem;
+        border-bottom: 3px solid var(--sm-black);
+    }
+
+    .sidebar-title {
+        font-size: 1rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin: 0;
+        color: var(--sm-black);
+    }
+
+    .sidebar-subtitle {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--sm-gray);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin: 0.25rem 0 0 0;
+    }
+
+    .sidebar-content {
+        padding: 1.5rem;
+    }
+
+    /* === PROFILE CARD === */
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+        border: 3px solid var(--sm-black);
+        background: var(--sm-light-gray);
+        margin-bottom: 1rem;
+    }
+
+    .profile-name {
+        font-size: 1.1rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin: 0 0 0.25rem 0;
+        color: var(--sm-black);
+    }
+
+    .profile-role {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--sm-gray);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin: 0 0 1.5rem 0;
+    }
+
+    .profile-info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-top: 2px solid var(--sm-light-gray);
+    }
+
+    .profile-info-row:first-child {
+        border-top: none;
+        padding-top: 0;
+    }
+
+    .profile-info-label {
+        font-size: 0.7rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--sm-gray);
+    }
+
+    .profile-info-value {
+        font-size: 0.85rem;
+        font-weight: 900;
+        color: var(--sm-black);
+    }
+
+    .edit-profile-btn {
+        width: 100%;
+        background: var(--sm-black);
+        color: var(--sm-white);
+        border: 3px solid var(--sm-black);
+        padding: 1rem;
+        font-size: 0.85rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        text-decoration: none;
+        display: block;
+        text-align: center;
+        transition: all 0.2s;
+        margin-top: 1.5rem;
+    }
+
+    .edit-profile-btn:hover {
+        background: var(--sm-white);
+        color: var(--sm-black);
+    }
+
+    /* === PROFILE SUMMARY CARD === */
+    .profile-summary-card {
+        min-width: 580px;
+    }
+
+    .profile-summary-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding: 2rem 2rem 1.5rem 2rem;
+        border-bottom: 3px solid var(--sm-black);
+    }
+
+    .profile-summary-title {
+        font-size: 2.2rem;
+        font-weight: 900;
+        font-style: italic;
+        text-transform: uppercase;
+        letter-spacing: -1px;
+        margin: 0;
+        color: var(--sm-black);
+        line-height: 0.95;
+    }
+
+    .edit-btn {
+        background: var(--sm-white);
+        color: var(--sm-black);
+        border: 3px solid var(--sm-black);
+        padding: 0.75rem 1.75rem;
+        font-size: 0.85rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.2s;
+        text-align: center;
+        line-height: 1.4;
+        flex-shrink: 0;
+    }
+
+    .edit-btn:hover {
+        background: var(--sm-black);
+        color: var(--sm-white);
+    }
+
+    .profile-summary-content {
+        padding: 0;
+    }
+
+    .profile-summary-item {
+        padding: 2rem;
+        border-bottom: 3px solid var(--sm-black);
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        transition: all 0.2s;
+    }
+
+    .profile-summary-item:last-child {
+        border-bottom: none;
+    }
+
+    .profile-summary-item:hover {
+        background: var(--sm-light-gray);
+    }
+
+    .profile-summary-label {
+        font-size: 0.7rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--sm-gray);
+    }
+
+    .profile-summary-value {
+        font-size: 1.15rem;
+        font-weight: 900;
+        color: var(--sm-black);
+    }
+
+    /* === LIVE FEED === */
+    .feed-item {
+        padding: 1.25rem 0;
+        border-bottom: 2px solid var(--sm-light-gray);
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .feed-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .feed-icon {
+        width: 30px;
+        height: 30px;
+        border: 3px solid var(--sm-black);
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+    }
+
+    .feed-icon.blue {
+        background: var(--sm-blue);
+        color: var(--sm-white);
+    }
+
+    .feed-icon.white {
+        background: var(--sm-white);
+        color: var(--sm-black);
+    }
+
+    .feed-icon.yellow {
+        background: var(--sm-yellow);
+        color: var(--sm-black);
+    }
+
+    .feed-content {
+        flex: 1;
+    }
+
+    .feed-title {
+        font-size: 0.85rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin: 0 0 0.25rem 0;
+        color: var(--sm-black);
+    }
+
+    .feed-time {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: var(--sm-gray);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* === BOTTOM SECTION === */
+    .bottom-card {
+        background: var(--sm-white);
+        border: 3px solid var(--sm-black);
+        box-shadow: 6px 6px 0 var(--sm-black);
+        padding: 3rem;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 200px;
+    }
+
+    .connect-btn {
+        background: var(--sm-white);
+        color: var(--sm-black);
+        border: 3px solid var(--sm-black);
+        padding: 1rem 2.5rem;
+        font-size: 0.85rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.2s;
+        box-shadow: 4px 4px 0 var(--sm-black);
+    }
+
+    .connect-btn:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 var(--sm-black);
+        background: var(--sm-yellow);
+    }
+
+    /* === EMPTY STATE === */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+        opacity: 0.3;
+    }
+
+    .empty-state h3 {
+        font-size: 1.3rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        color: var(--sm-black);
+        margin: 0 0 0.5rem 0;
+        letter-spacing: 0.5px;
+    }
+
+    .empty-state p {
+        color: var(--sm-gray);
+        font-weight: 600;
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 1200px) {
+        .dashboard-main-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .insights-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .insight-item:nth-child(2),
+        .insight-item:nth-child(4) {
+            border-right: none;
+        }
+
+        .profile-summary-card {
+            min-width: auto;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-page-wrapper {
+            padding: 1.5rem 0;
+        }
+
+        .dashboard-container {
+            padding: 0 1rem;
+        }
+
+        .welcome-header h1 {
+            font-size: 2.5rem;
+        }
+
+        .progress-section {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1.5rem;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+        }
+
+        .insights-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .insight-item {
+            border-right: none;
+        }
+
+        .insight-item:not(:last-child) {
+            border-bottom: 3px solid var(--sm-black);
+        }
+
+        .action-buttons {
+            grid-template-columns: 1fr;
+        }
+
+        .recommendations-table {
+            display: block;
+            overflow-x: auto;
+        }
+
+        .recommendations-table th,
+        .recommendations-table td {
+            padding: 1rem;
+        }
+    }
+</style>
+
+<div class="dashboard-page-wrapper">
+    <div class="dashboard-container">
+        
+        <!-- WELCOME HEADER -->
+        <div class="welcome-header">
+            <h1>HELLO,<br>{{ profile.full_name|upper|default:"STUDENT" }}.</h1>
+            <p class="welcome-subtitle">Your scholarship profile is <u>fully optimized</u> for the Spring 2024 academic cycle.</p>
+        </div>
+
+        <!-- PROGRESS SECTION -->
+        <div class="progress-section">
+            <div class="progress-info">
+                <span class="progress-label">PROGRESS</span>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: {{ profile.profile_completion }}%;">
+                        <span class="progress-percentage">{{ profile.profile_completion }}%</span>
+                    </div>
+                </div>
+            </div>
+            <a href="{% url 'otr_welcome' %}" class="milestone-btn">VIEW MILESTONES</a>
+        </div>
+
+        <!-- MAIN GRID -->
+        <div class="dashboard-main-grid">
+            
+            <!-- LEFT COLUMN -->
+            <div>
+                
+                <!-- PLATFORM INSIGHTS -->
+                <div class="insights-card">
+                    <div class="insights-header">
+                        <h2 class="insights-title">Platform Insights</h2>
+                        <div class="insights-icon">📊</div>
+                    </div>
+                    <div class="insights-grid">
+                        <div class="insight-item">
+                            <div class="insight-value">{{ academic_records.count|stringformat:"02d" }}</div>
+                            <div class="insight-label">MATCHES</div>
+                        </div>
+                        <div class="insight-item">
+                            <div class="insight-value">{{ documents.count|stringformat:"02d" }}</div>
+                            <div class="insight-label">DRAFTS</div>
+                        </div>
+                        <div class="insight-item">
+                            <div class="insight-value">00</div>
+                            <div class="insight-label">APPLIED</div>
+                        </div>
+                        <div class="insight-item">
+                            <div class="insight-value highlight">00</div>
+                            <div class="insight-label">AWARDED</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ACTION BUTTONS -->
+                <div class="action-buttons">
+                    <a href="{% url 'scholarships:scholarship_list' %}" class="action-card">
+                        <div class="action-card-icon">🔍</div>
+                        <h3 class="action-card-title">Browse<br>Scholarships</h3>
+                    </a>
+                    <a href="{% url 'applications:my_applications' %}" class="action-card">
+                        <div class="action-card-icon">▶</div>
+                        <h3 class="action-card-title">Active<br>Applications</h3>
+                    </a>
+                </div>
+
+                <!-- RECOMMENDATIONS -->
+                <div class="recommendations-section">
+                    <div class="recommendations-header">
+                        <h2 class="recommendations-title">Recommendations</h2>
+                        <span class="season-badge">SPRING 2024</span>
+                    </div>
+
+                    <!-- Check if there are recommendations -->
+                    {% comment %}
+                    <table class="recommendations-table">
+                        <thead>
+                            <tr>
+                                <th>SCHOLARSHIP NAME</th>
+                                <th>AMOUNT</th>
+                                <th>MATCH</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>STEM LEADERSHIP GRANT</td>
+                                <td>$5,000</td>
+                                <td><span class="match-badge high">HIGH MATCH</span></td>
+                            </tr>
+                            <tr>
+                                <td>FUTURE INNOVATORS FUND</td>
+                                <td>$10,000</td>
+                                <td><span class="match-badge medium">90% MATCH</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    {% endcomment %}
+
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🎯</div>
+                        <h3>Finding Perfect Matches</h3>
+                        <p>We'll recommend scholarships based on your profile. Check back soon!</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT COLUMN / SIDEBAR -->
+            <div>
+                
+                <!-- PROFILE SUMMARY CARD -->
+                <div class="sidebar-card profile-summary-card">
+                    <div class="sidebar-header profile-summary-header">
+                        <h3 class="sidebar-title profile-summary-title">PROFILE<br>SUMMARY</h3>
+                        <a href="{% url 'otr_welcome' %}" class="edit-btn">EDIT<br>—</a>
+                    </div>
+                    <div class="sidebar-content profile-summary-content">
+                        
+                        <div class="profile-summary-item">
+                            <span class="profile-summary-label">CATEGORY</span>
+                            <span class="profile-summary-value">{{ profile.caste_category|upper|default:"SC" }}</span>
+                        </div>
+
+                        <div class="profile-summary-item">
+                            <span class="profile-summary-label">ANNUAL INCOME</span>
+                            <span class="profile-summary-value">₹{{ profile.annual_income|default:"10000.00" }}</span>
+                        </div>
+
+                        <div class="profile-summary-item">
+                            <span class="profile-summary-label">LOCATION</span>
+                            <span class="profile-summary-value">{{ profile.city|default:"Varanasi District" }}, {{ profile.state|default:"Uttar Pradesh" }}</span>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- LIVE FEED -->
+                <div class="sidebar-card">
+                    <div class="sidebar-header">
+                        <h3 class="sidebar-title">Live Feed</h3>
+                    </div>
+                    <div class="sidebar-content">
+                        
+                        <div class="feed-item">
+                            <div class="feed-icon blue">🔵</div>
+                            <div class="feed-content">
+                                <h4 class="feed-title">OTR Completed</h4>
+                                <p class="feed-time">PROFILE SETUP</p>
+                            </div>
+                        </div>
+
+                        {% if academic_records %}
+                        <div class="feed-item">
+                            <div class="feed-icon white">⬜</div>
+                            <div class="feed-content">
+                                <h4 class="feed-title">Academic Records</h4>
+                                <p class="feed-time">{{ academic_records.count }} UPLOADED</p>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if documents %}
+                        <div class="feed-item">
+                            <div class="feed-icon yellow">🟡</div>
+                            <div class="feed-content">
+                                <h4 class="feed-title">Documents Verified</h4>
+                                <p class="feed-time">{{ documents.count }} ADDED</p>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+
+                <!-- BOTTOM CARD -->
+                <div class="bottom-card">
+                    <a href="{% url 'scholarships:scholarship_list' %}" class="connect-btn">CONNECT NOW</a>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

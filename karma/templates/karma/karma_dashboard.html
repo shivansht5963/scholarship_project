@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+
+{% block title %}Karma Dashboard - Scholar Match{% endblock %}
+
+{% block content %}
+<style>
+    .karma-hero {
+        background: linear-gradient(135deg, var(--neon-green) 0%, var(--primary-yellow) 100%);
+        border: 4px solid var(--black);
+        padding: 3rem 2rem;
+        text-align: center;
+        box-shadow: 8px 8px 0 var(--black);
+        margin-bottom: 2rem;
+    }
+
+    .karma-hero h1 {
+        font-size: 3rem;
+        font-weight: 900;
+        color: var(--black);
+        margin-bottom: 0.5rem;
+        font-family: 'Arial Black', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    .karma-points {
+        font-size: 1.2rem;
+        color: var(--black);
+        font-weight: 700;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: var(--white);
+        border: 4px solid var(--black);
+        padding: 1.5rem;
+        box-shadow: 5px 5px 0 var(--black);
+        text-align: center;
+    }
+
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: var(--black);
+        font-family: 'Arial Black', sans-serif;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        color: var(--text-gray);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .action-btn {
+        background: var(--white);
+        border: 4px solid var(--black);
+        padding: 1.5rem;
+        text-align: center;
+        text-decoration: none;
+        color: var(--black);
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 5px 5px 0 var(--black);
+        transition: all 0.2s;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .action-btn:hover {
+        transform: translate(2px, 2px);
+        box-shadow: 3px 3px 0 var(--black);
+        background: var(--neon-green);
+    }
+
+    .action-icon {
+        font-size: 2.5rem;
+    }
+
+    .transaction-type {
+        font-size: 0.75rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        padding: 0.3rem 0.6rem;
+        border: 2px solid var(--black);
+        display: inline-block;
+    }
+
+    .type-earn {
+        background: var(--neon-green);
+    }
+
+    .type-spend {
+        background: #FFCDD2;
+        color: var(--bright-red);
+    }
+
+    .type-penalty {
+        background: var(--bright-red);
+        color: var(--white);
+    }
+
+    .points-positive {
+        color: var(--bright-green);
+        font-weight: 900;
+    }
+
+    .points-negative {
+        color: var(--bright-red);
+        font-weight: 900;
+    }
+</style>
+
+<div class="karma-hero">
+    <h1>⚡ {{ total_karma }} KARMA</h1>
+    <p class="karma-points">
+        {% if karma_rank == 'Unranked' %}
+        Complete more actions to get ranked!
+        {% else %}
+        🏆 Rank #{{ karma_rank }} on Leaderboard
+        {% endif %}
+    </p>
+    {% if verified_badge %}
+    <span class="badge badge-success" style="margin-top: 1rem; font-size: 1rem;">✓ VERIFIED SCHOLAR</span>
+    {% endif %}
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ total_earned }}</div>
+        <div class="stat-label">Total Earned</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ total_spent }}</div>
+        <div class="stat-label">Total Spent</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">
+            {% if karma_rank == 'Unranked' %}
+            -
+            {% else %}
+            #{{ karma_rank }}
+            {% endif %}
+        </div>
+        <div class="stat-label">Leaderboard Rank</div>
+    </div>
+</div>
+
+<div class="quick-actions">
+    <a href="{% url 'karma:submit_scholarship' %}" class="action-btn">
+        <span class="action-icon">📝</span>
+        <span>Submit Scholarship</span>
+        <small style="font-weight: 500; font-size: 0.75rem;">Earn 100 Karma</small>
+    </a>
+    <a href="{% url 'karma:karma_store' %}" class="action-btn">
+        <span class="action-icon">🎁</span>
+        <span>Karma Store</span>
+        <small style="font-weight: 500; font-size: 0.75rem;">Redeem Rewards</small>
+    </a>
+    <a href="{% url 'karma:leaderboard' %}" class="action-btn">
+        <span class="action-icon">🏆</span>
+        <span>Leaderboard</span>
+        <small style="font-weight: 500; font-size: 0.75rem;">See Rankings</small>
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2>💫 Recent Activity</h2>
+    </div>
+
+    {% if transactions %}
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Points</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in transactions %}
+            <tr>
+                <td>{{ transaction.created_at|date:"M d, Y" }}</td>
+                <td>
+                    <span
+                        class="transaction-type {% if transaction.points > 0 %}type-earn{% elif 'PENALTY' in transaction.transaction_type %}type-penalty{% else %}type-spend{% endif %}">
+                        {{ transaction.get_transaction_type_display }}
+                    </span>
+                </td>
+                <td>{{ transaction.description }}</td>
+                <td>
+                    <span class="{% if transaction.points > 0 %}points-positive{% else %}points-negative{% endif %}">
+                        {% if transaction.points > 0 %}+{% endif %}{{ transaction.points }}
+                    </span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="text-align: center; padding: 2rem; color: var(--text-gray);">
+        No transactions yet. Start earning karma by completing your OTR or submitting scholarships!
+    </p>
+    {% endif %}
+</div>
+
+{% endblock %}

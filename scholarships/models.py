@@ -14,6 +14,17 @@ class Scholarship(models.Model):
     
     is_active = models.BooleanField(default=True)
     is_verified = models.BooleanField(default=False)
+    
+    # Karma Finder Bounty
+    found_by_student = models.ForeignKey(
+        'users.StudentProfile', 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True,
+        related_name='found_scholarships',
+        help_text="Student who submitted this scholarship"
+    )
+    finder_karma_awarded = models.IntegerField(default=0, help_text="Karma points awarded to finder")
     last_updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):

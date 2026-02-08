@@ -1,0 +1,545 @@
+{% extends 'base.html' %}
+
+{% block title %}Application Status - {{ application.scholarship.name }}{% endblock %}
+
+{% block content %}
+<style>
+    /* === SCHOLARMATCH THEME VARIABLES === */
+    :root {
+        --sm-yellow: #FFD700;
+        --sm-black: #000000;
+        --sm-white: #FFFFFF;
+        --sm-blue: #0066FF;
+        --sm-green: #00C853;
+        --sm-purple: #9C27B0;
+        --sm-red: #FF3333;
+        --sm-orange: #FF9800;
+        --sm-gray: #757575;
+        --sm-light-gray: #F5F5F5;
+        --sm-border-width: 3px;
+    }
+
+    /* === DOTTED BACKGROUND === */
+    .status-page-wrapper {
+        background: 
+            radial-gradient(circle, #00000008 1px, transparent 1px);
+        background-size: 20px 20px;
+        background-color: var(--sm-white);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .status-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+
+    /* === STATUS HEADER === */
+    .status-header {
+        background: var(--sm-yellow);
+        border: var(--sm-border-width) solid var(--sm-black);
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        position: relative;
+        box-shadow: 8px 8px 0 var(--sm-black);
+    }
+
+    .status-header h1 {
+        margin: 0 0 0.5rem 0;
+        font-size: 3rem;
+        font-weight: 900;
+        font-style: italic;
+        color: var(--sm-black);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .scholarship-name {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--sm-black);
+        opacity: 0.8;
+    }
+
+    /* === MAIN GRID === */
+    .status-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    /* === MAIN STATUS CARD === */
+    .main-status {
+        background: var(--sm-white);
+        border: var(--sm-border-width) solid var(--sm-black);
+        padding: 2.5rem;
+        box-shadow: 6px 6px 0 var(--sm-black);
+    }
+
+    /* === STATUS BADGE === */
+    .status-badge-large {
+        display: inline-block;
+        padding: 1rem 2rem;
+        border: var(--sm-border-width) solid var(--sm-black);
+        font-weight: 900;
+        font-size: 1.3rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 2rem;
+        box-shadow: 4px 4px 0 var(--sm-black);
+    }
+
+    .status-badge-large.DRAFT {
+        background: var(--sm-light-gray);
+        color: var(--sm-gray);
+    }
+
+    .status-badge-large.PENDING {
+        background: var(--sm-orange);
+        color: var(--sm-white);
+    }
+
+    .status-badge-large.APPROVED {
+        background: var(--sm-green);
+        color: var(--sm-white);
+    }
+
+    .status-badge-large.REJECTED {
+        background: var(--sm-red);
+        color: var(--sm-white);
+    }
+
+    /* === STATUS MESSAGE === */
+    .status-message {
+        padding: 1.5rem;
+        border: var(--sm-border-width) solid var(--sm-black);
+        margin: 1.5rem 0;
+        font-size: 1.05rem;
+        line-height: 1.6;
+        font-weight: 600;
+    }
+
+    .status-message.draft {
+        background: var(--sm-light-gray);
+        color: var(--sm-black);
+    }
+
+    .status-message.pending {
+        background: #FFF3E0;
+        color: var(--sm-black);
+    }
+
+    .status-message.approved {
+        background: #E8F5E9;
+        color: var(--sm-black);
+    }
+
+    .status-message.rejected {
+        background: #FFEBEE;
+        color: var(--sm-black);
+    }
+
+    /* === ACTION BUTTON === */
+    .btn-continue {
+        display: inline-block;
+        padding: 1rem 2.5rem;
+        background: var(--sm-blue);
+        color: var(--sm-white);
+        text-decoration: none;
+        border: var(--sm-border-width) solid var(--sm-black);
+        font-weight: 900;
+        text-transform: uppercase;
+        font-size: 1rem;
+        letter-spacing: 1px;
+        box-shadow: 4px 4px 0 var(--sm-black);
+        transition: all 0.2s;
+    }
+
+    .btn-continue:hover {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 var(--sm-black);
+    }
+
+    /* === ROADMAP SECTION === */
+    .roadmap {
+        margin: 3rem 0 2rem 0;
+    }
+
+    .roadmap h3 {
+        font-size: 2rem;
+        font-weight: 900;
+        font-style: italic;
+        color: var(--sm-black);
+        margin: 0 0 1.5rem 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .roadmap-step {
+        position: relative;
+        padding: 1.5rem 1.5rem 1.5rem 4.5rem;
+        margin-bottom: 1rem;
+        background: var(--sm-white);
+        border: var(--sm-border-width) solid var(--sm-black);
+        transition: all 0.3s;
+    }
+
+    .roadmap-step:hover {
+        background: var(--sm-light-gray);
+    }
+
+    .roadmap-step.complete {
+        background: var(--sm-yellow);
+        border-left-width: 8px;
+    }
+
+    .roadmap-step::before {
+        content: '';
+        position: absolute;
+        left: 1.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 28px;
+        height: 28px;
+        border: var(--sm-border-width) solid var(--sm-black);
+        background: var(--sm-white);
+    }
+
+    .roadmap-step.complete::before {
+        background: var(--sm-black);
+        content: '✓';
+        color: var(--sm-white);
+        font-size: 1rem;
+        font-weight: 900;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .step-name {
+        font-weight: 900;
+        font-size: 1.1rem;
+        color: var(--sm-black);
+        margin: 0 0 0.5rem 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .step-instructions {
+        color: var(--sm-black);
+        font-size: 0.95rem;
+        line-height: 1.5;
+        opacity: 0.8;
+    }
+
+    /* === DOCUMENTS SECTION === */
+    .documents-section {
+        margin-top: 3rem;
+        padding-top: 3rem;
+        border-top: var(--sm-border-width) solid var(--sm-black);
+    }
+
+    .documents-section h3 {
+        font-size: 2rem;
+        font-weight: 900;
+        font-style: italic;
+        color: var(--sm-black);
+        margin: 0 0 1.5rem 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .document-item {
+        padding: 1.25rem 1.5rem;
+        background: var(--sm-white);
+        border: var(--sm-border-width) solid var(--sm-black);
+        margin-bottom: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.2s;
+    }
+
+    .document-item:hover {
+        background: var(--sm-light-gray);
+    }
+
+    .doc-name {
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: var(--sm-black);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .doc-status {
+        font-size: 0.9rem;
+        font-weight: 900;
+        color: var(--sm-green);
+        text-transform: uppercase;
+        padding: 0.5rem 1rem;
+        background: var(--sm-white);
+        border: 2px solid var(--sm-green);
+    }
+
+    /* === INFO SIDEBAR === */
+    .info-sidebar {
+        background: var(--sm-white);
+        border: var(--sm-border-width) solid var(--sm-black);
+        padding: 2rem;
+        box-shadow: 6px 6px 0 var(--sm-black);
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+    }
+
+    .info-sidebar h3 {
+        font-size: 1.8rem;
+        font-weight: 900;
+        font-style: italic;
+        color: var(--sm-black);
+        margin: 0 0 2rem 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding-bottom: 1rem;
+        border-bottom: var(--sm-border-width) solid var(--sm-black);
+    }
+
+    .info-item {
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 2px solid var(--sm-light-gray);
+    }
+
+    .info-item:last-of-type {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .info-label {
+        font-size: 0.75rem;
+        font-weight: 900;
+        color: var(--sm-gray);
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .info-value {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--sm-black);
+    }
+
+    /* === BACK BUTTON === */
+    .btn-back {
+        width: 100%;
+        padding: 1rem;
+        background: var(--sm-black);
+        color: var(--sm-white);
+        text-decoration: none;
+        border: var(--sm-border-width) solid var(--sm-black);
+        font-weight: 900;
+        text-transform: uppercase;
+        text-align: center;
+        display: block;
+        margin-top: 2rem;
+        font-size: 1rem;
+        letter-spacing: 1px;
+        box-shadow: 4px 4px 0 var(--sm-yellow);
+        transition: all 0.2s;
+    }
+
+    .btn-back:hover {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 var(--sm-yellow);
+    }
+
+    /* === EMOJI ICONS === */
+    .icon-emoji {
+        font-style: normal;
+        font-size: 1.5rem;
+        margin-right: 0.5rem;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 1200px) {
+        .status-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .info-sidebar {
+            position: static;
+        }
+
+        .status-header h1 {
+            font-size: 2.5rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .status-page-wrapper {
+            padding: 1rem 0;
+        }
+
+        .status-container {
+            padding: 0 1rem;
+        }
+
+        .status-header {
+            padding: 1.5rem;
+            box-shadow: 4px 4px 0 var(--sm-black);
+        }
+
+        .status-header h1 {
+            font-size: 2rem;
+        }
+
+        .scholarship-name {
+            font-size: 1rem;
+        }
+
+        .main-status,
+        .info-sidebar {
+            padding: 1.5rem;
+            box-shadow: 4px 4px 0 var(--sm-black);
+        }
+
+        .status-badge-large {
+            font-size: 1.1rem;
+            padding: 0.75rem 1.5rem;
+        }
+
+        .roadmap h3,
+        .documents-section h3,
+        .info-sidebar h3 {
+            font-size: 1.5rem;
+        }
+
+        .roadmap-step {
+            padding: 1.25rem 1.25rem 1.25rem 4rem;
+        }
+
+        .roadmap-step::before {
+            width: 24px;
+            height: 24px;
+            left: 1.25rem;
+        }
+
+        .btn-continue,
+        .btn-back {
+            font-size: 0.9rem;
+            padding: 0.85rem 1.5rem;
+        }
+    }
+</style>
+
+<div class="status-page-wrapper">
+    <div class="status-container">
+        <!-- HEADER -->
+        <div class="status-header">
+            <h1><span class="icon-emoji">📊</span>Application Status</h1>
+            <div class="scholarship-name">{{ application.scholarship.name }}</div>
+        </div>
+
+        <!-- MAIN GRID -->
+        <div class="status-grid">
+            <!-- MAIN STATUS CARD -->
+            <div class="main-status">
+                <!-- STATUS BADGE -->
+                <div>
+                    <span class="status-badge-large {{ application.status }}">
+                        {{ application.get_status_display }}
+                    </span>
+                </div>
+
+                <!-- STATUS MESSAGES -->
+                {% if application.status == 'DRAFT' %}
+                <div class="status-message draft">
+                    Your application is still in draft. Complete the upload process and submit your application.
+                </div>
+                <a href="{% url 'applications:upload_documents' pk=application.pk %}" class="btn-continue">
+                    Continue Application →
+                </a>
+
+                {% elif application.status == 'PENDING' %}
+                <div class="status-message pending">
+                    Your application has been submitted and is currently under review. We'll notify you once a decision has been made.
+                </div>
+
+                {% elif application.status == 'APPROVED' %}
+                <div class="status-message approved">
+                    🎉 <strong>Congratulations!</strong> Your application has been approved. Check your email for next steps.
+                </div>
+
+                {% elif application.status == 'REJECTED' %}
+                <div class="status-message rejected">
+                    Unfortunately, your application was not approved at this time. You may apply for other scholarships.
+                </div>
+                {% endif %}
+
+                <!-- ROADMAP SECTION -->
+                {% if steps %}
+                <div class="roadmap">
+                    <h3><span class="icon-emoji">📍</span>Application Progress</h3>
+                    {% for step in steps %}
+                    <div class="roadmap-step {% if step.is_complete %}complete{% endif %}">
+                        <div class="step-name">{{ step.step_name }}</div>
+                        {% if step.instructions %}
+                        <div class="step-instructions">{{ step.instructions }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- DOCUMENTS SECTION -->
+                {% if documents %}
+                <div class="documents-section">
+                    <h3><span class="icon-emoji">📄</span>Uploaded Documents</h3>
+                    {% for doc in documents %}
+                    <div class="document-item">
+                        <div class="doc-name">{{ doc.document_type.document_name }}</div>
+                        <div class="doc-status">✓ Verified</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- INFO SIDEBAR -->
+            <aside class="info-sidebar">
+                <h3><span class="icon-emoji">ℹ️</span>Details</h3>
+
+                <div class="info-item">
+                    <div class="info-label">Organization</div>
+                    <div class="info-value">{{ application.scholarship.organization }}</div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Award Amount</div>
+                    <div class="info-value">₹{{ application.scholarship.award_amount }}</div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Deadline</div>
+                    <div class="info-value">{{ application.scholarship.deadline|date:"M d, Y" }}</div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Last Updated</div>
+                    <div class="info-value">{{ application.last_action_date|date:"M d, Y" }}</div>
+                </div>
+
+                <a href="{% url 'applications:my_applications' %}" class="btn-back">
+                    ← Back to Applications
+                </a>
+            </aside>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

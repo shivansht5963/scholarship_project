@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+
+{% block title %}Recommended Scholarships - Scholar Match{% endblock %}
+
+{% block content %}
+<style>
+    .recommended-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .recommended-header h1 {
+        color: var(--dark-green);
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .recommended-header p {
+        color: var(--gray);
+        font-size: 1.1rem;
+    }
+
+    .info-banner {
+        background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border-left: 4px solid #2196F3;
+        margin-bottom: 2rem;
+        color: #1565C0;
+    }
+
+    .scholarship-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2rem;
+    }
+
+    .scholarship-card {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s;
+        border: 2px solid transparent;
+        position: relative;
+    }
+
+    .scholarship-card::before {
+        content: '⭐';
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 1.5rem;
+    }
+
+    .scholarship-card:hover {
+        transform: translateY(-6px);
+        border-color: var(--primary-green);
+        box-shadow: 0 12px 28px rgba(76, 175, 80, 0.2);
+    }
+
+    .scholarship-card h3 {
+        margin: 0 0 0.75rem 0;
+        color: var(--dark-green);
+        font-size: 1.3rem;
+    }
+
+    .scholarship-card h3 a {
+        color: var(--dark-green);
+        text-decoration: none;
+    }
+
+    .scholarship-card h3 a:hover {
+        color: var(--primary-green);
+    }
+
+    .organization {
+        color: var(--gray);
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .amount {
+        background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
+        color: white;
+        padding: 0.75rem 1.25rem;
+        border-radius: 10px;
+        font-weight: 800;
+        font-size: 1.2rem;
+        display: inline-block;
+        margin: 1rem 0;
+    }
+
+    .details {
+        color: var(--gray);
+        line-height: 1.7;
+        margin: 1rem 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1.25rem;
+        margin-top: 1.25rem;
+        border-top: 2px solid var(--very-light-green);
+    }
+
+    .deadline {
+        color: var(--gray);
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .view-btn {
+        padding: 0.7rem 1.5rem;
+        background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .view-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+    }
+
+    @media (max-width: 768px) {
+        .scholarship-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="recommended-header">
+    <h1>⭐ Recommended For You</h1>
+    <p>Scholarships that match your profile</p>
+</div>
+
+{% if message %}
+<div class="info-banner">
+    <strong>ℹ️ {{ message }}</strong>
+</div>
+{% endif %}
+
+<div class="scholarship-grid">
+    {% for scholarship in scholarships %}
+    <article class="scholarship-card">
+        <h3><a href="{% url 'scholarships:scholarship_detail' pk=scholarship.pk %}">{{ scholarship.name }}</a></h3>
+
+        <div class="organization">
+            <span>🏛️</span>
+            <span>{{ scholarship.organization }}</span>
+        </div>
+
+        <div class="amount">₹{{ scholarship.award_amount }}</div>
+
+        <div class="details">
+            {{ scholarship.details|truncatewords:25 }}
+        </div>
+
+        <div class="card-footer">
+            <div class="deadline">
+                <span>📅</span>
+                <span>Due: {{ scholarship.deadline|date:"M d, Y" }}</span>
+            </div>
+
+            <a href="{% url 'scholarships:scholarship_detail' pk=scholarship.pk %}" class="view-btn">
+                View Details
+            </a>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+{% endblock %}

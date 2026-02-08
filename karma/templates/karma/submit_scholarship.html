@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}Submit Scholarship - Karma - Scholar Match{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>📝 Submit New Scholarship</h2>
+    </div>
+
+    <div style="background: var(--neon-green); border: 3px solid var(--black); padding: 1.5rem; margin-bottom: 2rem;">
+        <h3 style="margin: 0 0 0.5rem 0; font-weight: 900; font-size: 1.2rem;">💎 Finder Bounty Program</h3>
+        <p style="margin: 0; font-weight: 600;">Submit a scholarship we don't have and earn <strong>100 Karma
+                Points</strong> after moderator approval!</p>
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="{{ form.scholarship_name.id_for_label }}">Scholarship Name *</label>
+            {{ form.scholarship_name }}
+            {% if form.scholarship_name.errors %}
+            <div style="color: var(--bright-red); font-weight: 600; margin-top: 0.5rem;">
+                {{ form.scholarship_name.errors }}
+            </div>
+            {% endif %}
+            <small style="color: var(--text-gray); display: block; margin-top: 0.25rem;">
+                {{ form.scholarship_name.help_text }}
+            </small>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.organization.id_for_label }}">Organization *</label>
+            {{ form.organization }}
+            {% if form.organization.errors %}
+            <div style="color: var(--bright-red); font-weight: 600; margin-top: 0.5rem;">
+                {{ form.organization.errors }}
+            </div>
+            {% endif %}
+            <small style="color: var(--text-gray); display: block; margin-top: 0.25rem;">
+                {{ form.organization.help_text }}
+            </small>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.website_url.id_for_label }}">Website URL *</label>
+            {{ form.website_url }}
+            {% if form.website_url.errors %}
+            <div style="color: var(--bright-red); font-weight: 600; margin-top: 0.5rem;">
+                {{ form.website_url.errors }}
+            </div>
+            {% endif %}
+            <small style="color: var(--text-gray); display: block; margin-top: 0.25rem;">
+                {{ form.website_url.help_text }}
+            </small>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.proof_document.id_for_label }}">Proof Document *</label>
+            {{ form.proof_document }}
+            {% if form.proof_document.errors %}
+            <div style="color: var(--bright-red); font-weight: 600; margin-top: 0.5rem;">
+                {{ form.proof_document.errors }}
+            </div>
+            {% endif %}
+            <small style="color: var(--text-gray); display: block; margin-top: 0.25rem;">
+                {{ form.proof_document.help_text }}
+            </small>
+        </div>
+
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <button type="submit" class="btn">Submit for Review</button>
+            <a href="{% url 'karma:karma_dashboard' %}" class="btn btn-outline">Cancel</a>
+        </div>
+    </form>
+</div>
+
+{% if previous_submissions %}
+<div class="card">
+    <div class="card-header">
+        <h2>📋 Your Recent Submissions</h2>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Scholarship</th>
+                <th>Submitted</th>
+                <th>Status</th>
+                <th>Karma</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for submission in previous_submissions %}
+            <tr>
+                <td><strong>{{ submission.scholarship_name }}</strong></td>
+                <td>{{ submission.submitted_at|date:"M d, Y" }}</td>
+                <td>
+                    <span
+                        class="badge {% if submission.status == 'APPROVED' %}badge-success{% elif submission.status == 'REJECTED' %}badge-danger{% else %}badge-warning{% endif %}">
+                        {{ submission.get_status_display }}
+                    </span>
+                </td>
+                <td>
+                    {% if submission.karma_awarded != 0 %}
+                    <strong
+                        class="{% if submission.karma_awarded > 0 %}points-positive{% else %}points-negative{% endif %}">
+                        {% if submission.karma_awarded > 0 %}+{% endif %}{{ submission.karma_awarded }}
+                    </strong>
+                    {% else %}
+                    -
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+<style>
+    .points-positive {
+        color: var(--bright-green);
+    }
+
+    .points-negative {
+        color: var(--bright-red);
+    }
+</style>
+
+{% endblock %}

@@ -3,16 +3,18 @@
 from django.urls import path
 from . import views
 
+app_name = 'funder_portal'
+
 urlpatterns = [
-    # Main Dashboard
-    path('dashboard/', views.funder_dashboard, name='funder_dashboard'),
+    path('dashboard/', views.organization_dashboard, name='funder_dashboard'),
     
-    # Create New Scholarship (pk is None)
-    path('scholarship/new/', views.manage_scholarship, name='funder_add_scholarship'),
+    # Scholarship management
+    path('scholarship/new/', views.manage_scholarship, name='create_scholarship'),
+    path('scholarship/<int:pk>/edit/', views.manage_scholarship, name='edit_scholarship'),
+    path('scholarship/<int:pk>/delete/', views.delete_scholarship, name='delete_scholarship'),
     
-    # Edit Existing Scholarship (pk is the ID)
-    path('scholarship/edit/<int:pk>/', views.manage_scholarship, name='funder_edit_scholarship'),
-    
-    # Future paths for Review/Analytics will go here
-    # path('applications/', views.application_review_list, name='funder_review_apps'),
+    # Application review
+    path('applications/', views.view_applications, name='view_applications'),
+    path('applications/<int:pk>/', views.application_detail, name='application_detail'),
+    path('applications/<int:pk>/decision/', views.make_decision, name='make_decision'),
 ]

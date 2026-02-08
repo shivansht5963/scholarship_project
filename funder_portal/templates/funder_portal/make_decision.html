@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+
+{% block title %}Make Decision - {{ application.student.full_name }}{% endblock %}
+
+{% block content %}
+<style>
+    .decision-header {
+        background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
+        padding: 2rem;
+        border-radius: 16px;
+        margin-bottom: 2rem;
+        color: white;
+    }
+
+    .decision-header h1 {
+        margin: 0 0 0.5rem 0;
+    }
+
+    .decision-container {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .application-summary {
+        background: white;
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+    }
+
+    .application-summary h2 {
+        color: var(--dark-green);
+        margin: 0 0 1.5rem 0;
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .summary-item {
+        padding: 1rem;
+        background: var(--very-light-green);
+        border-radius: 8px;
+    }
+
+    .summary-label {
+        font-size: 0.85rem;
+        color: var(--gray);
+        margin-bottom: 0.25rem;
+    }
+
+    .summary-value {
+        font-weight: 600;
+        color: var(--dark-green);
+    }
+
+    .decision-form {
+        background: white;
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .decision-form h2 {
+        color: var(--dark-green);
+        margin: 0 0 1.5rem 0;
+    }
+
+    .form-group {
+        margin-bottom: 2rem;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        color: var(--dark-green);
+        margin-bottom: 1rem;
+    }
+
+    .radio-group {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .radio-option {
+        padding: 1.25rem;
+        border: 2px solid var(--border-green);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .radio-option:hover {
+        background: var(--very-light-green);
+    }
+
+    .radio-option input[type="radio"] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+
+    .radio-option.approve {
+        border-color: var(--primary-green);
+    }
+
+    .radio-option.reject {
+        border-color: #f44336;
+    }
+
+    .radio-option input[type="radio"]:checked+.radio-label {
+        font-weight: 700;
+    }
+
+    .radio-label {
+        font-size: 1.1rem;
+        color: var(--dark-green);
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.8rem;
+        border: 2px solid var(--border-green);
+        border-radius: 8px;
+        font-size: 1rem;
+        font-family: inherit;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .btn-submit {
+        flex: 1;
+        padding: 1rem;
+        background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+    }
+
+    .btn-cancel {
+        flex: 1;
+        padding: 1rem;
+        background: white;
+        color: var(--dark-green);
+        border: 2px solid var(--border-green);
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+    }
+
+    .btn-cancel:hover {
+        background: var(--very-light-green);
+    }
+</style>
+
+<div class="decision-header">
+    <h1>📊 Make Decision</h1>
+    <p>Review and decide on this application</p>
+</div>
+
+<div class="decision-container">
+    <div class="application-summary">
+        <h2>Application Summary</h2>
+        <div class="summary-grid">
+            <div class="summary-item">
+                <div class="summary-label">Student Name</div>
+                <div class="summary-value">{{ application.student.full_name }}</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">Scholarship</div>
+                <div class="summary-value">{{ application.scholarship.name }}</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">Applied On</div>
+                <div class="summary-value">{{ application.last_action_date|date:"M d, Y" }}</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">Current Status</div>
+                <div class="summary-value">{{ application.get_status_display }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="decision-form">
+        <h2>Your Decision</h2>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label>Select Decision</label>
+                <div class="radio-group">
+                    <label class="radio-option approve">
+                        <input type="radio" name="decision" value="APPROVED" required>
+                        <span class="radio-label">✅ Approve Application</span>
+                    </label>
+
+                    <label class="radio-option reject">
+                        <input type="radio" name="decision" value="REJECTED" required>
+                        <span class="radio-label">❌ Reject Application</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="id_notes">Feedback/Notes (Optional)</label>
+                <textarea name="notes" id="id_notes" rows="4" class="form-control"
+                    placeholder="Add any feedback or instructions for the student..."></textarea>
+            </div>
+
+            <div class="action-buttons">
+                <a href="{% url 'funder_portal:application_detail' pk=application.pk %}" class="btn-cancel">
+                    Cancel
+                </a>
+                <button type="submit" class="btn-submit">
+                    Submit Decision
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

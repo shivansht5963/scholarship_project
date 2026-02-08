@@ -13,8 +13,8 @@ def is_moderator(user):
     return user.is_authenticated and user.is_moderator
 
 # --- Dashboard View ---
-# @login_required 
-# @user_passes_test(is_moderator)
+@login_required 
+@user_passes_test(is_moderator)
 def moderator_dashboard(request):
     """Main dashboard showing stats and links for moderators."""
     
@@ -36,8 +36,8 @@ def moderator_dashboard(request):
 
 
 # --- Add Scholarship View ---
-# @login_required
-# @user_passes_test(is_moderator)
+@login_required
+@user_passes_test(is_moderator)
 def add_scholarship(request):
     """Handles the form submission for adding a new scholarship."""
     

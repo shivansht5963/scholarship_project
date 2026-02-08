@@ -1,0 +1,424 @@
+{% extends 'base.html' %}
+
+{% block title %}Step 6 - Banking Details{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-yellow: #FFD700;
+        --bright-yellow: #FFEB3B;
+        --text-dark: #000000;
+        --border-black: #000000;
+        --blue-primary: #0066FF;
+        --green-success: #00C853;
+        --bg-white: #FFFFFF;
+        --bg-light: #FAFAFA;
+    }
+
+    body {
+        background: #FFFFFF;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        position: relative;
+    }
+
+    /* Dotted Background Pattern */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: radial-gradient(circle, #e0e0e0 1px, transparent 1px);
+        background-size: 20px 20px;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .otr-container {
+        max-width: 1400px;
+        margin: 3rem auto;
+        padding: 0 2rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Header Section */
+    .step-header {
+        margin-bottom: 3rem;
+    }
+
+    .step-badge {
+        display: inline-block;
+        background: var(--primary-yellow);
+        color: var(--text-dark);
+        padding: 0.5rem 1.5rem;
+        font-size: 0.85rem;
+        font-weight: 900;
+        letter-spacing: 0.5px;
+        border: 3px solid var(--border-black);
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+    }
+
+    .step-title {
+        color: var(--text-dark);
+        font-size: 3.5rem;
+        font-weight: 900;
+        font-style: italic;
+        line-height: 1.1;
+        margin-bottom: 0.75rem;
+        letter-spacing: -1px;
+    }
+
+    .step-subtitle {
+        color: #666;
+        font-size: 1.1rem;
+        font-weight: 400;
+        margin-bottom: 0;
+    }
+
+    /* Completion Badge */
+    .completion-badge {
+        display: inline-block;
+        background: var(--primary-yellow);
+        color: var(--text-dark);
+        padding: 0.5rem 1.25rem;
+        font-size: 0.9rem;
+        font-weight: 700;
+        border: 3px solid var(--border-black);
+        margin-top: 1.5rem;
+        text-transform: uppercase;
+    }
+
+    /* Info Box */
+    .info-box {
+        background: var(--primary-yellow);
+        padding: 1.5rem;
+        border: 4px solid var(--border-black);
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .info-box strong {
+        font-size: 1.1rem;
+        font-weight: 900;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .info-icon {
+        font-size: 2rem;
+        margin-right: 0.5rem;
+    }
+
+    /* Form Sections */
+    .form-section {
+        background: var(--bg-white);
+        border: 4px solid var(--border-black);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-section h3 {
+        color: var(--text-dark);
+        font-size: 1.5rem;
+        font-weight: 900;
+        margin-bottom: 2rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 3px solid #e0e0e0;
+        text-transform: uppercase;
+    }
+
+    /* Form Layout */
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        color: var(--text-dark);
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 1rem;
+        border: 3px solid var(--border-black);
+        background: var(--bg-white);
+        font-size: 1rem;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: var(--blue-primary);
+        box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+    }
+
+    .form-group input::placeholder {
+        color: #999;
+        font-weight: 400;
+    }
+
+    /* Readonly/Disabled Field */
+    .form-group input:read-only,
+    .form-group input.readonly-field {
+        background: #f5f5f5;
+        color: #666;
+        cursor: not-allowed;
+        border-color: #ccc;
+        padding-right: 3rem;
+    }
+
+    .readonly-badge {
+        display: inline-block;
+        background: #e0e0e0;
+        color: #666;
+        padding: 0.25rem 0.75rem;
+        border: 2px solid #999;
+        font-size: 0.75rem;
+        font-weight: 700;
+        margin-left: 0.5rem;
+        text-transform: uppercase;
+    }
+
+    .field-lock-icon {
+        position: relative;
+    }
+
+    .field-lock-icon::after {
+        content: '🔒';
+        position: absolute;
+        right: 1rem;
+        top: 3.5rem;
+        font-size: 1.2rem;
+        pointer-events: none;
+    }
+
+    /* Helper Text */
+    .helper-text {
+        font-size: 0.85rem;
+        color: #666;
+        margin-top: 0.5rem;
+    }
+
+    /* Secure Badge */
+    .secure-badge {
+        display: inline-flex;
+        align-items: center;
+        background: var(--green-success);
+        color: white;
+        padding: 0.4rem 1rem;
+        border: 2px solid var(--border-black);
+        font-size: 0.85rem;
+        font-weight: 700;
+        margin-top: 1rem;
+        gap: 0.5rem;
+    }
+
+    /* Button Group */
+    .button-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 3rem;
+        gap: 1rem;
+    }
+
+    .btn-secondary,
+    .btn-primary {
+        padding: 1rem 2.5rem;
+        border: 3px solid var(--border-black);
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        font-weight: 900;
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-secondary {
+        background: var(--bg-white);
+        color: var(--text-dark);
+    }
+
+    .btn-secondary:hover {
+        background: #f0f0f0;
+        transform: translateY(-2px);
+    }
+
+    .btn-primary {
+        background: var(--blue-primary);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #0052cc;
+        transform: translateY(-2px);
+    }
+
+    /* Field Icons */
+    .field-with-icon {
+        position: relative;
+    }
+
+    .field-icon {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.2rem;
+        color: #999;
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+        .otr-container {
+            max-width: 1000px;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .otr-container {
+            padding: 0 1.5rem;
+        }
+
+        .step-title {
+            font-size: 2.5rem;
+        }
+
+        .button-group {
+            flex-direction: column;
+        }
+
+        .btn-secondary,
+        .btn-primary {
+            width: 100%;
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .otr-container {
+            padding: 0 1rem;
+            margin: 2rem auto;
+        }
+
+        .step-title {
+            font-size: 2rem;
+        }
+
+        .form-section {
+            padding: 1.5rem;
+        }
+    }
+</style>
+
+<div class="otr-container">
+    <!-- Header -->
+    <div class="step-header">
+        <div class="step-badge">STEP 6 OF 6: BANKING DETAILS</div>
+        <h1 class="step-title">BANKING DETAILS</h1>
+        <p class="step-subtitle">For scholarship disbursement - your funds need a home!</p>
+        <div class="completion-badge">90% COMPLETE</div>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Security Info Box -->
+        <div class="info-box">
+            <strong><span class="info-icon">🔒</span>SECURE INFORMATION</strong>
+            Your banking details are encrypted and used only for scholarship payments. We never share your financial information.
+        </div>
+
+        <!-- Aadhaar Section -->
+        <div class="form-section">
+            <h3>Aadhaar Information</h3>
+
+            <div class="form-group field-lock-icon">
+                <label for="{{ form.aadhaar_number.id_for_label }}">
+                    Aadhaar Number
+                    <span class="readonly-badge">🔒 Locked</span>
+                </label>
+                {{ form.aadhaar_number }}
+                <div class="helper-text">📋 This field is auto-filled from your profile and cannot be edited</div>
+            </div>
+
+            <div class="secure-badge">
+                🛡️ Aadhaar Verified & Encrypted
+            </div>
+        </div>
+
+        <!-- Bank Details Section -->
+        <div class="form-section">
+            <h3>Bank Account Details</h3>
+
+            <div class="form-group">
+                <label for="{{ form.bank_name.id_for_label }}">Bank Name</label>
+                {{ form.bank_name }}
+                <div class="helper-text">🏦 Enter your bank name (e.g., State Bank of India, HDFC Bank)</div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.bank_account_number.id_for_label }}">Account Number</label>
+                    {{ form.bank_account_number }}
+                    <div class="helper-text">💳 Your bank account number</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.bank_ifsc_code.id_for_label }}">IFSC Code</label>
+                    {{ form.bank_ifsc_code }}
+                    <div class="helper-text">🔢 11-character IFSC code</div>
+                </div>
+            </div>
+
+            <div class="info-box" style="background: #E3F2FD; border-color: var(--blue-primary);">
+                <strong>💡 TIP:</strong>
+                You can find your IFSC code on your bank passbook, cheque book, or by searching online with your bank name and branch.
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="button-group">
+            <a href="{% url 'otr_step5' %}" class="btn-secondary">← Back</a>
+            <button type="submit" class="btn-primary">Next: Review →</button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Make Aadhaar number field readonly
+    const aadhaarInput = document.querySelector('#{{ form.aadhaar_number.id_for_label }}');
+    if (aadhaarInput) {
+        aadhaarInput.setAttribute('readonly', 'readonly');
+        aadhaarInput.classList.add('readonly-field');
+    }
+});
+</script>
+{% endblock %}

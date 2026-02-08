@@ -1,0 +1,326 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome to OTR - Scholar Match{% endblock %}
+
+{% block content %}
+<style>
+    /* Modern OTR Welcome Page Styles */
+    .otr-container {
+        min-height: 100vh;
+        background: #f5f5f5;
+        padding: 30px 20px 40px;
+    }
+
+    .otr-welcome {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    /* Header Section */
+    .otr-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .welcome-text {
+        font-size: 56px;
+        font-weight: 900;
+        text-transform: uppercase;
+        color: #000;
+        margin-bottom: 12px;
+        letter-spacing: 2px;
+        font-family: 'Arial Black', sans-serif;
+        line-height: 1.1;
+    }
+
+    .highlight-box {
+        background: #B8FF57;
+        border: 4px solid #000;
+        padding: 20px 30px;
+        box-shadow: 6px 6px 0 #000;
+        display: inline-block;
+        margin-bottom: 15px;
+    }
+
+    .highlight-text {
+        font-size: 48px;
+        font-weight: 900;
+        text-transform: uppercase;
+        color: #000;
+        font-style: italic;
+        letter-spacing: 2px;
+        font-family: 'Arial Black', sans-serif;
+        line-height: 1.1;
+    }
+
+    .subtitle-box {
+        background: white;
+        border: 4px solid #000;
+        padding: 16px 30px;
+        box-shadow: 6px 6px 0 #000;
+        margin-bottom: 30px;
+    }
+
+    .subtitle-text {
+        font-size: 16px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #000;
+        letter-spacing: 1.5px;
+        margin: 0;
+    }
+
+    /* Steps Section */
+    .steps-container {
+        margin-bottom: 25px;
+    }
+
+    .step-card {
+        background: white;
+        border: 4px solid #000;
+        padding: 20px 25px;
+        margin-bottom: 15px;
+        box-shadow: 6px 6px 0 #000;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .step-card:hover {
+        transform: translate(2px, 2px);
+        box-shadow: 4px 4px 0 #000;
+    }
+
+    .step-number-box {
+        width: 60px;
+        height: 60px;
+        flex-shrink: 0;
+        border: 3px solid #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        font-weight: 900;
+        color: #000;
+        font-family: 'Arial Black', sans-serif;
+    }
+
+    /* Different colors for each step */
+    .step-card:nth-child(1) .step-number-box { background: #B8A4FF; }
+    .step-card:nth-child(2) .step-number-box { background: #FFA04A; }
+    .step-card:nth-child(3) .step-number-box { background: #5BC0EB; }
+    .step-card:nth-child(4) .step-number-box { background: #FF6B9D; }
+    .step-card:nth-child(5) .step-number-box { background: #FFD93D; }
+    .step-card:nth-child(6) .step-number-box { background: #6BCF7F; }
+
+    .step-content {
+        flex: 1;
+    }
+
+    .step-title {
+        font-size: 18px;
+        font-weight: 900;
+        text-transform: uppercase;
+        color: #000;
+        margin-bottom: 5px;
+        letter-spacing: 0.5px;
+        font-family: 'Arial Black', sans-serif;
+    }
+
+    .step-description {
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: #666;
+        letter-spacing: 0.3px;
+        margin: 0;
+        line-height: 1.4;
+    }
+
+    /* Start Button */
+    .button-container {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .start-button {
+        display: inline-block;
+        background: #B8FF57;
+        border: 4px solid #000;
+        color: #000;
+        padding: 18px 50px;
+        text-decoration: none;
+        font-size: 20px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        box-shadow: 6px 6px 0 #000;
+        transition: all 0.2s;
+        font-family: 'Arial Black', sans-serif;
+    }
+
+    .start-button:hover {
+        background: #A8EF47;
+        transform: translate(2px, 2px);
+        box-shadow: 4px 4px 0 #000;
+        color: #000;
+        text-decoration: none;
+    }
+
+    .start-button:active {
+        transform: translate(6px, 6px);
+        box-shadow: 0 0 0 #000;
+    }
+
+    /* Time Estimate */
+    .time-estimate {
+        text-align: center;
+        font-size: 14px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #666;
+        letter-spacing: 1.5px;
+        margin-top: 20px;
+        margin-bottom: 0;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .otr-welcome {
+            max-width: 100%;
+        }
+
+        .welcome-text {
+            font-size: 36px;
+        }
+
+        .highlight-text {
+            font-size: 32px;
+        }
+
+        .highlight-box,
+        .subtitle-box {
+            padding: 15px 20px;
+        }
+
+        .subtitle-text {
+            font-size: 13px;
+        }
+
+        .step-card {
+            padding: 20px 15px;
+            gap: 15px;
+        }
+
+        .step-number-box {
+            width: 50px;
+            height: 50px;
+            font-size: 22px;
+        }
+
+        .step-title {
+            font-size: 16px;
+        }
+
+        .step-description {
+            font-size: 11px;
+        }
+
+        .start-button {
+            padding: 18px 40px;
+            font-size: 18px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .welcome-text {
+            font-size: 28px;
+        }
+
+        .highlight-text {
+            font-size: 24px;
+        }
+
+        .start-button {
+            width: 100%;
+            padding: 18px 20px;
+            font-size: 16px;
+        }
+    }
+</style>
+
+<div class="otr-container">
+    <div class="otr-welcome">
+        <!-- Header Section -->
+        <div class="otr-header">
+            <h1 class="welcome-text">WELCOME TO</h1>
+            <div class="highlight-box">
+                <div class="highlight-text">ONE-TIME<br>REGISTRATION</div>
+            </div>
+            <div class="subtitle-box">
+                <p class="subtitle-text">Complete your profile once, apply to unlimited scholarships!</p>
+            </div>
+        </div>
+
+        <!-- Steps Section -->
+        <div class="steps-container">
+            <div class="step-card">
+                <div class="step-number-box">1</div>
+                <div class="step-content">
+                    <h3 class="step-title">Basic Information</h3>
+                    <p class="step-description">Full name, date of birth, gender, and contact details.</p>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number-box">2</div>
+                <div class="step-content">
+                    <h3 class="step-title">Family & Category</h3>
+                    <p class="step-description">Annual income, caste category, and disability status.</p>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number-box">3</div>
+                <div class="step-content">
+                    <h3 class="step-title">Academic Records</h3>
+                    <p class="step-description">Previous education details, current institution, and marks.</p>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number-box">4</div>
+                <div class="step-content">
+                    <h3 class="step-title">Document Upload</h3>
+                    <p class="step-description">Aadhaar card, income certificate, marksheets, and photo.</p>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number-box">5</div>
+                <div class="step-content">
+                    <h3 class="step-title">Banking Details</h3>
+                    <p class="step-description">Account number and IFSC code for direct scholarship transfers.</p>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number-box">6</div>
+                <div class="step-content">
+                    <h3 class="step-title">Review & Submit</h3>
+                    <p class="step-description">Verify all entered information and finalize your OTR profile.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Start Button -->
+        <div class="button-container">
+            <a href="{% url 'otr_step2' %}" class="start-button">START REGISTRATION →</a>
+        </div>
+
+        <!-- Time Estimate -->
+        <p class="time-estimate">⏱️ Estimated time: 10-15 minutes</p>
+    </div>
+</div>
+{% endblock %}

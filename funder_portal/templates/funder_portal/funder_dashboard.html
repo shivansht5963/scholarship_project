@@ -1,59 +1,490 @@
 {% extends "base.html" %}
 
-{% block title %}Organization Dashboard{% endblock title %}
+{% block title %}Organization Dashboard - Scholar Match{% endblock %}
 
 {% block content %}
-    <h1>🏛️ {{ organization.organization_name }} Portal</h1>
-    <p>Welcome, {{ user.username }}. Manage your schemes and review applications here.</p>
-    
-    <div class="stats-grid">
-        <div class="stat-card">
-            <h3>Active Schemes</h3>
-            <p style="font-size: 2em; color: #28a745;">{{ total_schemes }}</p>
-        </div>
-        <div class="stat-card">
-            <h3>Applications to Review</h3>
-            <p style="font-size: 2em; color: #dc3545;">{{ total_applications }}</p>
+<style>
+    .org-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    /* Welcome Header */
+    .org-welcome {
+        background: linear-gradient(135deg, #2E7D32 0%, #4CAF50 50%, #66BB6A 100%);
+        color: white;
+        padding: 2.5rem;
+        border-radius: 16px;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 24px rgba(76, 175, 80, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .org-welcome::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 400px;
+        height: 400px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+    }
+
+    .org-welcome-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .org-welcome h1 {
+        margin: 0 0 0.5rem 0;
+        font-size: 2.5rem;
+        font-weight: 700;
+    }
+
+    .org-subtitle {
+        opacity: 0.9;
+        font-size: 1.1rem;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.8rem;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: var(--primary-green);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(76, 175, 80, 0.15);
+    }
+
+    .stat-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+
+    .stat-icon {
+        font-size: 2.5rem;
+    }
+
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--dark-green);
+        margin: 0.5rem 0;
+        line-height: 1;
+    }
+
+    .stat-label {
+        color: var(--gray);
+        font-size: 0.95rem;
+        font-weight: 500;
+    }
+
+    /* Section Card */
+    .section-card {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--very-light-green);
+    }
+
+    .section-title {
+        color: var(--dark-green);
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-create {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
+        color: white;
+        padding: 0.75rem 2rem;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+
+    .btn-create:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(76, 175, 80, 0.3);
+    }
+
+    /* Scholarship Table */
+    .scholarship-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 0.75rem;
+    }
+
+    .scholarship-table thead {
+        background: var(--very-light-green);
+    }
+
+    .scholarship-table thead th {
+        padding: 1rem;
+        text-align: left;
+        color: var(--dark-green);
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: none;
+    }
+
+    .scholarship-table thead th:first-child {
+        border-radius: 8px 0 0 8px;
+    }
+
+    .scholarship-table thead th:last-child {
+        border-radius: 0 8px 8px 0;
+    }
+
+    .scholarship-table tbody tr {
+        background: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+    }
+
+    .scholarship-table tbody tr:hover {
+        transform: translateX(4px);
+        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.1);
+    }
+
+    .scholarship-table tbody td {
+        padding: 1.25rem 1rem;
+        border: none;
+        color: var(--dark-gray);
+    }
+
+    .scholarship-table tbody td:first-child {
+        border-radius: 8px 0 0 8px;
+        font-weight: 600;
+        color: var(--dark-green);
+    }
+
+    .scholarship-table tbody td:last-child {
+        border-radius: 0 8px 8px 0;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .status-active {
+        background: rgba(76, 175, 80, 0.1);
+        color: var(--primary-green);
+    }
+
+    .status-inactive {
+        background: rgba(158, 158, 158, 0.1);
+        color: var(--gray);
+    }
+
+    .action-links {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .action-link {
+        color: var(--primary-green);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+    }
+
+    .action-link:hover {
+        color: var(--dark-green);
+        text-decoration: underline;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--gray);
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    @media (max-width: 768px) {
+        .scholarship-table {
+            font-size: 0.9rem;
+        }
+
+        .scholarship-table th,
+        .scholarship-table td {
+            padding: 0.75rem 0.5rem;
+        }
+    }
+</style>
+
+<div class="org-container">
+    <!-- Welcome Section -->
+    <div class="org-welcome">
+        <div class="org-welcome-content">
+            <h1>🏛️ {{ organization.organization_name }}</h1>
+            <p class="org-subtitle">Welcome back! Manage your scholarships and review applications</p>
         </div>
     </div>
-    
-    <hr>
 
-    <h2>Your Schemes</h2>
-    <a href="{% url 'funder_add_scholarship' %}" class="button-primary">➕ Create New Scholarship</a>
-    
-    <table border="1" style="width: 100%; margin-top: 20px;">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Deadline</th>
-                <th>Amount</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for scheme in my_scholarships %}
-            <tr>
-                <td>{{ scheme.name }}</td>
-                <td>{{ scheme.deadline|date:"M d, Y" }}</td>
-                <td>{{ scheme.award_amount }}</td>
-                <td>
-                    {% if scheme.is_active %}
-                        <span style="color: green;">Active</span>
-                    {% else %}
-                        <span style="color: gray;">Draft/Closed</span>
-                    {% endif %}
-                </td>
-                <td>
-                    <a href="{% url 'funder_edit_scholarship' pk=scheme.pk %}">Edit</a> |
-                    <a href="#">View Applicants (TBD)</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="5">You have no scholarships listed yet.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    
-{% endblock content %}
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-header">
+                <span class="stat-icon">🎯</span>
+            </div>
+            <div class="stat-value">{{ active_scholarships }}</div>
+            <div class="stat-label">Active Scholarships</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <span class="stat-icon">📋</span>
+            </div>
+            <div class="stat-value">{{ total_applications }}</div>
+            <div class="stat-label">Applications to Review</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <span class="stat-icon">✅</span>
+            </div>
+            <div class="stat-value">{{ approved_count }}</div>
+            <div class="stat-label">Approved Applications</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <span class="stat-icon">💰</span>
+            </div>
+            <div class="stat-value">₹{{ total_disbursed }}</div>
+            <div class="stat-label">Total Disbursed</div>
+        </div>
+    </div>
+
+    <!-- Scholarships Section -->
+    <div class="section-card">
+        <div class="section-header">
+            <h2 class="section-title">📚 Your Scholarships</h2>
+            <a href="{% url 'funder_portal:create_scholarship' %}" class="btn-create">➕ Create New Scholarship</a>
+        </div>
+
+        {% if scholarships %}
+        <table class="scholarship-table">
+            <thead>
+                <tr>
+                    <th>Scholarship Name</th>
+                    <th>Deadline</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for scheme in scholarships %}
+                <tr>
+                    <td>{{ scheme.name }}</td>
+                    <td>{{ scheme.deadline|date:"M d, Y" }}</td>
+                    <td>₹{{ scheme.award_amount }}</td>
+                    <td>
+                        {% if scheme.is_active %}
+                        <span class="status-badge status-active">● Active</span>
+                        {% else %}
+                        <span class="status-badge status-inactive">○ Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="action-links">
+                            <a href="{% url 'funder_portal:edit_scholarship' pk=scheme.pk %}" class="btn-edit">✏️
+                                Edit</a>
+                            <a href="{% url 'funder_portal:view_applications' %}" class="action-link">👥
+                                Applications</a>
+                            <a href="{% url 'funder_portal:delete_scholarship' pk=scheme.pk %}" class="action-link"
+                                style="color: #dc3545;">🗑️ Delete</a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">📚</div>
+            <h3>No Scholarships Yet</h3>
+            <p>Create your first scholarship to start helping students!</p>
+            <a href="{% url 'funder_portal:create_scholarship' %}" class="btn-create"
+                style="margin-top: 1rem; display: inline-block;">Create Scholarship</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Recent Activity & Quick Stats -->
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+        <!-- Recent Activity -->
+        <div class="section-card">
+            <div class="section-header">
+                <h2 class="section-title">📊 Recent Activity</h2>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div
+                    style="padding: 1rem; background: var(--very-light-green); border-radius: 8px; border-left: 4px solid var(--primary-green);">
+                    <div style="font-weight: 600; color: var(--dark-green); margin-bottom: 0.25rem;">
+                        Organization Profile Active
+                    </div>
+                    <div style="font-size: 0.85rem; color: var(--gray);">
+                        Your organization account is ready to create scholarships
+                    </div>
+                </div>
+
+                {% if my_scholarships %}
+                <div
+                    style="padding: 1rem; background: var(--very-light-green); border-radius: 8px; border-left: 4px solid var(--accent-green);">
+                    <div style="font-weight: 600; color: var(--dark-green); margin-bottom: 0.25rem;">
+                        {{ total_schemes }} Scholarship{{ total_schemes|pluralize }} Created
+                    </div>
+                    <div style="font-size: 0.85rem; color: var(--gray);">
+                        Manage and track your active scholarship programs
+                    </div>
+                </div>
+                {% endif %}
+
+                <div
+                    style="padding: 1rem; background: var(--very-light-green); border-radius: 8px; border-left: 4px solid #2196F3;">
+                    <div style="font-weight: 600; color: var(--dark-green); margin-bottom: 0.25rem;">
+                        Platform Ready
+                    </div>
+                    <div style="font-size: 0.85rem; color: var(--gray);">
+                        Start accepting applications from qualified students
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="section-card">
+            <div class="section-header">
+                <h2 class="section-title">⚡ Quick Actions</h2>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <a href="{% url 'funder_portal:create_scholarship' %}" style="
+                    text-decoration: none;
+                    color: var(--dark-green);
+                    padding: 1rem;
+                    background: linear-gradient(135deg, var(--very-light-green), white);
+                    border: 2px solid var(--border-green);
+                    border-radius: 8px;
+                    font-weight: 600;
+                    transition: all 0.3s;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                ">
+                    <span style="font-size: 1.5rem;">➕</span>
+                    <span>New Scholarship</span>
+                </a>
+
+                <a href="{% url 'funder_portal:view_applications' %}" style="
+                    text-decoration: none;
+                    color: var(--dark-green);
+                    padding: 1rem;
+                    background: linear-gradient(135deg, var(--very-light-green), white);
+                    border: 2px solid var(--border-green);
+                    border-radius: 8px;
+                    font-weight: 600;
+                    transition: all 0.3s;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                ">
+                    <span style="font-size: 1.5rem;">👥</span>
+                    <span>View Applications</span>
+                </a>
+
+                <a href="/admin/" style="
+                    text-decoration: none;
+                    color: var(--dark-green);
+                    padding: 1rem;
+                    background: linear-gradient(135deg, var(--very-light-green), white);
+                    border: 2px solid var(--border-green);
+                    border-radius: 8px;
+                    font-weight: 600;
+                    transition: all 0.3s;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                ">
+                    <span style="font-size: 1.5rem;">⚙️</span>
+                    <span>Admin Panel</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @media (max-width: 1024px) {
+        [style*="grid-template-columns: 2fr 1fr"] {
+            grid-template-columns: 1fr !important;
+        }
+    }
+
+    .section-card a:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.15);
+        background: linear-gradient(135deg, var(--primary-green), var(--accent-green)) !important;
+        color: white !important;
+    }
+</style>
+{% endblock %}

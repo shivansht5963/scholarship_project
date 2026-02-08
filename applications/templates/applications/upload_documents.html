@@ -1,0 +1,747 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload Documents - {{ scholarship.name }}{% endblock %}
+
+{% block content %}
+<style>
+    /* === SCHOLARMATCH THEME VARIABLES === */
+    :root {
+        --sm-yellow: #FFD700;
+        --sm-black: #000000;
+        --sm-white: #FFFFFF;
+        --sm-blue: #0066FF;
+        --sm-green: #00C853;
+        --sm-purple: #9C27B0;
+        --sm-red: #FF3333;
+        --sm-orange: #FF9800;
+        --sm-gray: #757575;
+        --sm-light-gray: #F5F5F5;
+        --sm-border-width: 3px;
+    }
+
+    /* === DOTTED BACKGROUND === */
+    .upload-page-wrapper {
+        background: 
+            radial-gradient(circle, #00000008 1px, transparent 1px);
+        background-size: 20px 20px;
+        background-color: var(--sm-white);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .upload-container-wrapper {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+
+    /* === UPLOAD HEADER === */
+    .upload-header {
+        background: var(--sm-yellow);
+        border: var(--sm-border-width) solid var(--sm-black);
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 8px 8px 0 var(--sm-black);
+    }
+
+    .upload-header h1 {
+        margin: 0 0 0.5rem 0;
+        font-size: 3rem;
+        font-weight: 900;
+        font-style: italic;
+        color: var(--sm-black);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .scholarship-name {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--sm-black);
+        opacity: 0.8;
+    }
+
+    /* === MAIN GRID === */
+    .upload-container {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    /* === UPLOAD FORM SECTION === */
+    .upload-form-section {
+        background: var(--sm-white);
+        border: var(--sm-border-width) solid var(--sm-black);
+        padding: 2.5rem;
+        box-shadow: 6px 6px 0 var(--sm-black);
+    }
+
+    .upload-form-section h2 {
+        font-size: 2rem;
+        font-weight: 900;
+        font-style: italic;
+        color: var(--sm-black);
+        margin: 0 0 2rem 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* === FILE REQUIREMENTS === */
+    .file-requirements {
+        background: var(--sm-yellow);
+        border: var(--sm-border-width) solid var(--sm-black);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 4px 4px 0 var(--sm-black);
+    }
+
+    .file-requirements h4 {
+        font-size: 1.2rem;
+        font-weight: 900;
+        color: var(--sm-black);
+        margin: 0 0 1rem 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .file-requirements ul {
+        margin: 0;
+        padding-left: 1.5rem;
+        list-style: none;
+    }
+
+    .file-requirements li {
+        padding-left: 1.5rem;
+        position: relative;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--sm-black);
+    }
+
+    .file-requirements li::before {
+        content: '▸';
+        position: absolute;
+        left: 0;
+        font-weight: 900;
+    }
+
+    /* === MESSAGES === */
+    .message-box {
+        padding: 1.25rem 1.5rem;
+        border: var(--sm-border-width) solid var(--sm-black);
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+        box-shadow: 3px 3px 0 var(--sm-black);
+    }
+
+    .message-box.success {
+        background: var(--sm-green);
+        color: var(--sm-white);
+    }
+
+    .message-box.error {
+        background: var(--sm-red);
+        color: var(--sm-white);
+    }
+
+    /* === FORM STYLES === */
+    .form-group {
+        margin-bottom: 2rem;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 900;
+        font-size: 0.85rem;
+        color: var(--sm-black);
+        margin-bottom: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 1rem;
+        border: var(--sm-border-width) solid var(--sm-black);
+        font-size: 1rem;
+        font-weight: 600;
+        background: var(--sm-white);
+        transition: all 0.2s;
+    }
+
+    .form-control:focus {
+        outline: none;
+        background: var(--sm-light-gray);
+        box-shadow: 3px 3px 0 var(--sm-black);
+    }
+
+    select.form-control {
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='black' stroke-width='2' stroke-linecap='square'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        padding-right: 3rem;
+    }
+
+    input[type="file"].form-control {
+        padding: 0.75rem;
+        cursor: pointer;
+    }
+
+    .form-error {
+        color: var(--sm-red);
+        font-weight: 700;
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* === FILE PREVIEW === */
+    .file-preview {
+        margin-top: 1rem;
+        padding: 1.5rem;
+        border: var(--sm-border-width) solid var(--sm-black);
+        background: var(--sm-light-gray);
+        display: none;
+    }
+
+    .file-preview.active {
+        display: block;
+    }
+
+    .file-preview h4 {
+        font-size: 0.85rem;
+        font-weight: 900;
+        color: var(--sm-black);
+        margin: 0 0 1rem 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .preview-image {
+        max-width: 100%;
+        height: auto;
+        border: var(--sm-border-width) solid var(--sm-black);
+        background: var(--sm-white);
+    }
+
+    .preview-pdf {
+        width: 100%;
+        height: 400px;
+        border: var(--sm-border-width) solid var(--sm-black);
+        background: var(--sm-white);
+    }
+
+    .preview-file-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: var(--sm-white);
+        border: var(--sm-border-width) solid var(--sm-black);
+    }
+
+    .file-icon {
+        font-size: 2rem;
+    }
+
+    .file-details {
+        flex: 1;
+    }
+
+    .file-details .file-name {
+        font-weight: 900;
+        color: var(--sm-black);
+        margin-bottom: 0.25rem;
+        word-break: break-all;
+    }
+
+    .file-details .file-size {
+        font-size: 0.85rem;
+        color: var(--sm-gray);
+        font-weight: 600;
+    }
+
+    /* === BUTTONS === */
+    .btn-upload {
+        background: var(--sm-blue);
+        color: var(--sm-white);
+        padding: 1rem 2.5rem;
+        border: var(--sm-border-width) solid var(--sm-black);
+        font-weight: 900;
+        text-transform: uppercase;
+        font-size: 1rem;
+        letter-spacing: 1px;
+        cursor: pointer;
+        box-shadow: 4px 4px 0 var(--sm-black);
+        transition: all 0.2s;
+    }
+
+    .btn-upload:hover {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 var(--sm-black);
+    }
+
+    .btn-upload:active {
+        transform: translate(4px, 4px);
+        box-shadow: 0 0 0 var(--sm-black);
+    }
+
+    /* === SUCCESS STATE === */
+    .all-uploaded-message {
+        padding: 3rem 2rem;
+        text-align: center;
+        background: var(--sm-green);
+        border: var(--sm-border-width) solid var(--sm-black);
+        box-shadow: 6px 6px 0 var(--sm-black);
+    }
+
+    .all-uploaded-message h3 {
+        font-size: 2rem;
+        font-weight: 900;
+        font-style: italic;
+        color: var(--sm-white);
+        margin: 0 0 0.5rem 0;
+        text-transform: uppercase;
+    }
+
+    .all-uploaded-message p {
+        color: var(--sm-white);
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    /* === CHECKLIST SIDEBAR === */
+    .checklist-sidebar {
+        background: var(--sm-white);
+        border: var(--sm-border-width) solid var(--sm-black);
+        padding: 2rem;
+        box-shadow: 6px 6px 0 var(--sm-black);
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+    }
+
+    .checklist-sidebar h3 {
+        font-size: 1.8rem;
+        font-weight: 900;
+        font-style: italic;
+        color: var(--sm-black);
+        margin: 0 0 2rem 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding-bottom: 1rem;
+        border-bottom: var(--sm-border-width) solid var(--sm-black);
+    }
+
+    /* === PROGRESS BAR === */
+    .progress-bar {
+        background: var(--sm-light-gray);
+        border: var(--sm-border-width) solid var(--sm-black);
+        height: 40px;
+        overflow: hidden;
+        margin-bottom: 1rem;
+        position: relative;
+    }
+
+    .progress-fill {
+        background: var(--sm-green);
+        height: 100%;
+        transition: width 0.5s ease;
+        position: relative;
+    }
+
+    .progress-fill::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 10px,
+            rgba(255, 255, 255, 0.1) 10px,
+            rgba(255, 255, 255, 0.1) 20px
+        );
+    }
+
+    .progress-text {
+        text-align: center;
+        font-weight: 900;
+        font-size: 1.2rem;
+        color: var(--sm-black);
+        margin-bottom: 2rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* === CHECKLIST ITEMS === */
+    .checklist-item {
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+        background: var(--sm-white);
+        border: var(--sm-border-width) solid var(--sm-black);
+        transition: all 0.2s;
+    }
+
+    .checklist-item:hover {
+        background: var(--sm-light-gray);
+    }
+
+    .checklist-item.uploaded {
+        background: var(--sm-yellow);
+        border-left-width: 8px;
+    }
+
+    .checklist-item .doc-name {
+        font-weight: 900;
+        font-size: 0.95rem;
+        color: var(--sm-black);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .checklist-item.uploaded .doc-name::before {
+        content: '✓';
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        background: var(--sm-black);
+        color: var(--sm-white);
+        font-weight: 900;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+
+    .checklist-item:not(.uploaded) .doc-name::before {
+        content: '';
+        display: block;
+        width: 24px;
+        height: 24px;
+        border: var(--sm-border-width) solid var(--sm-black);
+        background: var(--sm-white);
+        flex-shrink: 0;
+    }
+
+    .checklist-item small {
+        display: block;
+        margin-top: 0.5rem;
+        font-size: 0.75rem;
+        color: var(--sm-gray);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding-left: 2.25rem;
+    }
+
+    /* === CONTINUE BUTTON === */
+    .btn-continue {
+        width: 100%;
+        background: var(--sm-black);
+        color: var(--sm-white);
+        padding: 1.25rem;
+        border: var(--sm-border-width) solid var(--sm-black);
+        font-weight: 900;
+        text-transform: uppercase;
+        font-size: 1rem;
+        letter-spacing: 1px;
+        cursor: pointer;
+        margin-top: 2rem;
+        box-shadow: 4px 4px 0 var(--sm-yellow);
+        transition: all 0.2s;
+        text-decoration: none;
+        display: block;
+        text-align: center;
+    }
+
+    .btn-continue:hover {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 var(--sm-yellow);
+    }
+
+    .btn-continue:disabled {
+        background: var(--sm-gray);
+        border-color: var(--sm-gray);
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+        opacity: 0.6;
+    }
+
+    /* === EMOJI ICONS === */
+    .icon-emoji {
+        font-style: normal;
+        font-size: 1.5rem;
+        margin-right: 0.5rem;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 1200px) {
+        .upload-container {
+            grid-template-columns: 1fr;
+        }
+
+        .checklist-sidebar {
+            position: static;
+        }
+
+        .upload-header h1 {
+            font-size: 2.5rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .upload-page-wrapper {
+            padding: 1rem 0;
+        }
+
+        .upload-container-wrapper {
+            padding: 0 1rem;
+        }
+
+        .upload-header {
+            padding: 1.5rem;
+            box-shadow: 4px 4px 0 var(--sm-black);
+        }
+
+        .upload-header h1 {
+            font-size: 2rem;
+        }
+
+        .scholarship-name {
+            font-size: 1rem;
+        }
+
+        .upload-form-section,
+        .checklist-sidebar {
+            padding: 1.5rem;
+            box-shadow: 4px 4px 0 var(--sm-black);
+        }
+
+        .upload-form-section h2,
+        .checklist-sidebar h3 {
+            font-size: 1.5rem;
+        }
+
+        .file-requirements {
+            padding: 1rem;
+        }
+
+        .btn-upload,
+        .btn-continue {
+            font-size: 0.9rem;
+            padding: 0.85rem 1.5rem;
+        }
+
+        .progress-bar {
+            height: 30px;
+        }
+
+        .progress-text {
+            font-size: 1rem;
+        }
+    }
+</style>
+
+<div class="upload-page-wrapper">
+    <div class="upload-container-wrapper">
+        <!-- HEADER -->
+        <div class="upload-header">
+            <h1><span class="icon-emoji">📄</span>Upload Documents</h1>
+            <div class="scholarship-name">{{ scholarship.name }}</div>
+        </div>
+
+        <!-- MAIN GRID -->
+        <div class="upload-container">
+            <!-- UPLOAD FORM SECTION -->
+            <div class="upload-form-section">
+                <h2>Required Documents</h2>
+
+                <!-- FILE REQUIREMENTS -->
+                <div class="file-requirements">
+                    <h4><span class="icon-emoji">⚠️</span>File Requirements</h4>
+                    <ul>
+                        <li>Accept formats: PDF, JPG, PNG</li>
+                        <li>Maximum file size: 5MB per file</li>
+                        <li>Ensure documents are clear and readable</li>
+                    </ul>
+                </div>
+
+                <!-- MESSAGES -->
+                {% if messages %}
+                {% for message in messages %}
+                <div class="message-box {% if message.tags == 'success' %}success{% else %}error{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+
+                <!-- UPLOAD FORM OR SUCCESS MESSAGE -->
+                {% if form.fields.document_type.queryset %}
+                <form method="post" enctype="multipart/form-data" id="uploadForm">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label for="id_document_type">Select Document Type</label>
+                        {{ form.document_type }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_file">Choose File</label>
+                        {{ form.file }}
+                        {% if form.file.errors %}
+                        <div class="form-error">
+                            {{ form.file.errors }}
+                        </div>
+                        {% endif %}
+
+                        <!-- FILE PREVIEW -->
+                        <div class="file-preview" id="filePreview">
+                            <h4>📎 File Preview</h4>
+                            <div id="previewContent"></div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-upload">
+                        <span class="icon-emoji">📤</span>Upload Document
+                    </button>
+                </form>
+                {% else %}
+                <div class="all-uploaded-message">
+                    <h3><span class="icon-emoji">🎉</span>All Complete!</h3>
+                    <p>You have uploaded all required documents.</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- CHECKLIST SIDEBAR -->
+            <aside class="checklist-sidebar">
+                <h3><span class="icon-emoji">📋</span>Checklist</h3>
+
+                {% if required_docs %}
+                <!-- PROGRESS BAR -->
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {% widthratio uploaded_docs.count required_docs.count 100 %}%;"></div>
+                </div>
+                <div class="progress-text">{{ uploaded_docs.count }} / {{ required_docs.count }} Complete</div>
+
+                <!-- CHECKLIST ITEMS -->
+                {% for doc in required_docs %}
+                {% with is_uploaded=False %}
+                {% for uploaded in uploaded_docs %}
+                {% if uploaded.document_type.id == doc.id %}
+                <div class="checklist-item uploaded">
+                    <div class="doc-name">{{ doc.document_name }}</div>
+                    <small>✓ Uploaded from OTR</small>
+                </div>
+                {% with is_uploaded=True %}{% endwith %}
+                {% endif %}
+                {% endfor %}
+                {% if not is_uploaded %}
+                <div class="checklist-item">
+                    <div class="doc-name">{{ doc.document_name }}</div>
+                </div>
+                {% endif %}
+                {% endwith %}
+                {% endfor %}
+                {% endif %}
+
+                <!-- CONTINUE BUTTON -->
+                {% if all_uploaded %}
+                <a href="{% url 'applications:review_application' pk=application.pk %}" class="btn-continue">
+                    Continue to Review →
+                </a>
+                {% else %}
+                <button class="btn-continue" disabled>
+                    Complete uploads to continue
+                </button>
+                {% endif %}
+            </aside>
+        </div>
+    </div>
+</div>
+
+<!-- FILE PREVIEW JAVASCRIPT -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInput = document.getElementById('id_file');
+        const filePreview = document.getElementById('filePreview');
+        const previewContent = document.getElementById('previewContent');
+
+        if (fileInput) {
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                
+                if (file) {
+                    // Show preview container
+                    filePreview.classList.add('active');
+                    
+                    const fileType = file.type;
+                    const fileSize = (file.size / 1024 / 1024).toFixed(2); // Convert to MB
+                    
+                    // Clear previous preview
+                    previewContent.innerHTML = '';
+                    
+                    // Create file info
+                    const fileInfo = document.createElement('div');
+                    fileInfo.className = 'preview-file-info';
+                    
+                    let iconEmoji = '📄';
+                    if (fileType.includes('image')) iconEmoji = '🖼️';
+                    if (fileType.includes('pdf')) iconEmoji = '📕';
+                    
+                    fileInfo.innerHTML = `
+                        <div class="file-icon">${iconEmoji}</div>
+                        <div class="file-details">
+                            <div class="file-name">${file.name}</div>
+                            <div class="file-size">${fileSize} MB</div>
+                        </div>
+                    `;
+                    previewContent.appendChild(fileInfo);
+                    
+                    // Show image preview
+                    if (fileType.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(event) {
+                            const img = document.createElement('img');
+                            img.src = event.target.result;
+                            img.className = 'preview-image';
+                            img.style.marginTop = '1rem';
+                            previewContent.appendChild(img);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                    
+                    // Show PDF preview (using iframe)
+                    if (fileType === 'application/pdf') {
+                        const reader = new FileReader();
+                        reader.onload = function(event) {
+                            const iframe = document.createElement('iframe');
+                            iframe.src = event.target.result;
+                            iframe.className = 'preview-pdf';
+                            iframe.style.marginTop = '1rem';
+                            previewContent.appendChild(iframe);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                } else {
+                    // Hide preview if no file selected
+                    filePreview.classList.remove('active');
+                }
+            });
+        }
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,609 @@
+{% extends 'base.html' %}
+
+{% block title %}My Applications - Scholar Match{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-yellow: #FFD700;
+        --bright-yellow: #FFEB3B;
+        --text-dark: #000000;
+        --border-black: #000000;
+        --blue-primary: #0066FF;
+        --green-success: #00C853;
+        --orange-pending: #FF9800;
+        --red-rejected: #FF3333;
+        --bg-white: #FFFFFF;
+        --bg-light: #F5F5F5;
+    }
+
+    body {
+        background: #FFFFFF;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        position: relative;
+    }
+
+    /* Dotted Background Pattern */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: radial-gradient(circle, #e0e0e0 1px, transparent 1px);
+        background-size: 20px 20px;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .applications-container {
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 2rem 2rem 4rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Header Section */
+    .applications-header {
+        margin-bottom: 2rem;
+    }
+
+    .page-title {
+        font-size: 4rem;
+        font-weight: 900;
+        font-style: italic;
+        color: var(--blue-primary);
+        margin: 0 0 1rem 0;
+        letter-spacing: -2px;
+        text-transform: uppercase;
+    }
+
+    .page-subtitle {
+        font-size: 1.2rem;
+        color: var(--text-dark);
+        margin: 0;
+    }
+
+    .highlight-count {
+        background: var(--primary-yellow);
+        padding: 0.25rem 0.75rem;
+        border: 3px solid var(--border-black);
+        font-weight: 900;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .stat-card {
+        border: 4px solid var(--border-black);
+        padding: 2rem;
+        background: var(--bg-white);
+        transition: transform 0.3s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+    }
+
+    .stat-card.total {
+        background: var(--bg-white);
+    }
+
+    .stat-card.pending {
+        background: #FFE0B2;
+    }
+
+    .stat-card.approved {
+        background: #C8E6C9;
+    }
+
+    .stat-card.rejected {
+        background: #FFCDD2;
+    }
+
+    .stat-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .stat-icon {
+        font-size: 1.5rem;
+        padding: 0.5rem;
+        background: var(--bg-white);
+        border: 2px solid var(--border-black);
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--text-dark);
+    }
+
+    .stat-value {
+        font-size: 3.5rem;
+        font-weight: 900;
+        color: var(--text-dark);
+        line-height: 1;
+        margin: 0;
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+        background: var(--bg-white);
+        border: 4px solid var(--border-black);
+        padding: 1.5rem 2rem;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .filter-count {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-dark);
+    }
+
+    .filter-select {
+        padding: 0.75rem 1.5rem;
+        border: 3px solid var(--border-black);
+        background: var(--bg-white);
+        font-size: 0.95rem;
+        font-weight: 700;
+        cursor: pointer;
+        text-transform: uppercase;
+    }
+
+    .filter-select:focus {
+        outline: none;
+        border-color: var(--blue-primary);
+    }
+
+    /* Applications List */
+    .applications-list {
+        background: var(--bg-white);
+        border: 4px solid var(--border-black);
+    }
+
+    /* Table Header */
+    .table-header {
+        display: grid;
+        grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr;
+        gap: 1.5rem;
+        padding: 1.5rem 2rem;
+        background: var(--bg-light);
+        border-bottom: 3px solid var(--border-black);
+    }
+
+    .table-header-cell {
+        font-size: 0.85rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        color: var(--text-dark);
+        letter-spacing: 0.5px;
+    }
+
+    /* Application Row */
+    .application-row {
+        display: grid;
+        grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr;
+        gap: 1.5rem;
+        padding: 2rem;
+        border-bottom: 2px solid #e0e0e0;
+        transition: background 0.3s;
+        align-items: center;
+    }
+
+    .application-row:last-child {
+        border-bottom: none;
+    }
+
+    .application-row:hover {
+        background: var(--bg-light);
+    }
+
+    /* Scholarship Info */
+    .scholarship-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .scholarship-name {
+        font-size: 1.1rem;
+        font-weight: 900;
+        color: var(--text-dark);
+        margin: 0;
+        text-transform: uppercase;
+    }
+
+    .scholarship-org {
+        color: #666;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    /* Institution Cell */
+    .institution-cell {
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+
+    /* Deadline Cell */
+    .deadline-cell {
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+
+    /* Status Badges */
+    .status-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border: 2px solid var(--border-black);
+        font-weight: 900;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .status-badge.DRAFT {
+        background: var(--blue-primary);
+        color: white;
+    }
+
+    .status-badge.PENDING {
+        background: var(--orange-pending);
+        color: white;
+    }
+
+    .status-badge.APPROVED {
+        background: var(--green-success);
+        color: white;
+    }
+
+    .status-badge.REJECTED {
+        background: var(--red-rejected);
+        color: white;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .btn-view,
+    .btn-edit {
+        padding: 0.6rem 1.25rem;
+        border: 2px solid var(--border-black);
+        font-weight: 700;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        cursor: pointer;
+        text-decoration: none;
+        text-align: center;
+        display: block;
+        transition: all 0.3s;
+    }
+
+    .btn-view {
+        background: var(--text-dark);
+        color: white;
+    }
+
+    .btn-view:hover {
+        background: #333;
+    }
+
+    .btn-edit {
+        background: var(--primary-yellow);
+        color: var(--text-dark);
+    }
+
+    .btn-edit:hover {
+        background: #FFC700;
+    }
+
+    /* Empty State */
+    .no-applications {
+        text-align: center;
+        padding: 5rem 2rem;
+        background: var(--bg-white);
+        border: 4px solid var(--border-black);
+    }
+
+    .empty-icon {
+        font-size: 5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .no-applications h3 {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--text-dark);
+        margin: 0 0 1rem 0;
+    }
+
+    .no-applications p {
+        color: #666;
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+    }
+
+    .btn-browse {
+        display: inline-block;
+        padding: 1rem 2.5rem;
+        background: var(--blue-primary);
+        color: white;
+        text-decoration: none;
+        border: 3px solid var(--border-black);
+        font-weight: 900;
+        font-size: 1rem;
+        text-transform: uppercase;
+        transition: all 0.3s;
+    }
+
+    .btn-browse:hover {
+        background: #0052cc;
+        transform: translateY(-2px);
+    }
+
+    /* Meta Info in Cards (for mobile) */
+    .card-meta {
+        display: none;
+        gap: 1rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 2px solid #e0e0e0;
+    }
+
+    .meta-item {
+        font-size: 0.85rem;
+        color: #666;
+        font-weight: 600;
+    }
+
+    /* Responsive */
+    @media (max-width: 1400px) {
+        .applications-container {
+            max-width: 1200px;
+        }
+    }
+
+    @media (max-width: 1200px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .table-header {
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+        }
+
+        .application-row {
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+        }
+
+        .institution-cell {
+            display: none;
+        }
+
+        .table-header-cell:nth-child(2) {
+            display: none;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .page-title {
+            font-size: 3rem;
+        }
+
+        /* Switch to card layout */
+        .table-header {
+            display: none;
+        }
+
+        .application-row {
+            display: block;
+            padding: 1.5rem;
+        }
+
+        .scholarship-info,
+        .deadline-cell,
+        .status-badge,
+        .action-buttons {
+            margin-bottom: 1rem;
+        }
+
+        .card-meta {
+            display: flex;
+        }
+
+        .action-buttons {
+            flex-direction: row;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .applications-container {
+            padding: 1.5rem 1.5rem 3rem;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+        }
+
+        .filter-bar {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: stretch;
+        }
+
+        .filter-select {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .applications-container {
+            padding: 1rem 1rem 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+        }
+    }
+</style>
+
+<div class="applications-container">
+    <!-- Header -->
+    <div class="applications-header">
+        <h1 class="page-title">MY APPLICATIONS</h1>
+        <p class="page-subtitle">Tracking <span class="highlight-count">{{ applications.count }} scholarship</span>
+            journeys in real-time.</p>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        <div class="stat-card total">
+            <div class="stat-header">
+                <span class="stat-icon">📋</span>
+                <span class="stat-label">Total</span>
+            </div>
+            <div class="stat-value">{{ total_count|default:"0" }}</div>
+        </div>
+
+        <div class="stat-card pending">
+            <div class="stat-header">
+                <span class="stat-icon">⏰</span>
+                <span class="stat-label">Pending</span>
+            </div>
+            <div class="stat-value">{{ pending_count|default:"0" }}</div>
+        </div>
+
+        <div class="stat-card approved">
+            <div class="stat-header">
+                <span class="stat-icon">✓</span>
+                <span class="stat-label">Approved</span>
+            </div>
+            <div class="stat-value">{{ approved_count|default:"0" }}</div>
+        </div>
+
+        <div class="stat-card rejected">
+            <div class="stat-header">
+                <span class="stat-icon">✕</span>
+                <span class="stat-label">Rejected</span>
+            </div>
+            <div class="stat-value">{{ rejected_count|default:"0" }}</div>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <div class="filter-count">
+            ALL APPS ({{ applications.count }})
+        </div>
+
+        <form method="get" id="filterForm">
+            <select name="status" class="filter-select" onchange="this.form.submit()">
+                <option value="">All Statuses</option>
+                {% for value, label in status_choices %}
+                <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+
+    <!-- Applications List -->
+    {% if applications %}
+    <div class="applications-list">
+        <!-- Table Header -->
+        <div class="table-header">
+            <div class="table-header-cell">Scholarship Name</div>
+            <div class="table-header-cell">Institution</div>
+            <div class="table-header-cell">Deadline</div>
+            <div class="table-header-cell">Status</div>
+            <div class="table-header-cell">Actions</div>
+        </div>
+
+        <!-- Application Rows -->
+        {% for application in applications %}
+        <div class="application-row">
+            <!-- Scholarship Info -->
+            <div class="scholarship-info">
+                <h3 class="scholarship-name">{{ application.scholarship.name }}</h3>
+                <div class="scholarship-org">{{ application.scholarship.organization }}</div>
+            </div>
+
+            <!-- Institution -->
+            <div class="institution-cell">
+                {{ application.scholarship.organization|truncatewords:3 }}
+            </div>
+
+            <!-- Deadline -->
+            <div class="deadline-cell">
+                {{ application.scholarship.deadline|date:"M d, Y" }}
+            </div>
+
+            <!-- Status Badge -->
+            <div>
+                <span class="status-badge {{ application.status }}">
+                    {{ application.get_status_display }}
+                </span>
+            </div>
+
+            <!-- Actions -->
+            <div class="action-buttons">
+                <a href="{% url 'applications:application_status' pk=application.pk %}" class="btn-view">
+                    View Details
+                </a>
+                {% if application.status == 'DRAFT' %}
+                <a href="{% url 'applications:upload_documents' pk=application.pk %}" class="btn-edit">
+                    Resume App
+                </a>
+                {% endif %}
+            </div>
+
+            <!-- Card Meta (Mobile Only) -->
+            <div class="card-meta">
+                <div class="meta-item">
+                    📅 Applied: {{ application.last_action_date|date:"M d, Y" }}
+                </div>
+                <div class="meta-item">
+                    💰 ₹{{ application.scholarship.award_amount }}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="no-applications">
+        <div class="empty-icon">📭</div>
+        <h3>No Applications Yet</h3>
+        <p>You haven't applied for any scholarships yet.</p>
+        <a href="{% url 'scholarships:scholarship_list' %}" class="btn-browse">
+            Browse Scholarships
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

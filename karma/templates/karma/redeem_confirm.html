@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirm Redemption - Scholar Match{% endblock %}
+
+{% block content %}
+<style>
+    .confirm-card {
+        max-width: 600px;
+        margin: 2rem auto;
+    }
+
+    .warning-banner {
+        background: var(--primary-yellow);
+        border: 4px solid var(--black);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 5px 5px 0 var(--black);
+    }
+
+    .reward-preview {
+        background: var(--white);
+        border: 4px solid var(--black);
+        padding: 2rem;
+        text-align: center;
+        margin-bottom: 2rem;
+        box-shadow: 5px 5px 0 var(--black);
+    }
+
+    .reward-icon-large {
+        font-size: 5rem;
+        margin-bottom: 1rem;
+    }
+
+    .cost-display {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--bright-purple);
+        margin: 1rem 0;
+        font-family: 'Arial Black', sans-serif;
+    }
+
+    .balance-after {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--text-gray);
+    }
+</style>
+
+<div class="confirm-card">
+    <div class="card">
+        <div class="card-header">
+            <h2>⚠️ Confirm Redemption</h2>
+        </div>
+
+        <div class="warning-banner">
+            <p style="margin: 0; font-weight: 700; text-align: center;">
+                ⚠️ This action cannot be undone. Karma will be deducted immediately.
+            </p>
+        </div>
+
+        <div class="reward-preview">
+            <div class="reward-icon-large">
+                {% if reward.reward_type == 'VOUCHER' %}🎫
+                {% elif reward.reward_type == 'BADGE' %}🏅
+                {% else %}⚡{% endif %}
+            </div>
+            <h3 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 1rem; text-transform: uppercase;">
+                {{ reward.reward_name }}
+            </h3>
+            <p style="color: var(--text-gray); margin-bottom: 1.5rem;">{{ reward.description }}</p>
+
+            <div class="cost-display">{{ reward.karma_cost }} Karma</div>
+
+            <div style="border-top: 3px solid var(--black); padding-top: 1rem; margin-top: 1rem;">
+                <div style="display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 0.5rem;">
+                    <span>Current Balance:</span>
+                    <span>{{ student_karma }} Karma</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 0.5rem;">
+                    <span>Cost:</span>
+                    <span style="color: var(--bright-red);">-{{ reward.karma_cost }} Karma</span>
+                </div>
+                <div
+                    style="display: flex; justify-content: space-between; font-weight: 900; font-size: 1.2rem; padding-top: 0.5rem; border-top: 2px solid var(--black);">
+                    <span>Balance After:</span>
+                    <span style="color: var(--bright-green);">{{
+                        student_karma|add:reward.karma_cost|add:"-"|add:reward.karma_cost }} Karma</span>
+                </div>
+            </div>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="btn" style="flex: 1; background: var(--neon-green);">
+                    ✓ Confirm Redemption
+                </button>
+                <a href="{% url 'karma:karma_store' %}" class="btn btn-outline" style="flex: 1;">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

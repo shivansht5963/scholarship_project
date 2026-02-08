@@ -1,0 +1,290 @@
+{% extends 'base.html' %}
+
+{% block title %}Review Application - {{ student.full_name }}{% endblock %}
+
+{% block content %}
+<style>
+    .review-header {
+        background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
+        padding: 2rem;
+        border-radius: 16px;
+        margin-bottom: 2rem;
+        color: white;
+    }
+
+    .review-header h1 {
+        margin: 0 0 0.5rem 0;
+    }
+
+    .review-container {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+    }
+
+    .main-content {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .info-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .info-card h2 {
+        color: var(--dark-green);
+        margin: 0 0 1.5rem 0;
+        font-size: 1.3rem;
+    }
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+
+    .detail-item {
+        padding: 1rem;
+        background: var(--very-light-green);
+        border-radius: 8px;
+    }
+
+    .detail-label {
+        font-size: 0.85rem;
+        color: var(--gray);
+        margin-bottom: 0.25rem;
+    }
+
+    .detail-value {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--dark-green);
+    }
+
+    .documents-list {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .document-item {
+        padding: 1.25rem;
+        background: var(--very-light-green);
+        border-radius: 8px;
+        border-left: 4px solid var(--primary-green);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .doc-name {
+        font-weight: 600;
+        color: var(--dark-green);
+    }
+
+    .doc-status {
+        color: var(--primary-green);
+        font-size: 0.9rem;
+    }
+
+    .sidebar {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+    }
+
+    .sidebar h3 {
+        color: var(--dark-green);
+        margin: 0 0 1.5rem 0;
+    }
+
+    .status-badge-large {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+    }
+
+    .status-badge-large.PENDING {
+        background: rgba(33, 150, 243, 0.15);
+        color: #1976d2;
+    }
+
+    .status-badge-large.APPROVED {
+        background: rgba(76, 175, 80, 0.15);
+        color: var(--primary-green);
+    }
+
+    .status-badge-large.REJECTED {
+        background: rgba(244, 67, 54, 0.15);
+        color: #d32f2f;
+    }
+
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .btn-decision {
+        width: 100%;
+        padding: 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        text-align: center;
+        transition: all 0.3s;
+    }
+
+    .btn-approve {
+        background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
+        color: white;
+    }
+
+    .btn-approve:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+    }
+
+    .btn-back {
+        background: white;
+        color: var(--dark-green);
+        border: 2px solid var(--border-green);
+    }
+
+    .btn-back:hover {
+        background: var(--very-light-green);
+    }
+
+    @media (max-width: 1024px) {
+        .review-container {
+            grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+            position: static;
+        }
+
+        .detail-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="review-header">
+    <h1>📋 Application Review</h1>
+    <p>{{ application.scholarship.name }}</p>
+</div>
+
+<div class="review-container">
+    <div class="main-content">
+        <div class="info-card">
+            <h2>👤 Student Information</h2>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="detail-label">Full Name</div>
+                    <div class="detail-value">{{ student.full_name }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Email</div>
+                    <div class="detail-value">{{ student.user.email }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Phone</div>
+                    <div class="detail-value">{{ student.phone_number|default:"Not provided" }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Date of Birth</div>
+                    <div class="detail-value">{{ student.date_of_birth|date:"M d, Y"|default:"Not provided" }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Gender</div>
+                    <div class="detail-value">{{ student.get_gender_display|default:"Not provided" }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Category</div>
+                    <div class="detail-value">{{ student.get_category_display|default:"Not provided" }}</div>
+                </div>
+            </div>
+        </div>
+
+        {% if academic_records %}
+        <div class="info-card">
+            <h2>🎓 Academic Records</h2>
+            {% for record in academic_records %}
+            <div style="padding: 1rem; background: var(--very-light-green); border-radius: 8px; margin-bottom: 1rem;">
+                <div style="font-weight: 600; color: var(--dark-green); margin-bottom: 0.5rem;">
+                    {{ record.get_degree_level_display }} - {{ record.institution_name }}
+                </div>
+                <div style="color: var(--gray);">
+                    Score: {{ record.last_exam_score|default:"N/A" }}
+                    {% if record.current_year %}| Year: {{ record.current_year }}{% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="info-card">
+            <h2>📄 Uploaded Documents ({{ documents.count }})</h2>
+            <div class="documents-list">
+                {% for doc in documents %}
+                <div class="document-item">
+                    <div>
+                        <div class="doc-name">{{ doc.document_type.document_name }}</div>
+                        <div class="doc-status">✓ Verified - Uploaded {{ doc.uploaded_at|date:"M d, Y" }}</div>
+                    </div>
+                    <a href="{{ doc.file.url }}" target="_blank" style="padding: 0.5rem 1rem; background: var(--primary-green); color: white; 
+                              border-radius: 6px; text-decoration: none; font-weight: 600; 
+                              transition: all 0.3s; display: inline-block;"
+                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(76,175,80,0.3)'"
+                        onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
+                        👁️ View Document
+                    </a>
+                </div>
+                {% empty %}
+                <p style="color: var(--gray); text-align: center;">No documents uploaded.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <aside class="sidebar">
+        <h3>📊 Application Status</h3>
+        <div>
+            <span class="status-badge-large {{ application.status }}">
+                {{ application.get_status_display }}
+            </span>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <div class="detail-item">
+                <div class="detail-label">Applied On</div>
+                <div class="detail-value">{{ application.last_action_date|date:"M d, Y" }}</div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            {% if application.status == 'PENDING' %}
+            <a href="{% url 'funder_portal:make_decision' pk=application.pk %}" class="btn-decision btn-approve">
+                Make Decision
+            </a>
+            {% endif %}
+
+            <a href="{% url 'funder_portal:view_applications' %}" class="btn-decision btn-back">
+                ← Back to Applications
+            </a>
+        </div>
+    </aside>
+</div>
+
+{% endblock %}

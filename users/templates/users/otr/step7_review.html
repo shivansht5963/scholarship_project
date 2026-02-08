@@ -1,0 +1,611 @@
+{% extends 'base.html' %}
+
+{% block title %}Step 7 - Review & Submit{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-yellow: #FFD700;
+        --bright-yellow: #FFEB3B;
+        --text-dark: #000000;
+        --border-black: #000000;
+        --blue-primary: #0066FF;
+        --green-success: #00C853;
+        --green-bright: #00E676;
+        --bg-white: #FFFFFF;
+        --bg-light: #FAFAFA;
+        --bg-green-light: #C8E6C9;
+    }
+
+    body {
+        background: #FFFFFF;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        position: relative;
+    }
+
+    /* Dotted Background Pattern */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: radial-gradient(circle, #e0e0e0 1px, transparent 1px);
+        background-size: 20px 20px;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .otr-container {
+        max-width: 1400px;
+        margin: 3rem auto;
+        padding: 0 2rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Header Section */
+    .step-header {
+        margin-bottom: 3rem;
+    }
+
+    .step-title {
+        color: var(--text-dark);
+        font-size: 4rem;
+        font-weight: 900;
+        font-style: italic;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+        letter-spacing: -2px;
+    }
+
+    /* Info Alert Box */
+    .info-alert {
+        background: var(--bg-green-light);
+        padding: 1.5rem 2rem;
+        border: 4px solid var(--border-black);
+        margin-bottom: 3rem;
+        font-weight: 600;
+        line-height: 1.6;
+    }
+
+    .info-alert strong {
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+    /* Review Sections - Collapsible */
+    .review-section {
+        background: var(--bg-white);
+        border: 4px solid var(--border-black);
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem 2rem;
+        cursor: pointer;
+        user-select: none;
+        background: var(--bg-white);
+        transition: background 0.3s;
+    }
+
+    .section-header:hover {
+        background: #f5f5f5;
+    }
+
+    .section-header.active {
+        background: #f0f0f0;
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-size: 1.3rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        color: var(--text-dark);
+    }
+
+    .section-icon {
+        font-size: 1.5rem;
+    }
+
+    .toggle-icon {
+        font-size: 1.5rem;
+        font-weight: 900;
+        transition: transform 0.3s;
+    }
+
+    .section-header.active .toggle-icon {
+        transform: rotate(180deg);
+    }
+
+    .section-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+        border-top: 3px solid #e0e0e0;
+    }
+
+    .section-content.active {
+        max-height: 2000px;
+        transition: max-height 0.5s ease-in;
+    }
+
+    .section-inner {
+        padding: 2rem;
+    }
+
+    /* Info Rows */
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+
+    .info-row {
+        margin-bottom: 1.5rem;
+    }
+
+    .info-label {
+        font-weight: 700;
+        color: #666;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+    }
+
+    .info-value {
+        color: var(--text-dark);
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    /* Edit Button */
+    .edit-section-btn {
+        background: var(--border-black);
+        color: white;
+        border: none;
+        padding: 0.5rem 1.25rem;
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 1rem;
+    }
+
+    .edit-section-btn:hover {
+        background: #333;
+    }
+
+    /* Document Badges */
+    .doc-badge {
+        display: inline-block;
+        background: var(--green-success);
+        color: white;
+        padding: 0.5rem 1rem;
+        border: 2px solid var(--border-black);
+        font-size: 0.85rem;
+        font-weight: 700;
+        margin-right: 0.75rem;
+        margin-bottom: 0.75rem;
+        text-transform: uppercase;
+    }
+
+    .academic-record-item {
+        background: #f9f9f9;
+        padding: 1.25rem;
+        border: 2px solid #e0e0e0;
+        margin-bottom: 1rem;
+    }
+
+    .academic-record-item strong {
+        font-weight: 900;
+        color: var(--text-dark);
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 1.05rem;
+    }
+
+    /* Warning Box */
+    .warning-box {
+        background: var(--primary-yellow);
+        padding: 2rem;
+        border: 4px solid var(--border-black);
+        margin: 3rem 0;
+    }
+
+    .warning-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .warning-icon {
+        font-size: 2.5rem;
+    }
+
+    .warning-title {
+        font-size: 1.3rem;
+        font-weight: 900;
+        font-style: italic;
+        text-transform: uppercase;
+    }
+
+    .warning-text {
+        font-weight: 600;
+        line-height: 1.6;
+        font-size: 0.95rem;
+    }
+
+    /* Checkbox Confirm */
+    .checkbox-confirm {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        background: var(--bg-white);
+        padding: 1.5rem;
+        border: 3px solid var(--border-black);
+        margin: 2rem 0;
+    }
+
+    .checkbox-confirm input[type="checkbox"] {
+        width: 24px;
+        height: 24px;
+        margin-top: 0.25rem;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .checkbox-confirm label {
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        line-height: 1.5;
+    }
+
+    /* Submit Button */
+    .submit-container {
+        text-align: center;
+        margin: 3rem 0;
+    }
+
+    .btn-submit {
+        background: var(--green-bright);
+        color: var(--text-dark);
+        padding: 1.5rem 4rem;
+        border: 4px solid var(--border-black);
+        cursor: pointer;
+        font-weight: 900;
+        font-size: 1.5rem;
+        font-style: italic;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+
+    .btn-submit:hover {
+        background: var(--green-success);
+        transform: translateY(-2px);
+    }
+
+    .btn-submit:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        border-color: #999;
+    }
+
+    .submit-note {
+        margin-top: 1.5rem;
+        color: #666;
+        font-size: 0.95rem;
+    }
+
+    /* Button Group */
+    .button-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 3rem;
+        gap: 1rem;
+    }
+
+    .btn-secondary {
+        padding: 1rem 2rem;
+        border: 3px solid var(--border-black);
+        background: var(--bg-white);
+        color: var(--text-dark);
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        font-weight: 700;
+        font-size: 1rem;
+        text-transform: uppercase;
+        transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+        background: #f0f0f0;
+        transform: translateY(-2px);
+    }
+
+    /* Empty State */
+    .empty-state {
+        color: #999;
+        font-style: italic;
+        padding: 1rem 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+        .otr-container {
+            max-width: 1000px;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .otr-container {
+            padding: 0 1.5rem;
+        }
+
+        .step-title {
+            font-size: 2.5rem;
+        }
+
+        .section-title {
+            font-size: 1rem;
+        }
+
+        .btn-submit {
+            padding: 1.25rem 2.5rem;
+            font-size: 1.2rem;
+        }
+
+        .button-group {
+            flex-direction: column;
+        }
+
+        .btn-secondary {
+            width: 100%;
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .otr-container {
+            padding: 0 1rem;
+            margin: 2rem auto;
+        }
+
+        .step-title {
+            font-size: 2rem;
+        }
+
+        .section-inner {
+            padding: 1.25rem;
+        }
+    }
+</style>
+
+<div class="otr-container">
+    <!-- Header -->
+    <div class="step-header">
+        <h1 class="step-title">OTR REVIEW</h1>
+    </div>
+
+    <!-- Alert Box -->
+    <div class="info-alert">
+        <strong>Final audit of your One-Time Registration data.</strong> Ensure all details are accurate. Once submitted, your profile will be locked for verification.
+    </div>
+
+    <!-- Personal Profile Summary -->
+    <div class="review-section">
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+                <span class="section-icon">👤</span>
+                PERSONAL PROFILE SUMMARY
+            </div>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-content">
+            <div class="section-inner">
+                <div class="info-grid">
+                    <div class="info-row">
+                        <div class="info-label">Full Name</div>
+                        <div class="info-value">{{ profile.full_name|default:"Not provided" }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Date of Birth</div>
+                        <div class="info-value">{{ profile.dob|date:"F d, Y"|default:"Not provided" }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Gender</div>
+                        <div class="info-value">{{ profile.gender|default:"Not provided" }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Phone</div>
+                        <div class="info-value">{{ profile.phone|default:"Not provided" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Family Information -->
+    <div class="review-section">
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+                <span class="section-icon">👨‍👩‍👧‍👦</span>
+                FAMILY INFORMATION
+            </div>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-content">
+            <div class="section-inner">
+                <div class="info-grid">
+                    <div class="info-row">
+                        <div class="info-label">Father's Name</div>
+                        <div class="info-value">{{ profile.father_name|default:"Not provided" }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Mother's Name</div>
+                        <div class="info-value">{{ profile.mother_name|default:"Not provided" }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Annual Income</div>
+                        <div class="info-value">₹{{ profile.annual_income|default:"Not provided" }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Caste Category</div>
+                        <div class="info-value">{{ profile.caste_category|default:"Not provided" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Academic Records Summary -->
+    <div class="review-section">
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+                <span class="section-icon">🎓</span>
+                ACADEMIC RECORDS SUMMARY
+            </div>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-content">
+            <div class="section-inner">
+                {% for record in academic_records %}
+                <div class="academic-record-item">
+                    <strong>{{ record.degree_level }}</strong>
+                    <div class="info-value">{{ record.stream }} - {{ record.institution_name }}</div>
+                    <div class="info-value">Score: {{ record.last_exam_score }}%</div>
+                </div>
+                {% empty %}
+                <p class="empty-state">No academic records added</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Documents Summary -->
+    <div class="review-section">
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+                <span class="section-icon">📄</span>
+                DOCUMENTS SUMMARY
+            </div>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-content">
+            <div class="section-inner">
+                {% for doc in documents %}
+                <span class="doc-badge">✓ {{ doc.get_document_type_display }}</span>
+                {% empty %}
+                <p class="empty-state">No documents uploaded</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Banking Details -->
+    <div class="review-section">
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">
+                <span class="section-icon">🏦</span>
+                BANKING DETAILS
+            </div>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="section-content">
+            <div class="section-inner">
+                <div class="info-grid">
+                    <div class="info-row">
+                        <div class="info-label">Aadhaar Number</div>
+                        <div class="info-value">{{ profile.aadhaar_number|default:"Not provided" }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Bank Name</div>
+                        <div class="info-value">{{ profile.bank_name|default:"Not provided" }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Account Number</div>
+                        <div class="info-value">{{ profile.bank_account_number|default:"Not provided" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Warning Box -->
+    <div class="warning-box">
+        <div class="warning-header">
+            <span class="warning-icon">⚠️</span>
+            <div class="warning-title">FINAL VERIFICATION NOTICE</div>
+        </div>
+        <div class="warning-text">
+            By clicking 'COMPLETE OTR', you certify that all information provided is accurate and truthful. Providing false information will result in immediate disqualification and possible blacklisting from the ScholarMatch program.
+        </div>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Confirmation Checkbox -->
+        <div class="checkbox-confirm">
+            <input type="checkbox" id="confirm" name="confirm" required>
+            <label for="confirm"><strong>I confirm that all information provided is accurate and complete to the best of my knowledge.</strong></label>
+        </div>
+
+        <!-- Submit Section -->
+        <div class="submit-container">
+            <button type="submit" class="btn-submit">COMPLETE OTR ✓</button>
+            <p class="submit-note">You will be redirected to your personal dashboard after submission.</p>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="button-group">
+            <a href="{% url 'otr_step6' %}" class="btn-secondary">← Back to Edit</a>
+        </div>
+    </form>
+</div>
+
+<script>
+function toggleSection(header) {
+    const content = header.nextElementSibling;
+    const isActive = header.classList.contains('active');
+    
+    // Toggle active class
+    if (isActive) {
+        header.classList.remove('active');
+        content.classList.remove('active');
+    } else {
+        header.classList.add('active');
+        content.classList.add('active');
+    }
+}
+
+// Open first section by default
+document.addEventListener('DOMContentLoaded', function() {
+    const firstHeader = document.querySelector('.section-header');
+    if (firstHeader) {
+        toggleSection(firstHeader);
+    }
+});
+</script>
+{% endblock %}

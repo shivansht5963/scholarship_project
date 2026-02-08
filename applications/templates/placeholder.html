@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - Scholar Match{% endblock %}
+
+{% block content %}
+<style>
+    .placeholder-container {
+        text-align: center;
+        padding: 4rem 2rem;
+        max-width: 600px;
+        margin: 4rem auto;
+    }
+
+    .placeholder-icon {
+        font-size: 5rem;
+        margin-bottom: 2rem;
+        opacity: 0.5;
+    }
+
+    .placeholder-title {
+        color: var(--dark-green);
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .placeholder-message {
+        color: var(--gray);
+        font-size: 1.25rem;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .phase-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 20px;
+        font-weight: bold;
+        margin-top: 1rem;
+    }
+</style>
+
+<div class="placeholder-container">
+    <div class="placeholder-icon">🚧</div>
+    <h1 class="placeholder-title">{{ title }}</h1>
+    <p class="placeholder-message">{{ message }}</p>
+    <div class="phase-badge">Under Development</div>
+</div>
+{% endblock %}

@@ -3,29 +3,58 @@ from django.shortcuts import render
 # Create your views here.
 # users/views.py
 
-from django.shortcuts import redirect
+from django.shortcuts import render, redirect
+from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
-
-# Note: You will need to create the 'student_dashboard' view in a new app later (e.g., 'core' or 'student_portal').
+from django.contrib import messages
+from django.db.models import Q
+from .models import StudentProfile, OrganizationProfile
 # For now, we assume if the user is not a mod or org, they are a student.
 
 @login_required
 def smart_dashboard_redirect(request):
     """
-    Redirects the user to the appropriate dashboard based on their role flags.
-    This view serves as the LOGIN_REDIRECT_URL target.
+    Smart redirect based on user role.
+    When user logs in or visits /dashboard, redirect them to the appropriate dashboard.
     """
     user = request.user
-    
+
+    # 1. Check if moderator
     if user.is_moderator:
-        # Redirect to the URL defined in moderator_panel/urls.py
-        return redirect('moderator_dashboard') 
+        return redirect('moderator_dashboard')
     
+    # 2. Check if organization
     elif user.is_organization:
-        # Redirect to the URL defined in funder_portal/urls.py
         return redirect('funder_dashboard')
-        
+    
+    # 3. Otherwise, assume student (default)
     else:
-        # Assumes any user not flagged as Mod or Org is a standard Student
-        # The student dashboard will be defined in a future app
-        return redirect('student_dashboard') # Assuming this URL will exist later
+        return redirect('student_dashboard')  # Will create this later
+
+@login_required
+def student_dashboard(request):
+    """Student dashboard - redirects to OTR if not completed"""
+    try:
+        profile = request.user.studentprofile
+        
+        # If OTR not completed, redirect to OTR
+        if not profile.otr_completed:
+            return redirect('otr_welcome')
+        
+        # OTR complete - show dashboard
+        academic_records = profile.academic_records.all()
+        documents = profile.documents.all()
+        
+        return render(request, 'users/student_dashboard.html', {
+            'profile': profile,
+            'academic_records': academic_records,
+            'documents': documents,
+        })
+        
+    except StudentProfile.DoesNotExist:
+        # Create profile and redirect to OTR
+        profile = StudentProfile.objects.create(
+            user=request.user,
+            full_name=request.user.username
+        )
+        return redirect('otr_welcome')

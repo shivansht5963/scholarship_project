@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+
+{% block title %}Karma Leaderboard - Scholar Match{% endblock %}
+
+{% block content %}
+<style>
+    .leaderboard-hero {
+        background: linear-gradient(135deg, var(--primary-yellow) 0%, var(--bright-orange) 100%);
+        border: 4px solid var(--black);
+        padding: 2.5rem;
+        text-align: center;
+        box-shadow: 8px 8px 0 var(--black);
+        margin-bottom: 2rem;
+    }
+
+    .leaderboard-hero h1 {
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: var(--black);
+        margin-bottom: 0.5rem;
+        font-family: 'Arial Black', sans-serif;
+        text-transform: uppercase;
+    }
+
+    .top-three {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .top-card {
+        background: var(--white);
+        border: 4px solid var(--black);
+        padding: 2rem 1.5rem;
+        text-align: center;
+        box-shadow: 6px 6px 0 var(--black);
+        position: relative;
+    }
+
+    .top-card.first {
+        order: 2;
+        background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    }
+
+    .top-card.second {
+        order: 1;
+    }
+
+    .top-card.third {
+        order: 3;
+    }
+
+    .medal {
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .rank-number {
+        font-size: 2.5rem;
+        font-weight: 900;
+        font-family: 'Arial Black', sans-serif;
+        color: var(--black);
+    }
+
+    .student-name {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--black);
+        margin: 0.5rem 0;
+    }
+
+    .karma-score {
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: var(--bright-green);
+        font-family: 'Arial Black', sans-serif;
+    }
+
+    .highlight-row {
+        background: var(--neon-green) !important;
+        font-weight: 900 !important;
+    }
+
+    .verified-badge-small {
+        display: inline-block;
+        background: var(--neon-green);
+        border: 2px solid var(--black);
+        padding: 0.2rem 0.4rem;
+        font-size: 0.7rem;
+        font-weight: 900;
+        margin-left: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .top-three {
+            grid-template-columns: 1fr;
+        }
+
+        .topcard.first,
+        .top-card.second,
+        .top-card.third {
+            order: initial;
+        }
+    }
+</style>
+
+<div class="leaderboard-hero">
+    <h1>🏆 Karma Leaderboard</h1>
+    <p style="font-weight: 600; font-size: 1.1rem;">Top Students by Karma Points</p>
+</div>
+
+{% if page_obj %}
+{% with students_list=page_obj.object_list %}
+{% if students_list|length >= 3 %}
+<div class="top-three">
+    {% for student in students_list|slice:":3" %}
+    <div
+        class="top-card {% if forloop.counter == 1 %}first{% elif forloop.counter == 2 %}second{% else %}third{% endif %}">
+        <div class="medal">
+            {% if forloop.counter == 1 %}🥇
+            {% elif forloop.counter == 2 %}🥈
+            {% else %}🥉{% endif %}
+        </div>
+        <div class="rank-number">#{{ forloop.counter }}</div>
+        <div class="student-name">
+            {{ student.full_name }}
+            {% if student.verified_scholar_badge %}
+            <span class="verified-badge-small">✓</span>
+            {% endif %}
+        </div>
+        <div class="karma-score">{{ student.total_karma_points }} pts</div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+{% endif %}
+
+<div class="card">
+    <div class="card-header">
+        <h2>📊 Full Rankings</h2>
+    </div>
+
+    {% if page_obj %}
+    <table>
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Name</th>
+                <th>Karma Points</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in page_obj %}
+            <tr {% if current_student and student.user_id==current_student.user_id %}class="highlight-row" {% endif %}>
+                <td>
+                    <strong>#{{ forloop.counter|add:page_obj.start_index|add:"-1" }}</strong>
+                    {% if forloop.counter <= 3 and page_obj.number==1 %} {% if forloop.counter==1 %}🥇 {% elif
+                        forloop.counter==2 %}🥈 {% else %}🥉{% endif %} {% endif %} </td>
+                <td>
+                    <strong>{{ student.full_name }}</strong>
+                    {% if student.verified_scholar_badge %}
+                    <span class="verified-badge-small">✓ VERIFIED</span>
+                    {% endif %}
+                    {% if current_student and student.user_id == current_student.user_id %}
+                    <span class="badge badge-info" style="margin-left: 0.5rem;">YOU</span>
+                    {% endif %}
+                </td>
+                <td><strong style="color: var(--bright-green);">{{ student.total_karma_points }}</strong></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div style="margin-top: 2rem; text-align: center;">
+        <div style="display: inline-flex; gap: 0.5rem; align-items: center;">
+            {% if page_obj.has_previous %}
+            <a href="?page=1" class="btn btn-outline" style="padding: 0.6rem 1rem;">First</a>
+            <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline"
+                style="padding: 0.6rem 1rem;">Previous</a>
+            {% endif %}
+
+            <span style="padding: 0.6rem 1rem; font-weight: 700;">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline"
+                style="padding: 0.6rem 1rem;">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-outline"
+                style="padding: 0.6rem 1rem;">Last</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+    {% else %}
+    <p style="text-align: center; padding: 2rem; color: var(--text-gray);">
+        No students on the leaderboard yet. Be the first to earn karma!
+    </p>
+    {% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Applications - {{ request.user.organizationprofile.organization_name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="header">
+        <h1>📋 Scholarship Applications</h1>
+        <p>Review and manage applications for your scholarships</p>
+    </div>
+
+    <div class="filters">
+        <div class="filter-group">
+            <label for="status-filter">Filter by Status</label>
+            <select id="status-filter" name="status">
+                <option value="">All Statuses</option>
+                {% for value, label in status_choices %}
+                    <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="scholarship-filter">Filter by Scholarship</label>
+            <select id="scholarship-filter" name="scholarship">
+                <option value="">All Scholarships</option>
+                {% for scholarship in scholarships %}
+                    <option value="{{ scholarship.id }}">{{ scholarship.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    {% if applications %}
+        <div class="table-responsive">
+            <table class="applications-table">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Scholarship</th>
+                        <th>Status</th>
+                        <th>Applied</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for application in applications %}
+                        <tr>
+                            <td>
+                                <div class="student-info">
+                                    <strong>{{ application.student.full_name }}</strong>
+                                    <small>{{ application.student.user.email }}</small>
+                                </div>
+                            </td>
+                            <td>{{ application.scholarship.name }}</td>
+                            <td>
+                                <span class="badge badge-{{ application.status|lower }}">
+                                    {{ application.get_status_display }}
+                                </span>
+                            </td>
+                            <td>{{ application.last_action_date|date:"M d, Y" }}</td>
+                            <td>
+                                <a href="{% url 'funder_portal:application_detail' application.id %}" class="btn btn-sm btn-primary">
+                                    Review →
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <h3>No Applications Found</h3>
+            <p>No applications match your filters.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

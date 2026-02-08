@@ -1,0 +1,445 @@
+{% extends 'base.html' %}
+
+{% block title %}Step {{ step }} - Basic Information{% endblock %}
+
+{% block content %}
+<style>
+    /* Desktop-First OTR Form Styling */
+    .otr-page-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    /* Main Content Area */
+    .otr-main-content {
+        width: 100%;
+    }
+
+    /* Page Header */
+    .page-header {
+        margin-bottom: 2rem;
+    }
+
+    .page-title {
+        font-size: 3.5rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        color: var(--black);
+        margin-bottom: 1rem;
+        letter-spacing: 2px;
+        font-family: 'Arial Black', sans-serif;
+        line-height: 1;
+    }
+
+    .step-indicator {
+        background: var(--bright-blue);
+        border: 4px solid var(--black);
+        padding: 0.8rem 1.5rem;
+        display: inline-block;
+        margin-bottom: 2rem;
+        box-shadow: 4px 4px 0 var(--black);
+    }
+
+    .step-indicator-text {
+        font-size: 0.9rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        color: var(--white);
+        letter-spacing: 1px;
+        font-style: italic;
+    }
+
+    /* Form Sections */
+    .form-section {
+        background: var(--white);
+        border: 4px solid var(--black);
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 6px 6px 0 var(--black);
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 3px solid var(--black);
+    }
+
+    .section-icon {
+        width: 45px;
+        height: 45px;
+        background: var(--white);
+        border: 3px solid var(--black);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        color: var(--black);
+        margin: 0;
+        letter-spacing: 1px;
+        font-family: 'Arial Black', sans-serif;
+        font-style: italic;
+    }
+
+    /* Photo Upload Area */
+    .photo-upload-area {
+        width: 150px;
+        height: 180px;
+        border: 4px dashed var(--black);
+        background: #FFF8E1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+
+    .photo-upload-area:hover {
+        background: #FFF3CD;
+        border-color: var(--primary-yellow);
+    }
+
+    .upload-icon {
+        font-size: 40px;
+        margin-bottom: 0.5rem;
+        color: var(--text-gray);
+    }
+
+    .camera-btn {
+        position: absolute;
+        bottom: -15px;
+        right: -15px;
+        width: 45px;
+        height: 45px;
+        background: var(--primary-yellow);
+        border: 3px solid var(--black);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        cursor: pointer;
+        box-shadow: 3px 3px 0 var(--black);
+    }
+
+    .camera-btn:hover {
+        transform: translate(-1px, -1px);
+        box-shadow: 4px 4px 0 var(--black);
+    }
+
+    /* Form Grid - Wide Desktop Layout */
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-grid-full {
+        grid-column: 1 / -1;
+    }
+
+    .form-grid-half {
+        grid-column: span 2;
+    }
+
+    /* Form Groups */
+    .form-group {
+        margin-bottom: 0;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--black);
+        margin-bottom: 0.6rem;
+        letter-spacing: 0.5px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 0.9rem 1rem;
+        border: 3px solid var(--black);
+        font-size: 1rem;
+        font-weight: 500;
+        background: var(--white);
+        transition: all 0.2s;
+    }
+
+    .form-group input::placeholder,
+    .form-group select,
+    .form-group textarea::placeholder {
+        color: var(--text-gray);
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.3px;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(184, 255, 87, 0.4);
+        background: #fffef8;
+    }
+
+    .form-group textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    /* Button Group */
+    .button-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 2.5rem;
+        gap: 1.5rem;
+    }
+
+    .btn-back {
+        background: var(--white);
+        border: 4px solid var(--black);
+        color: var(--black);
+        padding: 1rem 2rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-block;
+        box-shadow: 4px 4px 0 var(--black);
+        font-family: 'Arial Black', sans-serif;
+    }
+
+    .btn-back:hover {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 var(--black);
+    }
+
+    .btn-next {
+        background: var(--bright-blue);
+        border: 4px solid var(--black);
+        color: var(--white);
+        padding: 1rem 3rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 5px 5px 0 var(--black);
+        font-family: 'Arial Black', sans-serif;
+        font-size: 1rem;
+    }
+
+    .btn-next:hover {
+        transform: translate(2px, 2px);
+        box-shadow: 3px 3px 0 var(--black);
+    }
+
+    .btn-next:active {
+        transform: translate(5px, 5px);
+        box-shadow: 0 0 0 var(--black);
+    }
+
+    .btn-draft {
+        background: var(--white);
+        border: 4px solid var(--black);
+        color: var(--black);
+        padding: 1rem 2rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 4px 4px 0 var(--black);
+        font-family: 'Arial Black', sans-serif;
+    }
+
+    .btn-draft:hover {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 var(--black);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+        .page-title {
+            font-size: 2.5rem;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .otr-page-container {
+            padding: 1rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+        }
+
+        .form-section {
+            padding: 1.5rem;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .button-group {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .btn-back,
+        .btn-next,
+        .btn-draft {
+            width: 100%;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-title {
+            font-size: 1.8rem;
+        }
+
+        .step-indicator-text {
+            font-size: 0.75rem;
+        }
+
+        .form-section {
+            padding: 1rem;
+        }
+    }
+</style>
+
+<div class="otr-page-container">
+    <!-- Main Content -->
+    <main class="otr-main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Personal Profile</h1>
+            <div class="step-indicator">
+                <div class="step-indicator-text">Step 1: Complete Your Identity Information</div>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Personal Information Section -->
+            <div class="form-section">
+                <div class="section-header">
+                    <div class="section-icon">🆔</div>
+                    <h3 class="section-title">Personal Information</h3>
+                </div>
+
+                <div class="form-grid">
+                    <!-- Full Name -->
+                    <div class="form-group">
+                        <label for="{{ form.full_name.id_for_label }}">Full Name (As Per Aadhaar)</label>
+                        {{ form.full_name }}
+                    </div>
+
+                    <!-- Date of Birth -->
+                    <div class="form-group">
+                        <label for="{{ form.dob.id_for_label }}">Date of Birth</label>
+                        {{ form.dob }}
+                    </div>
+
+                    <!-- Gender -->
+                    <div class="form-group">
+                        <label for="{{ form.gender.id_for_label }}">Gender</label>
+                        {{ form.gender }}
+                    </div>
+
+                    <!-- Father's Name -->
+                    <div class="form-group">
+                        <label for="{{ form.father_name.id_for_label }}">Father's Name</label>
+                        {{ form.father_name }}
+                    </div>
+
+                    <!-- Mother's Name -->
+                    <div class="form-group">
+                        <label for="{{ form.mother_name.id_for_label }}">Mother's Name</label>
+                        {{ form.mother_name }}
+                    </div>
+
+                    <!-- Phone Number -->
+                    <div class="form-group">
+                        <label for="{{ form.phone.id_for_label }}">Mobile Number</label>
+                        {{ form.phone }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Address Section -->
+            <div class="form-section">
+                <div class="section-header">
+                    <div class="section-icon">📍</div>
+                    <h3 class="section-title">Address Details</h3>
+                </div>
+
+                <div class="form-grid">
+                    <!-- Address -->
+                    <div class="form-group form-grid-full">
+                        <label for="{{ form.address.id_for_label }}">Street, Area, Landmark</label>
+                        {{ form.address }}
+                    </div>
+
+                    <!-- City -->
+                    <div class="form-group">
+                        <label for="{{ form.city.id_for_label }}">City</label>
+                        {{ form.city }}
+                    </div>
+
+                    <!-- State -->
+                    <div class="form-group">
+                        <label for="{{ form.state.id_for_label }}">State</label>
+                        {{ form.state }}
+                    </div>
+
+                    <!-- PIN Code -->
+                    <div class="form-group">
+                        <label for="{{ form.pin_code.id_for_label }}">Pincode</label>
+                        {{ form.pin_code }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="button-group">
+                <a href="{% url 'otr_welcome' %}" class="btn-back">← Back</a>
+                <button type="submit" class="btn-next">Next: Family Details →</button>
+            </div>
+        </form>
+    </main>
+</div>
+{% endblock %}

@@ -1,0 +1,524 @@
+{% extends 'base.html' %}
+
+{% block title %}Step 4 - Academic Records{% endblock %}
+
+{% block content %}
+<style>
+    /* Desktop-First OTR Form Styling */
+    .otr-page-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    /* Main Content Area */
+    .otr-main-content {
+        width: 100%;
+    }
+
+    /* Page Header */
+    .page-header {
+        margin-bottom: 2rem;
+    }
+
+    .page-title {
+        font-size: 3.5rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        color: var(--black);
+        margin-bottom: 1rem;
+        letter-spacing: 2px;
+        font-family: 'Arial Black', sans-serif;
+        line-height: 1;
+    }
+
+    .step-indicator {
+        background: #5BC0EB;
+        border: 4px solid var(--black);
+        padding: 0.8rem 1.5rem;
+        display: inline-block;
+        margin-bottom: 1rem;
+        box-shadow: 4px 4px 0 var(--black);
+    }
+
+    .step-indicator-text {
+        font-size: 0.9rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        color: var(--white);
+        letter-spacing: 1px;
+        font-style: italic;
+    }
+
+    .page-subtitle {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-gray);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 1rem;
+    }
+
+    /* Existing Records Section */
+    .records-section {
+        background: #F0F8FF;
+        border: 4px solid var(--black);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 6px 6px 0 var(--black);
+    }
+
+    .records-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 3px solid var(--black);
+    }
+
+    .records-title {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .records-icon {
+        width: 45px;
+        height: 45px;
+        background: var(--black);
+        color: #F0F8FF;
+        border: 3px solid var(--black);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+
+    .records-title-text {
+        font-size: 1.3rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        color: var(--black);
+        letter-spacing: 1px;
+        font-family: 'Arial Black', sans-serif;
+    }
+
+    .records-count {
+        background: var(--black);
+        color: var(--white);
+        padding: 0.4rem 1rem;
+        border: 2px solid var(--black);
+        font-weight: 900;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+    }
+
+    /* Record Item Cards */
+    .record-item {
+        background: var(--white);
+        border: 3px solid var(--black);
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 4px 4px 0 var(--black);
+        transition: all 0.2s;
+    }
+
+    .record-item:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 var(--black);
+    }
+
+    .record-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+
+    .record-degree {
+        font-size: 1.2rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        color: var(--black);
+        font-family: 'Arial Black', sans-serif;
+    }
+
+    .record-score {
+        background: #5BC0EB;
+        color: var(--white);
+        padding: 0.4rem 1rem;
+        border: 2px solid var(--black);
+        font-weight: 900;
+        font-size: 0.9rem;
+        box-shadow: 2px 2px 0 var(--black);
+    }
+
+    .record-details {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+
+    .record-detail-item {
+        font-size: 0.85rem;
+    }
+
+    .record-detail-label {
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--text-gray);
+        font-size: 0.7rem;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.3rem;
+    }
+
+    .record-detail-value {
+        font-weight: 600;
+        color: var(--black);
+    }
+
+    /* Form Sections */
+    .form-section {
+        background: var(--white);
+        border: 4px solid var(--black);
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 6px 6px 0 var(--black);
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 3px solid var(--black);
+    }
+
+    .section-icon {
+        width: 45px;
+        height: 45px;
+        background: var(--white);
+        border: 3px solid var(--black);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        color: var(--black);
+        margin: 0;
+        letter-spacing: 1px;
+        font-family: 'Arial Black', sans-serif;
+        font-style: italic;
+    }
+
+    /* Form Grid - Wide Desktop Layout */
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-grid-full {
+        grid-column: 1 / -1;
+    }
+
+    .form-grid-half {
+        grid-column: span 2;
+    }
+
+    /* Form Groups */
+    .form-group {
+        margin-bottom: 0;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--black);
+        margin-bottom: 0.6rem;
+        letter-spacing: 0.5px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 0.9rem 1rem;
+        border: 3px solid var(--black);
+        font-size: 1rem;
+        font-weight: 500;
+        background: var(--white);
+        transition: all 0.2s;
+    }
+
+    .form-group input::placeholder,
+    .form-group select,
+    .form-group textarea::placeholder {
+        color: var(--text-gray);
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.3px;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(91, 192, 235, 0.4);
+        background: #fffef8;
+    }
+
+    /* Help Text */
+    .help-text {
+        font-size: 0.75rem;
+        color: var(--text-gray);
+        margin-top: 0.5rem;
+        text-transform: none;
+        font-weight: 500;
+        letter-spacing: 0;
+    }
+
+    /* Button Group */
+    .button-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 2.5rem;
+        gap: 1.5rem;
+    }
+
+    .btn-back {
+        background: var(--white);
+        border: 4px solid var(--black);
+        color: var(--black);
+        padding: 1rem 2rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-block;
+        box-shadow: 4px 4px 0 var(--black);
+        font-family: 'Arial Black', sans-serif;
+    }
+
+    .btn-back:hover {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 var(--black);
+    }
+
+    .btn-next {
+        background: #5BC0EB;
+        border: 4px solid var(--black);
+        color: var(--white);
+        padding: 1rem 3rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 5px 5px 0 var(--black);
+        font-family: 'Arial Black', sans-serif;
+        font-size: 1rem;
+    }
+
+    .btn-next:hover {
+        transform: translate(2px, 2px);
+        box-shadow: 3px 3px 0 var(--black);
+    }
+
+    .btn-next:active {
+        transform: translate(5px, 5px);
+        box-shadow: 0 0 0 var(--black);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+        .page-title {
+            font-size: 2.5rem;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .record-details {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .otr-page-container {
+            padding: 1rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+        }
+
+        .form-section,
+        .records-section {
+            padding: 1.5rem;
+        }
+
+        .form-grid,
+        .record-details {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .button-group {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .btn-back,
+        .btn-next {
+            width: 100%;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+        }
+
+        .records-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-title {
+            font-size: 1.8rem;
+        }
+
+        .step-indicator-text {
+            font-size: 0.75rem;
+        }
+
+        .form-section,
+        .records-section {
+            padding: 1rem;
+        }
+    }
+</style>
+
+<div class="otr-page-container">
+    <!-- Main Content -->
+    <main class="otr-main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Academic Records</h1>
+            <div class="step-indicator">
+                <div class="step-indicator-text">Step 3: Previous Education Details and Current Institution</div>
+            </div>
+            <p class="page-subtitle">Add your educational qualifications</p>
+        </div>
+
+        <!-- Existing Records Section -->
+        {% if existing_records %}
+        <div class="records-section">
+            <div class="records-header">
+                <div class="records-title">
+                    <div class="records-icon">✓</div>
+                    <h3 class="records-title-text">Your Academic Records</h3>
+                </div>
+                <div class="records-count">{{ existing_records|length }} Record{% if existing_records|length != 1 %}s{% endif %}</div>
+            </div>
+
+            {% for record in existing_records %}
+            <div class="record-item">
+                <div class="record-header">
+                    <div class="record-degree">{{ record.degree_level }}</div>
+                    <div class="record-score">{{ record.last_exam_score }}%</div>
+                </div>
+                <div class="record-details">
+                    <div class="record-detail-item">
+                        <div class="record-detail-label">Stream/Branch</div>
+                        <div class="record-detail-value">{{ record.stream }}</div>
+                    </div>
+                    <div class="record-detail-item">
+                        <div class="record-detail-label">Institution</div>
+                        <div class="record-detail-value">{{ record.institution_name }}</div>
+                    </div>
+                    <div class="record-detail-item">
+                        <div class="record-detail-label">Current Year</div>
+                        <div class="record-detail-value">Year {{ record.current_year }}</div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Form -->
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- Add Academic Record Section -->
+            <div class="form-section">
+                <div class="section-header">
+                    <div class="section-icon">➕</div>
+                    <h3 class="section-title">Add Academic Record</h3>
+                </div>
+
+                <div class="form-grid">
+                    <!-- Degree Level -->
+                    <div class="form-group">
+                        <label for="{{ form.degree_level.id_for_label }}">Degree Level *</label>
+                        {{ form.degree_level }}
+                        <p class="help-text">10th, 12th, Bachelor's, etc.</p>
+                    </div>
+
+                    <!-- Stream -->
+                    <div class="form-group">
+                        <label for="{{ form.stream.id_for_label }}">Stream/Branch</label>
+                        {{ form.stream }}
+                        <p class="help-text">Science, Commerce, Arts, Engineering, etc.</p>
+                    </div>
+
+                    <!-- Current Year -->
+                    <div class="form-group">
+                        <label for="{{ form.current_year.id_for_label }}">Current Year</label>
+                        {{ form.current_year }}
+                        <p class="help-text">1st, 2nd, 3rd year, etc.</p>
+                    </div>
+
+                    <!-- Institution Name -->
+                    <div class="form-group form-grid-half">
+                        <label for="{{ form.institution_name.id_for_label }}">Institution Name *</label>
+                        {{ form.institution_name }}
+                        <p class="help-text">Full name of your school/college/university</p>
+                    </div>
+
+                    <!-- Last Exam Score -->
+                    <div class="form-group">
+                        <label for="{{ form.last_exam_score.id_for_label }}">Last Exam Score (%/CGPA)</label>
+                        {{ form.last_exam_score }}
+                        <p class="help-text">Percentage or CGPA</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="button-group">
+                <a href="{% url 'otr_step3' %}" class="btn-back">← Back</a>
+                <button type="submit" class="btn-next">Next: Documents →</button>
+            </div>
+        </form>
+    </main>
+</div>
+{% endblock %}

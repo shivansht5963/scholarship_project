@@ -1,0 +1,636 @@
+{% extends 'base.html' %}
+
+{% block title %}Step 5 - Documents{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-green: #2ecc71;
+        --dark-green: #27ae60;
+        --accent-green: #3fd675;
+        --very-light-green: #e8f8f0;
+        --border-green: #d4edda;
+        --light-gray: #f5f5f5;
+        --yellow-badge: #ffeb3b;
+        --text-dark: #1a1a1a;
+    }
+
+    body {
+        background: #fafafa;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    .otr-container {
+        max-width: 1400px;
+        margin: 3rem auto;
+        padding: 0 2rem;
+    }
+
+    /* Header Section */
+    .step-header {
+        margin-bottom: 2.5rem;
+    }
+
+    .step-badge {
+        display: inline-block;
+        background: #000;
+        color: #fff;
+        padding: 0.5rem 1.25rem;
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        border: 3px solid #000;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+    }
+
+    .step-title {
+        color: var(--text-dark);
+        font-size: 3rem;
+        font-weight: 900;
+        line-height: 1.1;
+        margin-bottom: 0.75rem;
+        letter-spacing: -1px;
+    }
+
+    .step-subtitle {
+        color: #666;
+        font-size: 1rem;
+        font-weight: 400;
+        margin-bottom: 0;
+    }
+
+    /* Completion Badge */
+    .completion-badge {
+        display: inline-block;
+        background: var(--yellow-badge);
+        color: #000;
+        padding: 0.5rem 1.25rem;
+        font-size: 0.9rem;
+        font-weight: 700;
+        border: 3px solid #000;
+        margin-top: 1.5rem;
+        text-transform: uppercase;
+    }
+
+    /* Form Sections */
+    .form-section {
+        margin-bottom: 3rem;
+    }
+
+    .form-section h3 {
+        color: var(--text-dark);
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid #e0e0e0;
+    }
+
+    /* Upload Grid */
+    .upload-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2rem;
+    }
+
+    /* Document Card */
+    .upload-item {
+        background: white;
+        border: 4px solid #000;
+        border-radius: 0;
+        padding: 1.75rem;
+        position: relative;
+        transition: all 0.3s ease;
+        box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.1);
+    }
+
+    .upload-item:hover {
+        transform: translateY(-4px);
+        box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.15);
+    }
+
+    /* Status Badge */
+    .status-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        padding: 0.35rem 0.85rem;
+        font-size: 0.7rem;
+        font-weight: 700;
+        border: 2px solid #000;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-not-uploaded {
+        background: var(--yellow-badge);
+        color: #000;
+    }
+
+    .status-verified {
+        background: var(--primary-green);
+        color: #fff;
+    }
+
+    .status-pending {
+        background: #64b5f6;
+        color: #fff;
+    }
+
+    /* Icon Box */
+    .upload-icon {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 3px solid #000;
+        background: #fff;
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+    }
+
+    /* Document Title */
+    .upload-item label {
+        display: block;
+        color: var(--text-dark);
+        font-weight: 700;
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    .upload-description {
+        color: #666;
+        font-size: 0.8rem;
+        margin-bottom: 1rem;
+        line-height: 1.4;
+    }
+
+    /* File Upload Area */
+    .file-upload-area {
+        border: 2px dashed #ccc;
+        background: #fafafa;
+        padding: 1.5rem;
+        text-align: center;
+        margin-top: 1rem;
+        transition: all 0.3s;
+        position: relative;
+        min-height: 180px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .file-upload-area:hover {
+        border-color: var(--primary-green);
+        background: var(--very-light-green);
+    }
+
+    .upload-item input[type="file"] {
+        width: 100%;
+        padding: 0.5rem;
+        border: 2px solid #000;
+        background: white;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .upload-item input[type="file"]::-webkit-file-upload-button {
+        background: #000;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        font-weight: 700;
+        margin-right: 0.75rem;
+    }
+
+    /* Preview Area */
+    .preview-container {
+        width: 100%;
+        margin-bottom: 1rem;
+        display: none;
+    }
+
+    .preview-container.active {
+        display: block;
+    }
+
+    .preview-image {
+        max-width: 100%;
+        max-height: 150px;
+        border: 2px solid #000;
+        object-fit: contain;
+        background: white;
+    }
+
+    .preview-document {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        background: white;
+        border: 2px solid #000;
+        gap: 0.75rem;
+    }
+
+    .preview-document-icon {
+        font-size: 2.5rem;
+    }
+
+    .preview-document-info {
+        text-align: left;
+    }
+
+    .preview-document-name {
+        font-weight: 700;
+        color: var(--text-dark);
+        font-size: 0.85rem;
+        margin-bottom: 0.25rem;
+        word-break: break-all;
+    }
+
+    .preview-document-size {
+        font-size: 0.75rem;
+        color: #666;
+    }
+
+    .remove-preview {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        background: #ff4444;
+        color: white;
+        border: 2px solid #000;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 1rem;
+        z-index: 10;
+    }
+
+    .remove-preview:hover {
+        background: #cc0000;
+    }
+
+    .upload-placeholder {
+        color: #999;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .file-upload-area.has-file {
+        border-color: var(--primary-green);
+        background: #f0fff4;
+    }
+
+    /* Button Group */
+    .button-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 3rem;
+        gap: 1rem;
+    }
+
+    .btn-secondary,
+    .btn-primary {
+        padding: 1rem 2.5rem;
+        border: 3px solid #000;
+        border-radius: 0;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        font-weight: 700;
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-secondary {
+        background: white;
+        color: #000;
+    }
+
+    .btn-secondary:hover {
+        transform: translateY(-2px);
+        box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.25);
+    }
+
+    .btn-primary {
+        background: var(--yellow-badge);
+        color: #000;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.25);
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+        .upload-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media (max-width: 992px) {
+        .upload-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .otr-container {
+            padding: 0 1.5rem;
+        }
+
+        .step-title {
+            font-size: 2rem;
+        }
+
+        .upload-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .button-group {
+            flex-direction: column;
+        }
+
+        .btn-secondary,
+        .btn-primary {
+            width: 100%;
+            text-align: center;
+        }
+
+        .upload-item {
+            box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    @media (max-width: 480px) {
+        .otr-container {
+            padding: 0 1rem;
+            margin: 2rem auto;
+        }
+
+        .step-title {
+            font-size: 1.75rem;
+        }
+
+        .upload-item {
+            padding: 1.25rem;
+        }
+    }
+</style>
+
+<div class="otr-container">
+    <!-- Header -->
+    <div class="step-header">
+        <div class="step-badge">STEP 5 OF 6: DOCUMENT UPLOAD</div>
+        <h1 class="step-title">UPLOAD YOUR<br>DOCUMENTS</h1>
+        <p class="step-subtitle">We require 14 specific documents for your One-Time Registration (OTR). Ensure all scans are clear and legible.</p>
+        <div class="completion-badge">75% COMPLETE</div>
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Identity & Certificates Section -->
+        <div class="form-section">
+            <h3>Identity & Certificates</h3>
+
+            <div class="upload-grid">
+                <!-- Aadhaar Card -->
+                <div class="upload-item">
+                    <span class="status-badge status-not-uploaded">Not Uploaded</span>
+                    <div class="upload-icon">🆔</div>
+                    <label for="{{ form.aadhaar.id_for_label }}">Aadhaar Card</label>
+                    <p class="upload-description">Front and back side merged into one PDF.</p>
+                    <div class="file-upload-area" data-upload="aadhaar">
+                        <div class="preview-container"></div>
+                        <div class="upload-placeholder">📤 No file chosen</div>
+                        {{ form.aadhaar }}
+                    </div>
+                </div>
+
+                <!-- Income Certificate -->
+                <div class="upload-item">
+                    <span class="status-badge status-not-uploaded">Not Uploaded</span>
+                    <div class="upload-icon">💰</div>
+                    <label for="{{ form.income_cert.id_for_label }}">Income Certificate</label>
+                    <p class="upload-description">Issued within the current financial year.</p>
+                    <div class="file-upload-area" data-upload="income_cert">
+                        <div class="preview-container"></div>
+                        <div class="upload-placeholder">📤 No file chosen</div>
+                        {{ form.income_cert }}
+                    </div>
+                </div>
+
+                <!-- Caste Certificate -->
+                <div class="upload-item">
+                    <span class="status-badge status-not-uploaded">Not Uploaded</span>
+                    <div class="upload-icon">📄</div>
+                    <label for="{{ form.caste_cert.id_for_label }}">Caste Certificate</label>
+                    <p class="upload-description">Valid certificate for category verification.</p>
+                    <div class="file-upload-area" data-upload="caste_cert">
+                        <div class="preview-container"></div>
+                        <div class="upload-placeholder">📤 No file chosen</div>
+                        {{ form.caste_cert }}
+                    </div>
+                </div>
+
+                <!-- Disability Certificate -->
+                <div class="upload-item">
+                    <span class="status-badge status-not-uploaded">Not Uploaded</span>
+                    <div class="upload-icon">♿</div>
+                    <label for="{{ form.disability_cert.id_for_label }}">Disability Certificate</label>
+                    <p class="upload-description">If applicable, with disability percentage.</p>
+                    <div class="file-upload-area" data-upload="disability_cert">
+                        <div class="preview-container"></div>
+                        <div class="upload-placeholder">📤 No file chosen</div>
+                        {{ form.disability_cert }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Academic Documents Section -->
+        <div class="form-section">
+            <h3>Academic Documents</h3>
+
+            <div class="upload-grid">
+                <!-- 10th Marksheet -->
+                <div class="upload-item">
+                    <span class="status-badge status-not-uploaded">Not Uploaded</span>
+                    <div class="upload-icon">📚</div>
+                    <label for="{{ form.marksheet_10.id_for_label }}">10th Marksheet</label>
+                    <p class="upload-description">Secondary school examination certificate.</p>
+                    <div class="file-upload-area" data-upload="marksheet_10">
+                        <div class="preview-container"></div>
+                        <div class="upload-placeholder">📤 No file chosen</div>
+                        {{ form.marksheet_10 }}
+                    </div>
+                </div>
+
+                <!-- 12th Marksheet -->
+                <div class="upload-item">
+                    <span class="status-badge status-not-uploaded">Not Uploaded</span>
+                    <div class="upload-icon">📚</div>
+                    <label for="{{ form.marksheet_12.id_for_label }}">12th Marksheet</label>
+                    <p class="upload-description">Higher secondary certificate/diploma.</p>
+                    <div class="file-upload-area" data-upload="marksheet_12">
+                        <div class="preview-container"></div>
+                        <div class="upload-placeholder">📤 No file chosen</div>
+                        {{ form.marksheet_12 }}
+                    </div>
+                </div>
+
+                <!-- Current Marksheet -->
+                <div class="upload-item">
+                    <span class="status-badge status-not-uploaded">Not Uploaded</span>
+                    <div class="upload-icon">📖</div>
+                    <label for="{{ form.current_marksheet.id_for_label }}">Current Marksheet</label>
+                    <p class="upload-description">Latest semester/year academic record.</p>
+                    <div class="file-upload-area" data-upload="current_marksheet">
+                        <div class="preview-container"></div>
+                        <div class="upload-placeholder">📤 No file chosen</div>
+                        {{ form.current_marksheet }}
+                    </div>
+                </div>
+
+                <!-- Passport Photo -->
+                <div class="upload-item">
+                    <span class="status-badge status-not-uploaded">Not Uploaded</span>
+                    <div class="upload-icon">📷</div>
+                    <label for="{{ form.photo.id_for_label }}">Passport Photo</label>
+                    <p class="upload-description">Recent passport-size photograph.</p>
+                    <div class="file-upload-area" data-upload="photo">
+                        <div class="preview-container"></div>
+                        <div class="upload-placeholder">📤 No file chosen</div>
+                        {{ form.photo }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="button-group">
+            <a href="{% url 'otr_step4' %}" class="btn-secondary">← Back</a>
+            <button type="submit" class="btn-primary">Next: Banking →</button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get all file inputs
+    const fileInputs = document.querySelectorAll('input[type="file"]');
+    
+    fileInputs.forEach(input => {
+        input.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const uploadArea = this.closest('.file-upload-area');
+            const previewContainer = uploadArea.querySelector('.preview-container');
+            const placeholder = uploadArea.querySelector('.upload-placeholder');
+            const statusBadge = uploadArea.closest('.upload-item').querySelector('.status-badge');
+            
+            if (file) {
+                // Hide placeholder
+                placeholder.style.display = 'none';
+                
+                // Add has-file class
+                uploadArea.classList.add('has-file');
+                
+                // Update status badge to verified
+                if (statusBadge) {
+                    statusBadge.className = 'status-badge status-verified';
+                    statusBadge.textContent = 'UPLOADED';
+                }
+                
+                // Clear previous preview
+                previewContainer.innerHTML = '';
+                
+                const fileType = file.type;
+                const fileName = file.name;
+                const fileSize = (file.size / 1024).toFixed(2); // Convert to KB
+                
+                // Check if it's an image
+                if (fileType.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewContainer.innerHTML = `
+                            <button type="button" class="remove-preview" title="Remove file">×</button>
+                            <img src="${e.target.result}" alt="Preview" class="preview-image">
+                        `;
+                        previewContainer.classList.add('active');
+                        
+                        // Add remove functionality
+                        const removeBtn = previewContainer.querySelector('.remove-preview');
+                        removeBtn.addEventListener('click', function() {
+                            clearPreview(input, uploadArea, previewContainer, placeholder, statusBadge);
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                } 
+                // For PDF and other documents
+                else {
+                    const icon = fileType.includes('pdf') ? '📄' : '📎';
+                    previewContainer.innerHTML = `
+                        <button type="button" class="remove-preview" title="Remove file">×</button>
+                        <div class="preview-document">
+                            <div class="preview-document-icon">${icon}</div>
+                            <div class="preview-document-info">
+                                <div class="preview-document-name">${fileName}</div>
+                                <div class="preview-document-size">${fileSize} KB</div>
+                            </div>
+                        </div>
+                    `;
+                    previewContainer.classList.add('active');
+                    
+                    // Add remove functionality
+                    const removeBtn = previewContainer.querySelector('.remove-preview');
+                    removeBtn.addEventListener('click', function() {
+                        clearPreview(input, uploadArea, previewContainer, placeholder, statusBadge);
+                    });
+                }
+            }
+        });
+    });
+    
+    function clearPreview(input, uploadArea, previewContainer, placeholder, statusBadge) {
+        // Clear the file input
+        input.value = '';
+        
+        // Clear preview
+        previewContainer.innerHTML = '';
+        previewContainer.classList.remove('active');
+        
+        // Show placeholder
+        placeholder.style.display = 'block';
+        
+        // Remove has-file class
+        uploadArea.classList.remove('has-file');
+        
+        // Reset status badge
+        if (statusBadge) {
+            statusBadge.className = 'status-badge status-not-uploaded';
+            statusBadge.textContent = 'NOT UPLOADED';
+        }
+    }
+});
+</script>
+{% endblock %}
