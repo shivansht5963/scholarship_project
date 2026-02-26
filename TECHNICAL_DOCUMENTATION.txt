@@ -1,0 +1,689 @@
+================================================================================
+SCHOLAR MATCH - TECHNICAL DOCUMENTATION FOR RESEARCH PAPER
+================================================================================
+
+PROJECT OVERVIEW
+================================================================================
+Scholar Match is an AI-powered scholarship management and matching platform 
+designed to connect students with scholarships through intelligent eligibility 
+matching, moderator verification, and a gamified karma points system.
+
+TECH STACK
+- Framework: Django 5.2.6
+- Database: SQLite3 (Development) / PostgreSQL (Production-ready)
+- Language: Python 3.x
+- Frontend: HTML5, CSS3, JavaScript, TailwindCSS
+- Architecture: Monolithic MVC Pattern
+
+
+SYSTEM ARCHITECTURE
+================================================================================
+
+1. CORE MODULES
+---------------
+
+A. Users Module (users/)
+   - Custom authentication system with role-based access
+   - User types: Students, Moderators, Organizations
+   - One-Time Registration (OTR) workflow for students
+
+B. Scholarships Module (scholarships/)
+   - Master scholarship database
+   - Eligibility criteria engine
+   - Required documents checklist
+
+C. Applications Module (applications/)
+   - Application lifecycle management
+   - Document upload and verification
+   - Roadmap-based progress tracking
+
+D. Karma System Module (karma/)
+   - Points-based gamification system
+   - Scholarship submission (finder bounty program)
+   - Rewards marketplace with redemption system
+   - Leaderboard and ranking
+
+E. Moderator Panel Module (moderator_panel/)
+   - Application review queue
+   - Document verification interface
+   - Activity logging and audit trail
+
+F. Funder Portal Module (funder_portal/)
+   - Organization dashboard
+   - Scholarship management
+   - Application review and decision-making
+
+G. AI Integrations Module (ai_integrations/)
+   - Eligibility matching engine
+   - Document OCR and validation
+   - Audit logging for AI operations
+
+
+2. DATABASE SCHEMA
+================================================================================
+
+A. USER MANAGEMENT
+------------------
+User (Custom AbstractUser)
+- Fields: username, email, password, is_student, is_moderator, is_organization
+- Purpose: Base authentication with role flags
+
+StudentProfile (1-to-1 with User)
+- Personal: full_name, dob, gender, phone, address
+- Family: father_name, mother_name, annual_income, caste_category
+- Identity: aadhaar_number, bank details (account, IFSC, bank_name)
+- OTR Tracking: otr_completed, otr_step (1-7), profile_completion %
+- Karma: total_karma_points, karma_rank, verified_scholar_badge
+- Purpose: Comprehensive student data for eligibility matching
+
+AcademicRecord (Many-to-1 with StudentProfile)
+- Fields: degree_level, stream, institution_name, current_year, last_exam_score
+- Purpose: Educational history for scholarship matching
+
+StudentDocument (Many-to-1 with StudentProfile)
+- Fields: document_type, file, uploaded_at, is_verified, notes
+- Types: Aadhaar, income cert, caste cert, marksheets, bank passbook, etc.
+- Purpose: Document repository for OTR and applications
+
+ModeratorProfile (1-to-1 with User)
+- Fields: organization_name, contact_phone, is_verified
+- Purpose: NGO representatives or teacher accounts
+
+OrganizationProfile (1-to-1 with User)
+- Fields: organization_name, contact_person, official_email, website_url, is_verified_funder
+- Purpose: Scholarship funding organizations
+
+
+B. SCHOLARSHIP MANAGEMENT
+--------------------------
+Scholarship
+- Core: name, organization, source_url, deadline, award_amount, details
+- Status: is_active, is_verified
+- Finder Bounty: found_by_student (FK), finder_karma_awarded
+- Purpose: Master scholarship database
+
+EligibilityCriteria (Many-to-1 with Scholarship)
+- Fields: criterion_type, comparison_operator (GT/LT/EQ/IN), value, is_required
+- Examples: MIN_INCOME < 250000, MIN_GPA >= 3.5
+- Purpose: AI matching rules engine
+
+RequiredDocument (Many-to-1 with Scholarship)
+- Fields: document_name, description, is_mandatory
+- Purpose: Application document checklist
+
+
+C. APPLICATION LIFECYCLE
+-------------------------
+Application (Student + Scholarship combination)
+- Fields: student, scholarship, status, moderator_assigned, application_link
+- Status Flow: DRAFT → PENDING → MOD_VERIFIED → SUBMITTED → APPROVED/REJECTED
+- Constraint: unique_together (student, scholarship) - one application per scholarship
+- Purpose: Track student applications
+
+UploadedDocument (Many-to-1 with Application)
+- Fields: application, document_type, file, ai_verification_status, moderator_verified, moderator_notes
+- AI Status: PENDING → AI_OK / AI_FLAG → MOD_OK
+- Purpose: Application document storage and verification
+
+ApplicationRoadmapStep (Many-to-1 with Application)
+- Fields: step_order, step_name, instructions, is_complete
+- Purpose: Visual progress tracker
+
+
+D. KARMA SYSTEM
+----------------
+KarmaTransaction (Immutable Audit Log)
+- Fields: student, points, transaction_type, description, related_scholarship, created_at
+- Transaction Types:
+  * FINDER_BOUNTY: +100 points for scholarship submission approval
+  * OTR_COMPLETE: +50 points for completing registration
+  * REDEEM_REWARD: -X points for reward purchase
+  * PENALTY_FAKE: -100 points for fake submission
+  * ADMIN_ADJUST: Manual adjustment
+- Purpose: Complete karma history ledger
+
+ScholarshipSubmission (Finder Bounty Program)
+- Fields: submitted_by, scholarship_name, organization, website_url, proof_document
+- Status: PENDING → APPROVED/REJECTED
+- Rewards: karma_awarded, reviewed_by, reviewed_at
+- Purpose: Student-submitted scholarship tracking
+
+KarmaReward (Perk Store)
+- Fields: reward_name, karma_cost, reward_type, description, stock_quantity, is_active
+- Types: VOUCHER (Zomato, Lenskart), BADGE, PRIORITY_SERVICE
+- Purpose: Redemption marketplace
+
+RedemptionHistory
+- Fields: student, reward, karma_spent, redemption_code, redeemed_at
+- Purpose: Reward redemption tracking
+
+
+E. MODERATION & AUDIT
+----------------------
+ModeratorActivityLog
+- Fields: moderator, application, action_type, details, timestamp
+- Actions: VERIFY_DOC, CHANGE_STATUS, NOTE_ADD, ASSIGN_APP
+- Purpose: Audit trail for moderator actions
+
+TaskAssignment (1-to-1 with Application)
+- Fields: moderator, application, assigned_date, due_date, is_complete
+- Purpose: Moderator workload management
+
+AICheckLog
+- Fields: application, check_type, input_data (JSON), result_json (JSON), is_success, timestamp
+- Types: ELIGIBILITY, DOCUMENT_OCR
+- Purpose: AI feature debugging and audit
+
+
+3. KEY FEATURES & WORKFLOWS
+================================================================================
+
+A. ONE-TIME REGISTRATION (OTR) - 7-STEP PROCESS
+------------------------------------------------
+Step 1: Welcome & Introduction
+- Student account creation
+- Platform overview
+
+Step 2: Basic Information
+- Personal details (name, DOB, gender)
+- Contact information
+
+Step 3: Family & Financial Details
+- Father/mother names
+- Annual income
+- Caste category
+- Disability status
+
+Step 4: Academic Records
+- Degree level, stream, institution
+- Current year of study
+- Exam scores/CGPA
+
+Step 5: Document Upload (14 Required Documents)
+- Aadhaar card
+- Income certificate
+- Caste certificate (if applicable)
+- Disability certificate (if applicable)
+- 10th marksheet
+- 12th marksheet
+- Current semester/year marksheet
+- Bank passbook
+- Passport photo
+- Other supporting documents
+
+Step 6: Banking Information
+- Bank account number
+- IFSC code
+- Bank name
+- For scholarship disbursements
+
+Step 7: Review & Submission
+- Review all entered information
+- Certify accuracy
+- Complete OTR → Award +50 karma points
+
+Benefits:
+- Complete once, use for all applications
+- Auto-fill application forms
+- Faster application processing
+
+
+B. AI-POWERED SCHOLARSHIP MATCHING
+-----------------------------------
+Algorithm:
+1. Parse student profile data
+2. Compare against EligibilityCriteria for each scholarship
+3. Apply comparison operators (GT, LT, EQ, IN)
+4. Calculate match score (0-100%)
+5. Rank scholarships by match probability
+6. Filter by deadlines and active status
+
+Criteria Examples:
+- Income-based: annual_income < 250000
+- Academic: last_exam_score >= 70
+- Category-based: caste_category IN ['SC', 'ST', 'OBC']
+- Age restrictions: age < 25
+- Disability benefits: is_disabled == True
+
+Output:
+- Smart Discovery Engine shows 95%+ match scholarships first
+- Real-time deadline alerts
+- Verified funding sources only
+
+
+C. APPLICATION WORKFLOW
+---------------------------------
+Student Side:
+1. Browse matched scholarships
+2. Select scholarship → Create draft application
+3. Upload required documents
+4. Submit for moderator review
+5. Track progress via roadmap steps
+
+Moderator Side:
+1. Review application queue
+2. Verify uploaded documents
+3. AI verification: Automated OCR and validation
+4. Manual verification if AI flags issues
+5. Approve/reject application
+6. Submit to funder organization
+
+Organization (Funder) Side:
+1. View submitted applications
+2. Review student profiles and documents
+3. Make funding decision: Approve/Reject
+4. Scholarship disbursement
+
+
+D. KARMA SYSTEM - GAMIFICATION ENGINE
+--------------------------------------
+Earning Karma:
+1. OTR Completion: +50 points (one-time)
+2. Finder Bounty: +100 points (per approved scholarship submission)
+3. Scholarship Application: +10 points (per submission)
+4. Profile Updates: +5 points
+5. Referral Bonuses: +25 points (future)
+
+Spending Karma:
+1. Vouchers: 500-1000 points
+   - Zomato gift cards
+   - Lenskart discount vouchers
+   - Amazon vouchers
+2. Badges: 200-500 points
+   - Verified Scholar Badge (profile enhancement)
+   - Gold/Platinum badges
+3. Priority Services: 300 points
+   - Faster application review
+   - Premium support
+
+Penalties:
+- Fake submission: -100 points
+- Incomplete applications: -10 points
+- Spam reporting: -50 points
+
+Karma Range: 0-∞ (unlimited ceiling)
+Leaderboard: Global ranking based on total points
+
+
+E. FINDER BOUNTY PROGRAM (MONETIZATION FEATURE)
+------------------------------------------------
+Concept:
+Students discover niche scholarships not in the database and submit them for 
+verification. Upon moderator approval, they earn 100 karma points.
+
+Workflow:
+1. Student finds scholarship (website/organization)
+2. Submits via Karma Dashboard:
+   - Scholarship name
+   - Organization
+   - Website URL
+   - Proof document (screenshot/PDF)
+3. Moderator reviews submission
+4. If APPROVED:
+   - Scholarship added to database
+   - Student awarded 100 karma points
+   - Student credited as "finder"
+5. If REJECTED:
+   - -100 karma penalty (prevents spam)
+   - Admin notes explaining rejection
+
+Database Tracking:
+- Scholarship.found_by_student (FK to StudentProfile)
+- Scholarship.finder_karma_awarded (int)
+
+
+F. MODERATOR PANEL FEATURES
+----------------------------
+Dashboard:
+- Unassigned applications count
+- Pending tasks list
+- Scholarships needing verification
+- Activity statistics
+
+Application Review:
+- Document viewer with zoom/download
+- AI verification status display
+- Moderator notes section
+- Approve/reject controls
+- Status change tracking
+
+Karma Management:
+- Scholarship submission queue
+- Approve/reject finder bounties
+- Manual karma adjustments (admins only)
+
+
+G. FUNDER PORTAL FEATURES
+--------------------------
+Dashboard:
+- Organization profile
+- Active scholarships list
+- Total applications received
+- Approval statistics
+
+Scholarship Management:
+- Create new scholarships
+- Edit existing scholarships
+- Set eligibility criteria
+- Define required documents
+- Set deadlines and award amounts
+
+Application Review:
+- View submitted applications
+- Access student profiles (privacy-compliant)
+- Download supporting documents
+- Make funding decisions
+
+
+4. MONETIZATION STRATEGY
+================================================================================
+
+A. AFFILIATE MARKETING (PRIMARY REVENUE)
+-----------------------------------------
+Karma Store Integration:
+- Partner with voucher providers (Zomato, Lenskart, Amazon, Flipkart)
+- Earn 5-15% commission on each redemption
+- Volume-based incentives from partners
+
+Example:
+- Student redeems 500 karma for ₹500 Zomato voucher
+- ScholarMatch purchases voucher for ₹450 (10% discount)
+- Platform profit: ₹50 per redemption
+
+Projected Revenue:
+- 10,000 active students
+- 30% monthly redemption rate = 3,000 redemptions/month
+- Average redemption value: ₹300
+- Commission rate: 10%
+- Monthly revenue: ₹90,000 ($1,080)
+
+
+B. AFFILIATE SCHOLARSHIP LINKS
+-------------------------------
+Referral Partnerships:
+- Partner with scholarship providers
+- Earn referral fees for successful applications
+- Typical rates: ₹100-500 per application, ₹1000-5000 per disbursement
+
+Implementation:
+- Scholarship.source_url includes affiliate tracking
+- Track click-through rates
+- Commission on successful applications
+
+
+C. PREMIUM FEATURES (FREEMIUM MODEL)
+-------------------------------------
+Free Tier:
+- Basic OTR and profile
+- AI matching (limited to top 10 matches)
+- Standard application processing
+- 500 karma limit per month
+
+Premium Tier (₹199/month or 2000 karma/year):
+- Unlimited AI matches
+- Priority application review
+- Verified Scholar Badge
+- Advanced analytics dashboard
+- Application deadline reminders via SMS
+- Unlimited karma earning potential
+
+
+D. ORGANIZATION SUBSCRIPTION
+-----------------------------
+Funder Portal Pricing:
+- Small NGOs: Free (up to 1 scholarship)
+- Medium Organizations: ₹4,999/month (up to 10 scholarships)
+- Enterprise: ₹14,999/month (unlimited scholarships)
+
+Features:
+- Custom branded portal
+- Automated tax receipts
+- Direct fund disbursement integration
+- Analytics and reporting
+- Dedicated support
+
+
+E. SPONSORED SCHOLARSHIPS
+--------------------------
+- Organizations pay for premium listing
+- Featured placement in student feeds
+- Guaranteed top-3 ranking for matched students
+- Pricing: ₹10,000-50,000 per scholarship campaign
+
+
+F. DATA ANALYTICS (B2B)
+------------------------
+Anonymized Insights:
+- Scholarship success rate trends
+- Market demand analysis for organizations
+- Pricing: ₹25,000/report
+
+
+5. TECHNICAL IMPLEMENTATION DETAILS
+================================================================================
+
+A. AUTHENTICATION & AUTHORIZATION
+----------------------------------
+- Custom User model (AbstractUser)
+- Role-based access control via boolean flags
+- Decorators: @login_required, @user_passes_test(is_student)
+- Session-based authentication
+- LOGIN_REDIRECT_URL: /accounts/dashboard/
+- Smart dashboard routing based on user role
+
+
+B. FILE UPLOAD SYSTEM
+----------------------
+- MEDIA_ROOT: project_root/media/
+- Document paths:
+  * Student docs: student_documents/YYYY/MM/
+  * Application docs: application_docs/
+  * Scholarship submissions: scholarship_submissions/YYYY/MM/
+- File size limit: 10MB per file
+- Allowed formats: PDF, JPG, PNG, DOCX
+
+
+C. KARMA TRANSACTION SYSTEM
+----------------------------
+Utility Functions (karma/utils.py):
+- award_karma(): Atomic transaction to add points
+- deduct_karma(): Atomic transaction to subtract points
+- update_karma_ranks(): Periodic rank calculation (cron job)
+- generate_redemption_code(): 16-char unique codes (XXXX-XXXX-XXXX-XXXX)
+
+Concurrency Safety:
+- Django ORM F() expressions for atomic updates
+- Database transactions for multi-step operations
+- Prevents race conditions
+
+
+D. AI MATCHING ENGINE (PLANNED)
+--------------------------------
+Inputs:
+- Student profile JSON snapshot
+- Scholarship eligibility criteria
+
+Process:
+1. Extract student attributes (income, GPA, category, etc.)
+2. Evaluate each criterion using comparison operators
+3. Calculate weighted match score
+4. Log to AICheckLog for debugging
+
+Output:
+- Match percentage (0-100%)
+- Matched/failed criteria breakdown
+- Recommended action
+
+
+E. DOCUMENT OCR (PLANNED)
+--------------------------
+Technology: Tesseract OCR / Google Cloud Vision API
+Purpose:
+- Extract text from uploaded documents
+- Verify authenticity (income certificates, marksheets)
+- Auto-populate form fields
+- Flag suspicious documents for moderator review
+
+
+6. SECURITY & COMPLIANCE
+================================================================================
+
+A. DATA PROTECTION
+-------------------
+- Aadhaar stored encrypted (Django field encryption)
+- Bank details encrypted at rest
+- HTTPS/SSL for all data in transit
+- GDPR-compliant data export/deletion
+- Student consent for data usage
+
+
+B. FILE UPLOAD SECURITY
+------------------------
+- File type validation (whitelist: PDF, JPG, PNG, DOCX)
+- File size limits (10MB max)
+- Virus scanning (ClamAV integration)
+- Secure file storage (non-public S3 buckets)
+
+
+C. AUTHENTICATION SECURITY
+---------------------------
+- Django password validators (min length, complexity)
+- Session timeout: 30 minutes
+- CSRF protection enabled
+- Rate limiting on login attempts
+
+
+7. DEPLOYMENT ARCHITECTURE
+================================================================================
+
+Development:
+- SQLite database
+- Django development server
+- Local file storage
+
+Production:
+- PostgreSQL database (Heroku Postgres / AWS RDS)
+- Web server: Gunicorn
+- Reverse proxy: Nginx
+- File storage: AWS S3 / Cloudinary
+- Cache: Redis
+- Task queue: Celery (for karma rank updates, email notifications)
+- Hosting: AWS EC2 / Heroku / Digital Ocean
+
+
+8. API ENDPOINTS (PLANNED)
+================================================================================
+
+REST API for Mobile App:
+- /api/auth/ - Authentication
+- /api/students/profile/ - Student CRUD
+- /api/scholarships/ - Scholarship listing and search
+- /api/applications/ - Application management
+- /api/karma/ - Karma balance and transactions
+- /api/rewards/ - Perk store
+
+Authentication: JWT tokens
+
+
+9. FUTURE ENHANCEMENTS
+================================================================================
+
+A. AI/ML Features
+-----------------
+- Predictive scholarship success rate
+- Application essay analysis and suggestions
+- Automated deadline prioritization
+- Scholarship recommendation engine
+
+B. Communication
+----------------
+- Email notifications (application status updates)
+- SMS alerts for deadlines
+- In-app messaging between students and moderators
+- WhatsApp bot integration
+
+C. Mobile Applications
+----------------------
+- Native Android app
+- iOS app
+- Push notifications
+- Offline document access
+
+D. Advanced Karma Features
+---------------------------
+- Karma multipliers for loyalty
+- Team challenges and group rewards
+- Seasonal events and bonus opportunities
+- Karma gifting between students
+
+E. Blockchain Integration
+--------------------------
+- Immutable scholarship records
+- Transparent fund disbursement tracking
+- NFT badges for achievements
+
+
+10. COMPETITIVE ADVANTAGES
+================================================================================
+
+1. Gamification: Unique karma system keeps students engaged
+2. One-Time Registration: Reduces application friction
+3. AI Matching: Higher success rates vs. manual searching
+4. Finder Bounty: Crowdsourced scholarship discovery
+5. Moderator Network: Quality assurance and trust
+6. Multi-stakeholder Platform: Students, NGOs, funders all benefit
+7. Data-Driven: Analytics for better decision-making
+8. Community-Driven: Students help each other succeed
+
+
+11. IMPACT METRICS (PROJECTED)
+================================================================================
+
+Year 1 Targets:
+- 10,000 registered students
+- 500 scholarships in database
+- 1,000 applications submitted
+- ₹50 lakhs in scholarships disbursed
+- 100 partner organizations
+
+Year 3 Targets:
+- 100,000 registered students
+- 5,000 scholarships
+- 25,000 applications
+- ₹10 crores in disbursements
+- 500 partner organizations
+
+
+12. RESEARCH PAPER HIGHLIGHTS
+================================================================================
+
+Novel Contributions:
+1. Gamified scholarship discovery via karma points
+2. Community-driven scholarship database growth (finder bounty)
+3. AI-powered eligibility matching reducing application waste
+4. One-Time Registration reducing bureaucratic burden
+5. Multi-stakeholder platform design (students, NGOs, funders)
+6. Monetization via ethical affiliate partnerships (no student fees)
+
+Social Impact:
+- Democratizing access to scholarship information
+- Reducing information asymmetry
+- Empowering students from underprivileged backgrounds
+- Supporting NGOs in their mission
+- Streamlining organizational scholarship management
+
+Technical Innovation:
+- Django-based scalable architecture
+- PostgreSQL for complex queries
+- AI/ML integration for document verification
+- Atomic transaction handling for karma system
+- RESTful API for mobile integration
+
+
+================================================================================
+END OF TECHNICAL DOCUMENTATION
+================================================================================
+
+Contact: ScholarMatch Team
+Version: 1.0
+Last Updated: February 2026

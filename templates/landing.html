@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Scholar Match | Unlock Your Future with Karma</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                electricBlue: '#256af4',
+                electricLime: '#0df20d',
+                vividPink: '#f4258c',
+              },
+              borderWidth: {
+                '4': '4px',
+              },
+              boxShadow: {
+                'brutal': '8px 8px 0px 0px rgba(0, 0, 0, 1)',
+                'brutal-hover': '12px 12px 0px 0px rgba(0, 0, 0, 1)',
+                'brutal-active': '4px 4px 0px 0px rgba(0, 0, 0, 1)',
+                'brutal-pink': '8px 8px 0px 0px #f4258c',
+              },
+              fontFamily: {
+                sans: ['Space Grotesk', 'sans-serif'],
+              }
+            }
+          }
+        }
+      </script>
+<style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&display=swap');
+        body {
+          font-family: 'Space Grotesk', sans-serif;
+          background-color: #ffffff;
+          background-image: radial-gradient(#256af4 1px, transparent 1px);
+          background-size: 30px 30px;}
+        .brutal-border {
+          border: 4px solid black;
+        }
+        .brutal-shadow {
+          box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 1);
+        }.brutal-interactive {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .brutal-interactive:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 12px 12px 0px 0px rgba(0, 0, 0, 1);
+        }
+        .brutal-interactive:active {
+            transform: translate(2px, 2px);
+            box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+        }@keyframes float {
+          0% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-15px) rotate(2deg); }
+          100% { transform: translateY(0px) rotate(0deg); }
+        }
+        .animate-float {
+          animation: float 5s ease-in-out infinite;
+        }.reveal-hidden {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }.slide-in-left-hidden {
+            opacity: 0;
+            transform: translateX(-50px) translateY(50px);
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .slide-in-right-hidden {
+            opacity: 0;
+            transform: translateX(50px) translateY(50px);
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .slide-in-visible {
+            opacity: 1;
+            transform: translate(0, 0);
+        }.cascade-item {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease-out, transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .cascade-visible .cascade-item {
+            opacity: 1;
+            transform: translateY(0);
+        }.expand-bg-hidden {
+            transform: scaleX(0.95);
+            opacity: 0.9;
+            transition: transform 1s ease-out, opacity 1s ease-out;
+        }
+        .expand-bg-visible {
+            transform: scaleX(1);
+            opacity: 1;
+        }
+        .slide-from-right-hidden {
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .slide-from-right-visible {
+            opacity: 1;
+            transform: translateX(0);
+        }.scale-up-hidden {
+            transform: scale(0.9);
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .scale-up-visible {
+            transform: scale(1);
+            opacity: 1;
+        }
+        .parallax-card {
+            transition: transform 0.2s ease-out;
+        }
+      </style>
+</head>
+<body class="overflow-x-hidden selection:bg-vividPink selection:text-white">
+<nav class="sticky top-0 z-50 bg-white brutal-border border-t-0 border-l-0 border-r-0 px-6 py-4">
+<div class="max-w-7xl mx-auto flex items-center justify-between">
+<div class="text-3xl font-black tracking-tighter cursor-pointer hover:skew-x-[-10deg] transition-transform">
+            SCHOLAR<span class="text-electricBlue">MATCH</span>
+</div>
+<div class="hidden lg:flex space-x-8 font-bold text-lg">
+<a class="hover:text-electricBlue hover:underline decoration-4 underline-offset-4 transition-all" href="#">How it Works</a>
+<a class="hover:text-electricBlue hover:underline decoration-4 underline-offset-4 transition-all" href="#">Scholarships</a>
+<a class="hover:text-electricBlue hover:underline decoration-4 underline-offset-4 transition-all" href="#">Karma System</a>
+<a class="hover:text-electricBlue hover:underline decoration-4 underline-offset-4 transition-all" href="#">For Organizations</a>
+</div>
+<div class="flex items-center space-x-4">
+<button class="hidden sm:block font-bold py-2 px-6 brutal-border bg-white brutal-interactive">Login</button>
+<button class="font-bold py-2 px-6 brutal-border bg-electricBlue text-white brutal-shadow brutal-interactive">Get Started</button>
+</div>
+</div>
+</nav>
+<main>
+<section class="relative pt-20 pb-32 px-6 overflow-hidden min-h-[90vh] flex items-center justify-center">
+<div class="absolute top-20 left-4 md:left-20 w-24 h-24 bg-vividPink brutal-border brutal-shadow flex items-center justify-center text-white font-bold animate-float z-20 rotate-[-6deg]" style="animation-delay: 0.5s;">
+            +50 XP
+        </div>
+<div class="absolute bottom-20 right-4 md:right-20 w-32 h-32 bg-electricLime brutal-border brutal-shadow flex items-center justify-center text-black font-bold animate-float z-20 rotate-[12deg]" style="animation-delay: 1.2s;">
+<div class="text-center text-xs leading-tight">
+<span class="material-symbols-outlined text-4xl mb-1">verified</span><br/>
+                GOLD BADGE<br/>EARNED!
+            </div>
+</div>
+<div class="absolute top-40 right-10 md:right-32 hidden md:block w-20 h-20 bg-electricBlue brutal-border brutal-shadow flex items-center justify-center text-white font-bold animate-float z-20 rotate-[3deg]" style="animation-delay: 0s;">
+            +100
+        </div>
+<div class="max-w-5xl mx-auto text-center relative z-10">
+<h1 class="text-6xl md:text-8xl lg:text-9xl font-black uppercase tracking-tighter mb-8 leading-[0.9] reveal-hidden" id="hero-heading">
+                FUNDING FUTURES, <br/>
+<span class="bg-vividPink text-white px-2 inline-block transform -skew-x-6">FASTER.</span>
+</h1>
+<p class="text-xl md:text-3xl font-bold max-w-3xl mx-auto mb-12 reveal-hidden text-gray-800" id="hero-subtext" style="transition-delay: 0.2s;">
+                Stop wasting time on dead-end applications. Our AI-powered matching engine connects you with the funds you actually qualify for.
+            </p>
+<div class="flex flex-col sm:flex-row gap-6 justify-center items-center reveal-hidden" id="hero-cta" style="transition-delay: 0.4s;">
+<button class="w-full sm:w-auto text-xl md:text-2xl font-black px-10 py-6 bg-electricLime brutal-border brutal-shadow brutal-interactive">
+                    CLAIM YOUR FUNDS
+                </button>
+<button class="w-full sm:w-auto text-xl md:text-2xl font-black px-10 py-6 bg-white brutal-border brutal-interactive flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">play_circle</span> WATCH DEMO
+                </button>
+</div>
+</div>
+</section>
+<section class="py-24 px-6 bg-white border-t-4 border-black relative z-10">
+<div class="max-w-7xl mx-auto">
+<h2 class="text-4xl md:text-7xl font-black mb-16 uppercase italic tracking-tighter reveal-hidden">The Karma Engine</h2>
+<div class="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-6 md:h-[700px]">
+<div class="md:col-span-2 md:row-span-1 bg-vividPink p-8 brutal-border brutal-shadow flex flex-col justify-between slide-in-left-hidden group hover:bg-pink-500 transition-colors" data-animate="slide-in-left">
+<div class="flex justify-between items-start">
+<h3 class="text-4xl md:text-5xl font-black text-white mb-2">DISCOVER</h3>
+<span class="text-6xl font-black text-black/10 italic group-hover:text-black/20 transition-colors">01</span>
+</div>
+<p class="font-bold text-white text-xl md:text-2xl max-w-md">AI-powered matching that actually works. No more scrolling through junk.</p>
+</div>
+<div class="md:col-span-1 md:row-span-2 bg-electricBlue p-8 brutal-border brutal-shadow flex flex-col justify-between slide-in-right-hidden group hover:bg-blue-600 transition-colors" data-animate="slide-in-right" style="transition-delay: 0.2s;">
+<div class="flex justify-between items-start">
+<h3 class="text-4xl md:text-5xl font-black text-white mb-2 break-all">EARN</h3>
+<span class="text-6xl font-black text-black/10 italic group-hover:text-black/20 transition-colors">02</span>
+</div>
+<div>
+<div class="w-full h-32 bg-black/10 mb-6 rounded-none brutal-border border-2 border-white/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-6xl text-white/50">share</span>
+</div>
+<p class="font-bold text-white text-lg">Found a niche scholarship? Share it. Every share boosts your Karma points.</p>
+</div>
+</div>
+<div class="md:col-span-1 md:row-span-1 bg-white p-8 brutal-border brutal-shadow flex flex-col justify-between slide-in-right-hidden group" data-animate="slide-in-right" style="transition-delay: 0.3s;">
+<div class="flex justify-between items-start">
+<h3 class="text-3xl md:text-4xl font-black mb-2">VERIFY</h3>
+<span class="text-5xl font-black text-black/10 italic">03</span>
+</div>
+<p class="font-bold">Peer-reviewed links. Keep the ecosystem clean and earn points.</p>
+</div>
+<div class="md:col-span-2 md:row-span-1 bg-electricLime p-8 brutal-border brutal-shadow flex flex-col justify-between slide-in-left-hidden group hover:bg-lime-400 transition-colors" data-animate="slide-in-left" style="transition-delay: 0.1s;">
+<div class="flex justify-between items-start">
+<h3 class="text-4xl md:text-5xl font-black mb-2">REDEEM</h3>
+<span class="text-6xl font-black text-black/10 italic group-hover:text-black/20 transition-colors">04</span>
+</div>
+<p class="font-bold text-xl md:text-2xl">Trade your hard-earned Karma for real-world rewards, merch, and partner discounts.</p>
+</div>
+<div class="md:col-span-1 md:row-span-1 bg-black p-8 brutal-border brutal-shadow flex items-center justify-center slide-in-right-hidden" data-animate="slide-in-right" style="transition-delay: 0.4s;">
+<div class="text-center">
+<div class="text-electricLime font-black text-4xl mb-2 count-up" data-target="1200000">0</div>
+<p class="text-white font-bold text-sm uppercase tracking-widest">Points Distributed</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-24 px-6 border-t-4 border-black bg-gray-50 overflow-hidden" id="otr-section">
+<div class="max-w-7xl mx-auto">
+<h2 class="text-4xl md:text-7xl font-black mb-16 uppercase italic tracking-tighter text-center reveal-hidden">The OTR Advantage</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="cascade-grid">
+<div class="bg-white p-8 brutal-border brutal-shadow cascade-item hover:scale-[1.02] transition-transform duration-300">
+<span class="text-6xl font-black text-electricBlue block mb-4">01</span>
+<h4 class="text-2xl font-black uppercase mb-2">Create Account</h4>
+<p class="font-bold text-gray-600">Set up your secure profile in seconds with social login or email.</p>
+</div>
+<div class="bg-white p-8 brutal-border brutal-shadow cascade-item hover:scale-[1.02] transition-transform duration-300" style="transition-delay: 100ms;">
+<span class="text-6xl font-black text-vividPink block mb-4">02</span>
+<h4 class="text-2xl font-black uppercase mb-2">Complete Profile</h4>
+<p class="font-bold text-gray-600">Tell us your story, academic goals, and financial needs.</p>
+</div>
+<div class="bg-white p-8 brutal-border brutal-shadow cascade-item hover:scale-[1.02] transition-transform duration-300" style="transition-delay: 200ms;">
+<span class="text-6xl font-black text-electricLime block mb-4">03</span>
+<h4 class="text-2xl font-black uppercase mb-2">Sync Documents</h4>
+<p class="font-bold text-gray-600">Securely upload transcripts, IDs, and tax forms once.</p>
+</div>
+<div class="bg-white p-8 brutal-border brutal-shadow cascade-item hover:scale-[1.02] transition-transform duration-300" style="transition-delay: 300ms;">
+<span class="text-6xl font-black text-black block mb-4">04</span>
+<h4 class="text-2xl font-black uppercase mb-2">Instant Match</h4>
+<p class="font-bold text-gray-600">See curated scholarships immediately based on your data.</p>
+</div>
+<div class="bg-white p-8 brutal-border brutal-shadow cascade-item hover:scale-[1.02] transition-transform duration-300" style="transition-delay: 400ms;">
+<span class="text-6xl font-black text-electricBlue block mb-4">05</span>
+<h4 class="text-2xl font-black uppercase mb-2">Apply Now</h4>
+<p class="font-bold text-gray-600">One-click applications for top matches. No repetitive forms.</p>
+</div>
+<div class="bg-white p-8 brutal-border brutal-shadow cascade-item hover:scale-[1.02] transition-transform duration-300" style="transition-delay: 500ms;">
+<span class="text-6xl font-black text-vividPink block mb-4">06</span>
+<h4 class="text-2xl font-black uppercase mb-2">Track Progress</h4>
+<p class="font-bold text-gray-600">Real-time status updates of your funding journey.</p>
+</div>
+</div>
+</div>
+</section>
+<section class="py-32 px-6 border-t-4 border-black overflow-hidden bg-electricBlue text-white expand-bg-hidden" id="smart-discovery">
+<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+<div class="reveal-hidden">
+<h2 class="text-4xl md:text-7xl font-black mb-8 uppercase leading-tight">Smart Discovery <br/>Engine</h2>
+<p class="text-xl md:text-2xl font-bold mb-8 text-blue-100">Our priority matching system scans verified databases to find the highest probability wins for your specific profile.</p>
+<ul class="space-y-6 font-black text-xl">
+<li class="flex items-center"><div class="w-8 h-8 bg-electricLime mr-6 brutal-border flex-shrink-0"></div> 98% Match Accuracy</li>
+<li class="flex items-center"><div class="w-8 h-8 bg-vividPink mr-6 brutal-border flex-shrink-0"></div> Verified Funding Sources</li>
+<li class="flex items-center"><div class="w-8 h-8 bg-white mr-6 brutal-border flex-shrink-0"></div> Real-time Deadline Alerts</li>
+</ul>
+</div>
+<div class="relative mt-10 md:mt-0 slide-from-right-hidden" id="scholarship-card">
+<div class="absolute -top-10 -right-10 w-full h-full bg-black brutal-border opacity-20 transform rotate-6"></div>
+<div class="bg-white p-8 md:p-10 brutal-border brutal-shadow text-black relative z-10 transform md:rotate-2 hover:rotate-0 transition-transform duration-500">
+<div class="border-b-4 border-black pb-6 mb-6 flex justify-between items-center">
+<span class="bg-electricLime px-4 py-1 brutal-border font-black text-sm md:text-base uppercase">95% Match Priority</span>
+<span class="font-black flex items-center gap-1 text-red-600"><span class="material-symbols-outlined">timer</span> DUE: OCT 15</span>
+</div>
+<div class="flex gap-4 mb-4">
+<span class="px-3 py-1 border-2 border-black font-bold text-xs uppercase bg-gray-100">Engineering</span>
+<span class="px-3 py-1 border-2 border-black font-bold text-xs uppercase bg-gray-100">Merit-Based</span>
+</div>
+<h4 class="text-3xl md:text-4xl font-black mb-3 leading-none">STEM Excellence Grant</h4>
+<p class="font-bold text-gray-600 mb-8 text-lg">For high-achieving engineering students with a focus on sustainable energy solutions.</p>
+<div class="flex justify-between items-end mb-8">
+<div>
+<p class="text-xs font-bold uppercase text-gray-500 mb-1">Award Amount</p>
+<div class="text-5xl font-black">$15,000</div>
+</div>
+<div class="text-right">
+<p class="text-xs font-bold uppercase text-gray-500 mb-1">Min. GPA</p>
+<div class="text-3xl font-black">3.5+</div>
+</div>
+</div>
+<button class="w-full py-5 bg-black text-white font-black uppercase text-xl brutal-interactive flex items-center justify-center gap-2 hover:bg-gray-900">
+                        Apply Now <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<section class="py-24 px-6 border-t-4 border-black bg-white" id="institutional-section">
+<div class="max-w-7xl mx-auto">
+<div class="bg-electricLime p-8 md:p-16 brutal-border brutal-shadow scale-up-hidden" id="green-container">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-12">
+<div>
+<h2 class="text-4xl md:text-6xl font-black mb-8 uppercase leading-none">Powering <br/>Institutional Giving</h2>
+<p class="text-xl md:text-2xl font-bold max-w-lg">Revolutionize how your organization manages scholarships. From custom portals to automated payouts, we handle the heavy lifting.</p>
+<button class="mt-10 text-xl font-black px-10 py-5 bg-black text-white brutal-border brutal-shadow brutal-interactive">
+                            PARTNER WITH US
+                        </button>
+</div>
+<div class="grid gap-6">
+<div class="bg-white p-6 brutal-border parallax-card" data-parallax="20">
+<div class="flex items-center gap-4 mb-2">
+<span class="material-symbols-outlined text-4xl text-vividPink">web</span>
+<h5 class="font-black text-2xl italic">Custom Portals</h5>
+</div>
+<p class="font-bold pl-14">Branded experiences for your donors. White-label ready.</p>
+</div>
+<div class="bg-white p-6 brutal-border parallax-card" data-parallax="40">
+<div class="flex items-center gap-4 mb-2">
+<span class="material-symbols-outlined text-4xl text-electricBlue">receipt_long</span>
+<h5 class="font-black text-2xl italic">Tax Receipts</h5>
+</div>
+<p class="font-bold pl-14">Automated compliance for every gift. Zero paperwork.</p>
+</div>
+<div class="bg-white p-6 brutal-border parallax-card" data-parallax="60">
+<div class="flex items-center gap-4 mb-2">
+<span class="material-symbols-outlined text-4xl text-electricLime">payments</span>
+<h5 class="font-black text-2xl italic">Auto-Payouts</h5>
+</div>
+<p class="font-bold pl-14">Direct-to-institution fund transfers. Fast and secure.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<div class="bg-white border-y-4 border-black py-16 px-6 overflow-hidden" id="stats-section">
+<div class="max-w-7xl mx-auto flex flex-wrap justify-center md:justify-between gap-12">
+<div class="text-center w-full sm:w-auto">
+<div class="text-5xl md:text-6xl font-black text-electricBlue italic count-up flex justify-center items-center" data-suffix="+" data-target="10000">0</div>
+<p class="font-bold uppercase tracking-widest mt-2">Active Students</p>
+</div>
+<div class="text-center w-full sm:w-auto">
+<div class="text-5xl md:text-6xl font-black text-vividPink italic count-up flex justify-center items-center" data-prefix="$" data-suffix="M" data-target="2.4">0</div>
+<p class="font-bold uppercase tracking-widest mt-2">Funds Disbursed</p>
+</div>
+<div class="text-center w-full sm:w-auto">
+<div class="text-5xl md:text-6xl font-black text-electricLime italic count-up flex justify-center items-center" data-suffix="K" data-target="150">0</div>
+<p class="font-bold uppercase tracking-widest mt-2">Scholarships</p>
+</div>
+<div class="text-center w-full sm:w-auto">
+<div class="text-5xl md:text-6xl font-black text-black italic count-up flex justify-center items-center" data-suffix="/5" data-target="4.9">0</div>
+<p class="font-bold uppercase tracking-widest mt-2">User Rating</p>
+</div>
+</div>
+</div>
+<footer class="bg-black text-white py-20 px-6 border-t-8 border-electricBlue">
+<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
+<div class="md:col-span-2">
+<h2 class="text-5xl font-black mb-6 italic uppercase tracking-tighter">Scholar Match</h2>
+<p class="text-xl text-gray-400 font-bold max-w-sm">The global standard for transparent, community-driven scholarship funding.</p>
+</div>
+<div>
+<h4 class="text-xl font-black mb-6 uppercase text-electricLime border-b-2 border-electricLime inline-block pb-1">Platform</h4>
+<ul class="space-y-4 font-bold text-lg text-gray-300">
+<li><a class="hover:text-vividPink transition-colors hover:pl-2 inline-block" href="#">Scholarships</a></li>
+<li><a class="hover:text-vividPink transition-colors hover:pl-2 inline-block" href="#">Karma Shop</a></li>
+<li><a class="hover:text-vividPink transition-colors hover:pl-2 inline-block" href="#">For Non-Profits</a></li>
+<li><a class="hover:text-vividPink transition-colors hover:pl-2 inline-block" href="#">For Donors</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-xl font-black mb-6 uppercase text-electricLime border-b-2 border-electricLime inline-block pb-1">Support</h4>
+<ul class="space-y-4 font-bold text-lg text-gray-300">
+<li><a class="hover:text-vividPink transition-colors hover:pl-2 inline-block" href="#">Help Center</a></li>
+<li><a class="hover:text-vividPink transition-colors hover:pl-2 inline-block" href="#">Guidelines</a></li>
+<li><a class="hover:text-vividPink transition-colors hover:pl-2 inline-block" href="#">Status</a></li>
+<li><a class="hover:text-vividPink transition-colors hover:pl-2 inline-block" href="#">Contact</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-7xl mx-auto mt-20 pt-8 border-t-2 border-white/20 flex flex-col md:flex-row justify-between items-center gap-6">
+<p class="font-bold text-gray-500">© 2024 Scholar Match. No Rights Reserved. Just Go Win.</p>
+<div class="flex space-x-8 font-black text-sm uppercase italic">
+<a class="hover:text-white text-gray-500 transition-colors" href="#">Privacy</a>
+<a class="hover:text-white text-gray-500 transition-colors" href="#">Terms</a>
+<a class="hover:text-white text-gray-500 transition-colors" href="#">Cookies</a>
+</div>
+</div>
+</footer>
+</main>
+<script>
+    // General Observer for Simple Reveals (Hero, Text, etc.)
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.remove('reveal-hidden');
+          entry.target.classList.add('reveal-visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal-hidden').forEach(el => revealObserver.observe(el));
+    // Observer for Side Slides (Karma Engine)
+    const slideObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.remove('slide-in-left-hidden');
+                entry.target.classList.remove('slide-in-right-hidden');
+                entry.target.classList.add('slide-in-visible');
+                slideObserver.unobserve(entry.target); // Trigger once
+            }
+        });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.slide-in-left-hidden, .slide-in-right-hidden').forEach(el => slideObserver.observe(el));
+    // Observer for OTR Advantage Cascade
+    const cascadeObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const grid = document.getElementById('cascade-grid');
+                grid.classList.add('cascade-visible');
+                cascadeObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.2 });
+    const otrSection = document.getElementById('otr-section');
+    if(otrSection) cascadeObserver.observe(otrSection);
+    // Observer for Smart Discovery Expansion
+    const expandObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.remove('expand-bg-hidden');
+                entry.target.classList.add('expand-bg-visible');
+                // Trigger inner card slide
+                const card = document.getElementById('scholarship-card');
+                if(card) {
+                    card.classList.remove('slide-from-right-hidden');
+                    card.classList.add('slide-from-right-visible');
+                }
+                expandObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.3 });
+    const smartDiscovery = document.getElementById('smart-discovery');
+    if(smartDiscovery) expandObserver.observe(smartDiscovery);
+    // Observer for Institutional Giving Scale Up
+    const scaleObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const container = document.getElementById('green-container');
+                if(container) {
+                    container.classList.remove('scale-up-hidden');
+                    container.classList.add('scale-up-visible');
+                }
+                scaleObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.3 });
+    const instSection = document.getElementById('institutional-section');
+    if(instSection) scaleObserver.observe(instSection);
+    // Simple Mouse Parallax for Institutional Cards
+    if(instSection) {
+        instSection.addEventListener('mousemove', (e) => {
+            const cards = document.querySelectorAll('.parallax-card');
+            const x = (window.innerWidth - e.pageX * 2) / 100;
+            const y = (window.innerHeight - e.pageY * 2) / 100;
+            cards.forEach(card => {
+                const speed = card.getAttribute('data-parallax') || 20;
+                card.style.transform = `translateX(${x * (speed/20)}px) translateY(${y * (speed/20)}px)`;
+            });
+        });
+    }
+    // Number Counting Animation
+    const countUpObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const el = entry.target;
+                const target = parseFloat(el.getAttribute('data-target'));
+                const prefix = el.getAttribute('data-prefix') || '';
+                const suffix = el.getAttribute('data-suffix') || '';
+                const duration = 2000; // 2 seconds
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    // Easing function for smoother counting
+                    const easeProgress = 1 - Math.pow(1 - progress, 3);
+                    const currentVal = (target * easeProgress);
+                    // Formatting based on whether it's an integer or float-like string in the target
+                    let formattedVal;
+                    if (target % 1 !== 0) {
+                        formattedVal = currentVal.toFixed(1);
+                    } else {
+                        formattedVal = Math.floor(currentVal);
+                    }
+                    // For the 1.2M case in Karma engine
+                    if(target > 1000000) {
+                         // Specific custom handling for very large numbers if needed, but here simple math works
+                         formattedVal = Math.floor(currentVal).toLocaleString();
+                    }
+                    el.innerText = `${prefix}${formattedVal}${suffix}`;
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    } else {
+                        // Ensure final value is exact
+                        el.innerText = `${prefix}${target}${suffix}`;
+                        // Special fix for the 1.2M+ formatting logic if strictly following visual request vs data attribute
+                        if(target === 1200000) el.innerText = "1.2M+"; 
+                    }
+                };
+                window.requestAnimationFrame(step);
+                countUpObserver.unobserve(el);
+            }
+        });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('.count-up').forEach(el => countUpObserver.observe(el));
+</script>
+
+</body></html>

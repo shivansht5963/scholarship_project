@@ -17,7 +17,7 @@ def otr_welcome(request):
         profile = StudentProfile.objects.create(user=request.user, full_name=request.user.username)
     
     return render(request, 'users/otr/step1_welcome.html', {'profile': profile})
-
+# hey i am here typing rn hey hey hey
 @login_required
 def otr_step2(request):
     """Step 2: Basic Profile Information"""
@@ -40,7 +40,7 @@ def otr_step2(request):
         'profile': profile,
         'step': 2
     })
-
+# i just wanted to know that 
 @login_required
 def otr_step3(request):
     """Step 3: Family & Category Information"""
