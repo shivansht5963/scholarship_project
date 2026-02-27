@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-qb3!7%h%8%^@t%)3s$+&838^$u7jqlg%_-&2g26ib33)=dyxtd'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-qb3!7%h%8%^@t%)3s$+&838^$u7jqlg%_-&2g26ib33)=dyxtd')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']  # Hackathon: allow all hosts including Render domain
 
 
 # Application definition
@@ -44,12 +45,14 @@ INSTALLED_APPS = [
     'ai_integrations.apps.AiIntegrationsConfig',
     'moderator_panel.apps.ModeratorPanelConfig',
     'karma.apps.KarmaConfig',  # Karma points system
+    'rest_framework',           # Django REST Framework
 ]
 
 AUTH_USER_MODEL = 'users.User' 
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Serve static files on Render
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -127,6 +130,7 @@ LOGIN_URL = '/accounts/login/'
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # Required for collectstatic on Render
 
 # Media files (User uploads)
 MEDIA_URL = '/media/'
@@ -140,3 +144,11 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ── Razorpay ──────────────────────────────────────────────────────────────────
+# Replace with your actual Test Mode keys from https://dashboard.razorpay.com
+# Settings > API Keys > Generate Test Key
+RAZORPAY_KEY_ID     = os.environ.get('RAZORPAY_KEY_ID', 'rzp_test_SKkTal12swC3kN')
+RAZORPAY_KEY_SECRET = os.environ.get('RAZORPAY_KEY_SECRET', 'D5lG67pwKB3TEEVjfN0ZyUFr')
+
+

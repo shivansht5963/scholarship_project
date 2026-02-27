@@ -1,0 +1,636 @@
+{% extends "base.html" %}
+{% block title %}Review & Pay — {{ scholarship.title }}{% endblock %}
+
+{% block content %}
+<style>
+    .review-container {
+        max-width: 860px;
+        margin: 2.5rem auto;
+        padding: 0 1.5rem;
+    }
+
+    /* Header */
+    .review-hero {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        border-radius: 20px;
+        padding: 2.5rem;
+        color: white;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .review-hero::before {
+        content: '';
+        position: absolute;
+        top: -60px;
+        right: -60px;
+        width: 200px;
+        height: 200px;
+        background: rgba(255, 255, 255, .05);
+        border-radius: 50%;
+    }
+
+    .review-hero::after {
+        content: '';
+        position: absolute;
+        bottom: -40px;
+        left: -40px;
+        width: 150px;
+        height: 150px;
+        background: rgba(255, 215, 0, .08);
+        border-radius: 50%;
+    }
+
+    .review-hero-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .review-tag {
+        display: inline-block;
+        background: rgba(255, 215, 0, .2);
+        color: #FFD700;
+        padding: .3rem 1rem;
+        border-radius: 20px;
+        font-size: .8rem;
+        font-weight: 700;
+        letter-spacing: .8px;
+        margin-bottom: 1rem;
+    }
+
+    .review-hero h1 {
+        margin: 0 0 .5rem;
+        font-size: 2rem;
+        font-weight: 700;
+    }
+
+    .review-hero p {
+        margin: 0;
+        opacity: .8;
+    }
+
+    .review-badge-row {
+        display: flex;
+        gap: .75rem;
+        flex-wrap: wrap;
+        margin-top: 1.2rem;
+    }
+
+    .review-badge {
+        background: rgba(255, 255, 255, .12);
+        padding: .35rem .9rem;
+        border-radius: 20px;
+        font-size: .83rem;
+        font-weight: 600;
+    }
+
+    /* Section cards */
+    .review-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .review-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.8rem;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, .08);
+    }
+
+    .review-card-full {
+        grid-column: 1/-1;
+    }
+
+    .review-card h3 {
+        margin: 0 0 1.2rem;
+        font-size: 1.05rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+    }
+
+    .review-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding: .55rem 0;
+        border-bottom: 1px solid #f5f5f5;
+    }
+
+    .review-row:last-child {
+        border-bottom: none;
+    }
+
+    .review-key {
+        font-size: .88rem;
+        color: #999;
+        font-weight: 500;
+    }
+
+    .review-val {
+        font-size: .93rem;
+        color: #222;
+        font-weight: 600;
+        text-align: right;
+        max-width: 60%;
+    }
+
+    .tag-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .4rem;
+        justify-content: flex-end;
+    }
+
+    .tag {
+        background: #e8f5e9;
+        color: #2E7D32;
+        padding: .2rem .6rem;
+        border-radius: 6px;
+        font-size: .8rem;
+        font-weight: 600;
+    }
+
+    /* Budget card */
+    .budget-card {
+        background: linear-gradient(135deg, #1a1a2e, #0f3460);
+        border-radius: 16px;
+        padding: 2rem;
+        color: white;
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .budget-amount {
+        font-size: 3.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #FFD700, #FFA000);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .budget-label {
+        opacity: .75;
+        font-size: 1rem;
+        margin-top: .25rem;
+    }
+
+    .budget-breakdown {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .budget-breakdown-item {
+        text-align: center;
+    }
+
+    .budget-breakdown-item .bval {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #FFD700;
+    }
+
+    .budget-breakdown-item .blabel {
+        font-size: .8rem;
+        opacity: .7;
+        margin-top: .2rem;
+    }
+
+    /* Docs pills */
+    .docs-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .5rem;
+        margin-top: .75rem;
+    }
+
+    .doc-pill {
+        background: #fff3e0;
+        color: #E65100;
+        padding: .3rem .75rem;
+        border-radius: 20px;
+        font-size: .8rem;
+        font-weight: 600;
+    }
+
+    /* Pay button */
+    .pay-section {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, .08);
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .pay-section h3 {
+        color: #1a1a2e;
+        font-size: 1.3rem;
+        margin: 0 0 .5rem;
+    }
+
+    .pay-section p {
+        color: #888;
+        font-size: .92rem;
+        margin: 0 0 1.8rem;
+    }
+
+    .btn-pay {
+        background: linear-gradient(135deg, #2E7D32 0%, #43A047 50%, #66BB6A 100%);
+        color: white;
+        border: none;
+        padding: 1.1rem 3.5rem;
+        border-radius: 14px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: .2s;
+        box-shadow: 0 6px 30px rgba(76, 175, 80, .4);
+        display: inline-flex;
+        align-items: center;
+        gap: .75rem;
+    }
+
+    .btn-pay:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 40px rgba(76, 175, 80, .5);
+    }
+
+    .btn-pay:active {
+        transform: translateY(-1px);
+    }
+
+    .btn-pay-icon {
+        font-size: 1.5rem;
+    }
+
+    .pay-trust {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 1.2rem;
+        flex-wrap: wrap;
+    }
+
+    .trust-item {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        color: #999;
+        font-size: .82rem;
+    }
+
+    /* Back link */
+    .btn-edit-link {
+        color: #666;
+        text-decoration: none;
+        font-size: .9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        padding: .5rem 1rem;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        transition: .2s;
+        margin-right: .5rem;
+    }
+
+    .btn-edit-link:hover {
+        border-color: #4CAF50;
+        color: #2E7D32;
+    }
+
+    /* Success overlay */
+    .success-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: rgba(0, 0, 0, .6);
+        align-items: center;
+        justify-content: center;
+    }
+
+    .success-overlay.show {
+        display: flex;
+    }
+
+    .success-box {
+        background: white;
+        border-radius: 24px;
+        padding: 3rem;
+        text-align: center;
+        max-width: 420px;
+        width: 90%;
+    }
+
+    .success-icon {
+        font-size: 5rem;
+        display: block;
+        margin-bottom: 1rem;
+    }
+
+    .success-box h2 {
+        color: #2E7D32;
+        font-size: 1.8rem;
+        margin: 0 0 .5rem;
+    }
+
+    .success-box p {
+        color: #666;
+        margin: 0 0 1.5rem;
+    }
+
+    .btn-go-dashboard {
+        display: inline-block;
+        background: linear-gradient(135deg, #2E7D32, #66BB6A);
+        color: white;
+        text-decoration: none;
+        padding: .9rem 2.5rem;
+        border-radius: 12px;
+        font-weight: 700;
+    }
+</style>
+
+<div class="review-container">
+
+    <!-- Hero -->
+    <div class="review-hero">
+        <div class="review-hero-content">
+            <div class="review-tag">📋 REVIEW BEFORE PAYMENT</div>
+            <h1>{{ scholarship.title }}</h1>
+            <p>{{ scholarship.org_profile.organization_name }} · Deadline: {{ scholarship.deadline|date:"M d, Y, g:i A"
+                }}</p>
+            <div class="review-badge-row">
+                <span class="review-badge">{{ scholarship.get_education_level_display }}</span>
+                <span class="review-badge">{{ scholarship.get_distribution_type_display }}</span>
+                <span class="review-badge">{{ scholarship.get_disbursement_method_display }}</span>
+                {% if scholarship.min_karma > 0 %}
+                <span class="review-badge">⭐ ≥ {{ scholarship.min_karma }} Karma</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Budget highlight -->
+    <div class="budget-card">
+        <div class="budget-amount">₹{{ scholarship.total_budget|default:0 }}</div>
+        <div class="budget-label">Total Scholarship Budget (Escrow Deposit)</div>
+        {% if scholarship.distribution_type == 'FIXED' and scholarship.fixed_amount and scholarship.num_winners %}
+        <div class="budget-breakdown">
+            <div class="budget-breakdown-item">
+                <div class="bval">₹{{ scholarship.fixed_amount }}</div>
+                <div class="blabel">per winner</div>
+            </div>
+            <div class="budget-breakdown-item">
+                <div class="bval">{{ scholarship.num_winners }}</div>
+                <div class="blabel">winners</div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- 2-col review grid -->
+    <div class="review-grid">
+
+        <!-- Eligibility -->
+        <div class="review-card">
+            <h3>🎓 Eligibility</h3>
+            <div class="review-row">
+                <span class="review-key">Education Level</span>
+                <span class="review-val">{{ scholarship.get_education_level_display }}</span>
+            </div>
+            <div class="review-row">
+                <span class="review-key">Min Score</span>
+                <span class="review-val">{% if scholarship.min_percentage %}{{ scholarship.min_percentage }}%{% else
+                    %}—{% endif %}</span>
+            </div>
+            <div class="review-row">
+                <span class="review-key">Max Family Income</span>
+                <span class="review-val">{% if scholarship.max_family_income %}₹{{
+                    scholarship.max_family_income|floatformat:0 }}{% else %}No limit{% endif %}</span>
+            </div>
+            {% if courses %}
+            <div class="review-row">
+                <span class="review-key">Courses</span>
+                <span class="review-val">
+                    <div class="tag-list">
+                        {% for c in courses %}<span class="tag">{{ c }}</span>{% endfor %}
+                    </div>
+                </span>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Platform Filters -->
+        <div class="review-card">
+            <h3>🔍 Platform Filters</h3>
+            <div class="review-row">
+                <span class="review-key">Min Karma</span>
+                <span class="review-val">⭐ {{ scholarship.min_karma }} points</span>
+            </div>
+            <div class="review-row">
+                <span class="review-key">Verification</span>
+                <span class="review-val">{{ scholarship.get_verification_strictness_display }}</span>
+            </div>
+            <div class="review-row">
+                <span class="review-key">Essay Question</span>
+                <span class="review-val">{% if scholarship.essay_question %}✅ Set{% else %}—{% endif %}</span>
+            </div>
+            {% if demographics %}
+            <div class="review-row">
+                <span class="review-key">Demographics</span>
+                <span class="review-val">
+                    <div class="tag-list">
+                        {% for d in demographics %}<span class="tag">{{ d }}</span>{% endfor %}
+                    </div>
+                </span>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Documents -->
+        {% if required_docs %}
+        <div class="review-card review-card-full">
+            <h3>📄 Required Documents ({{ required_docs.count }})</h3>
+            <div class="docs-list">
+                {% for doc in required_docs %}
+                <div class="doc-pill">{{ doc.get_document_name_display }}</div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Description -->
+        <div class="review-card review-card-full">
+            <h3>📝 About the Scholarship</h3>
+            <div style="color:#444;line-height:1.7;font-size:.95rem;">{{ scholarship.description|linebreaks }}</div>
+        </div>
+
+    </div>
+
+    <!-- Edit links -->
+    <div style="margin-bottom:1.5rem;">
+        <a href="{% url 'funder_portal:create_step1' %}" class="btn-edit-link">✏️ Edit Step 1</a>
+        <a href="{% url 'funder_portal:create_step2' draft_id=scholarship.pk %}" class="btn-edit-link">✏️ Edit
+            Eligibility</a>
+        <a href="{% url 'funder_portal:create_step3' draft_id=scholarship.pk %}" class="btn-edit-link">✏️ Edit
+            Financials</a>
+        <a href="{% url 'funder_portal:create_step4' draft_id=scholarship.pk %}" class="btn-edit-link">✏️ Edit
+            Filters</a>
+    </div>
+
+    <!-- Pay Section -->
+    {% if is_paid %}
+    <!-- Already funded — show confirmation instead of pay button -->
+    <div class="pay-section" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border:2px solid #4CAF50;">
+        <div style="font-size:3rem;margin-bottom:.75rem;">✅</div>
+        <h3 style="color:#2E7D32;">Scholarship is Already Funded!</h3>
+        <p style="color:#388E3C;">Payment of ₹{{ scholarship.total_budget|default:0 }} has been received and is held in
+            escrow. This scholarship is live and visible to students.</p>
+        <a href="{% url 'funder_portal:funder_dashboard' %}"
+            style="display:inline-block;background:linear-gradient(135deg,#2E7D32,#66BB6A);color:white;text-decoration:none;padding:.9rem 2.5rem;border-radius:12px;font-weight:700;">Go
+            to Dashboard →</a>
+    </div>
+    {% else %}
+    <div class="pay-section">
+        <h3>🔐 Secure Payment &amp; Escrow</h3>
+        <p>Your ₹{{ scholarship.total_budget|default:0 }} will be held securely in our Razorpay escrow until the
+            scholarship deadline passes and winners are selected.</p>
+        <button class="btn-pay" id="pay-btn" onclick="startPayment()">
+            <span class="btn-pay-icon">💳</span>
+            Pay ₹{{ scholarship.total_budget|default:0 }} &amp; Publish Scholarship
+        </button>
+        <div class="pay-trust">
+            <div class="trust-item">🔐 256-bit SSL Encrypted</div>
+            <div class="trust-item">🏦 Razorpay Secured Escrow</div>
+            <div class="trust-item">↩️ Refundable (before deadline)</div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Success Overlay -->
+<div class="success-overlay" id="success-overlay">
+    <div class="success-box">
+        <span class="success-icon">🎉</span>
+        <h2>Scholarship Live!</h2>
+        <p id="success-msg">Your scholarship is now visible to eligible students.</p>
+        <a href="{% url 'funder_portal:funder_dashboard' %}" class="btn-go-dashboard">Go to Dashboard</a>
+    </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    const SCHOLARSHIP_ID = {{ scholarship.pk }};
+    const INITIATE_URL = "{% url 'funder_portal:initiate_payment' draft_id=scholarship.pk %}";
+    const CALLBACK_URL = "{% url 'funder_portal:payment_callback' %}";
+    const CSRF_TOKEN = "{{ csrf_token }}";
+
+    function startPayment() {
+        const btn = document.getElementById('pay-btn');
+        btn.disabled = true;
+        btn.innerHTML = '⏳ Preparing...';
+
+        fetch(INITIATE_URL, {
+            method: 'GET',
+            headers: { 'X-CSRFToken': CSRF_TOKEN }
+        })
+            .then(r => r.json())
+            .then(data => {
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                    btn.disabled = false;
+                    btn.innerHTML = '<span class="btn-pay-icon">💳</span> Pay & Publish';
+                    return;
+                }
+
+                if (data.demo_mode) {
+                    // Hackathon demo mode: skip real Razorpay modal
+                    simulateDemoPayment(data);
+                    return;
+                }
+
+                const options = {
+                    key: data.key,
+                    amount: data.amount,
+                    currency: data.currency,
+                    name: 'Scholar Match',
+                    description: data.name,
+                    order_id: data.order_id,
+                    handler: function (response) {
+                        // Payment success — send to callback
+                        verifyPayment({
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature,
+                            demo_mode: false,
+                        });
+                    },
+                    prefill: { name: '{{ request.user.organizationprofile.organization_name }}' },
+                    theme: { color: '#2E7D32' },
+                    modal: {
+                        ondismiss: function () {
+                            btn.disabled = false;
+                            btn.innerHTML = '<span class="btn-pay-icon">💳</span> Pay & Publish';
+                        }
+                    }
+                };
+                const rzp = new Razorpay(options);
+                rzp.open();
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Something went wrong. Please try again.');
+                btn.disabled = false;
+                btn.innerHTML = '<span class="btn-pay-icon">💳</span> Pay & Publish';
+            });
+    }
+
+    function simulateDemoPayment(data) {
+        // Demo/hackathon mode — show fake processing then succeed
+        const btn = document.getElementById('pay-btn');
+        btn.innerHTML = '⏳ Processing Demo Payment...';
+        setTimeout(function () {
+            verifyPayment({
+                razorpay_order_id: data.order_id,
+                razorpay_payment_id: 'pay_DEMO',
+                razorpay_signature: 'DEMO',
+                demo_mode: true,
+                scholarship_id: SCHOLARSHIP_ID,
+            });
+        }, 1500);
+    }
+
+    function verifyPayment(payload) {
+        fetch(CALLBACK_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': CSRF_TOKEN,
+            },
+            body: JSON.stringify(payload),
+        })
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('success-msg').textContent = data.message || 'Your scholarship is now live!';
+                    document.getElementById('success-overlay').classList.add('show');
+                } else {
+                    alert('Payment verification failed: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Callback error: ' + err.message);
+            });
+    }
+</script>
+{% endblock %}

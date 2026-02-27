@@ -4,7 +4,6 @@
 
 {% block content %}
 <style>
-    /* === SCHOLARMATCH THEME VARIABLES === */
     :root {
         --sm-yellow: #FFD700;
         --sm-black: #000000;
@@ -19,10 +18,8 @@
         --sm-border-width: 3px;
     }
 
-    /* === DOTTED BACKGROUND === */
     .browse-page-wrapper {
-        background: 
-            radial-gradient(circle, #00000008 1px, transparent 1px);
+        background: radial-gradient(circle, #00000008 1px, transparent 1px);
         background-size: 20px 20px;
         background-color: var(--sm-white);
         min-height: 100vh;
@@ -35,7 +32,6 @@
         padding: 0 2rem;
     }
 
-    /* === SCHOLARSHIP HEADER === */
     .scholarship-header {
         background: var(--sm-purple);
         border: var(--sm-border-width) solid var(--sm-black);
@@ -63,7 +59,6 @@
         opacity: 0.95;
     }
 
-    /* === MAIN LAYOUT === */
     .browse-container {
         display: grid;
         grid-template-columns: 320px 1fr;
@@ -71,7 +66,6 @@
         align-items: start;
     }
 
-    /* === FILTER SIDEBAR === */
     .filter-sidebar {
         background: var(--sm-white);
         border: var(--sm-border-width) solid var(--sm-black);
@@ -138,7 +132,6 @@
         color: var(--sm-gray);
     }
 
-    /* === FILTER BUTTONS === */
     .filter-actions {
         display: flex;
         gap: 0.75rem;
@@ -190,7 +183,6 @@
         box-shadow: 2px 2px 0 var(--sm-black);
     }
 
-    /* === RESULTS HEADER === */
     .results-header {
         display: flex;
         justify-content: space-between;
@@ -217,7 +209,6 @@
         align-items: center;
     }
 
-    /* === VIEW TOGGLE === */
     .view-toggle {
         display: flex;
         gap: 0.5rem;
@@ -243,7 +234,6 @@
         background: var(--sm-light-gray);
     }
 
-    /* === SORT CONTROLS === */
     .sort-controls select {
         padding: 0.75rem 1.25rem;
         border: var(--sm-border-width) solid var(--sm-black);
@@ -260,7 +250,6 @@
         padding-right: 3rem;
     }
 
-    /* === SCHOLARSHIP GRID === */
     .scholarship-grid {
         display: grid;
         gap: 2rem;
@@ -271,7 +260,6 @@
         grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
     }
 
-    /* === SCHOLARSHIP CARD === */
     .scholarship-card {
         background: var(--sm-white);
         border: var(--sm-border-width) solid var(--sm-black);
@@ -323,7 +311,6 @@
         letter-spacing: 0.5px;
     }
 
-    /* === AMOUNT BADGE === */
     .amount-badge {
         background: var(--sm-yellow);
         color: var(--sm-black);
@@ -338,7 +325,6 @@
         flex-shrink: 0;
     }
 
-    /* === SCHOLARSHIP DETAILS === */
     .scholarship-details {
         color: var(--sm-black);
         margin: 1.5rem 0;
@@ -347,7 +333,6 @@
         font-weight: 500;
     }
 
-    /* === SCHOLARSHIP META === */
     .scholarship-meta {
         display: flex;
         gap: 1rem;
@@ -367,7 +352,6 @@
         letter-spacing: 0.5px;
     }
 
-    /* === VIEW DETAILS BUTTON === */
     .view-details-btn {
         margin-left: auto;
         padding: 0.75rem 1.75rem;
@@ -389,7 +373,6 @@
         box-shadow: 2px 2px 0 var(--sm-black);
     }
 
-    /* === NO RESULTS === */
     .no-results {
         text-align: center;
         padding: 5rem 2rem;
@@ -419,14 +402,12 @@
         margin-top: 1rem;
     }
 
-    /* === EMOJI ICONS === */
     .icon-emoji {
         font-style: normal;
         font-size: 1.3rem;
         margin-right: 0.5rem;
     }
 
-    /* === RESPONSIVE === */
     @media (max-width: 1400px) {
         .scholarship-grid.grid-view {
             grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
@@ -539,6 +520,7 @@
 
 <div class="browse-page-wrapper">
     <div class="browse-container-wrapper">
+
         <!-- HEADER -->
         <div class="scholarship-header">
             <h1><span class="icon-emoji">🎓</span>Browse Scholarships</h1>
@@ -547,18 +529,17 @@
 
         <!-- MAIN LAYOUT -->
         <div class="browse-container">
+
             <!-- FILTER SIDEBAR -->
             <aside class="filter-sidebar">
                 <h3><span class="icon-emoji">🔍</span>Filters</h3>
                 <form method="get" action="{% url 'scholarships:scholarship_list' %}">
-                    <!-- SEARCH -->
+
                     <div class="filter-group">
                         <label for="search">Search</label>
-                        <input type="text" id="search" name="search" placeholder="Search scholarships..."
-                            value="{{ search_query }}">
+                        <input type="text" id="search" name="search" placeholder="Search scholarships..." value="{{ search_query }}">
                     </div>
 
-                    <!-- ORGANIZATION -->
                     <div class="filter-group">
                         <label for="organization">Organization</label>
                         <select id="organization" name="organization">
@@ -569,7 +550,6 @@
                         </select>
                     </div>
 
-                    <!-- DEADLINE -->
                     <div class="filter-group">
                         <label for="deadline">Deadline</label>
                         <select id="deadline" name="deadline">
@@ -580,7 +560,6 @@
                         </select>
                     </div>
 
-                    <!-- FILTER ACTIONS -->
                     <div class="filter-actions">
                         <button type="submit" class="btn-filter">Apply</button>
                         <a href="{% url 'scholarships:scholarship_list' %}" class="btn-clear">Clear</a>
@@ -590,6 +569,7 @@
 
             <!-- MAIN CONTENT -->
             <main class="scholarships-main">
+
                 <!-- RESULTS HEADER -->
                 <div class="results-header">
                     <div class="results-count">
@@ -597,13 +577,11 @@
                     </div>
 
                     <div class="results-controls">
-                        <!-- VIEW TOGGLE -->
                         <div class="view-toggle">
                             <button type="button" class="view-btn" data-view="list" title="List View">☰</button>
                             <button type="button" class="view-btn active" data-view="grid" title="Grid View">⊞</button>
                         </div>
 
-                        <!-- SORT CONTROLS -->
                         <div class="sort-controls">
                             <form method="get" id="sortForm">
                                 {% for key, value in request.GET.items %}
@@ -612,9 +590,10 @@
                                 {% endif %}
                                 {% endfor %}
                                 <select name="sort" onchange="this.form.submit()">
-                                    <option value="-deadline" {% if sort_by == '-deadline' %}selected{% endif %}>Newest First</option>
-                                    <option value="deadline" {% if sort_by == 'deadline' %}selected{% endif %}>Oldest First</option>
-                                    <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name (A-Z)</option>
+                                    <option value="-created_at" {% if sort_by == '-created_at' %}selected{% endif %}>Newest First</option>
+                                    <option value="deadline" {% if sort_by == 'deadline' %}selected{% endif %}>Deadline (Soonest)</option>
+                                    <option value="-total_budget" {% if sort_by == '-total_budget' %}selected{% endif %}>Budget (High→Low)</option>
+                                    <option value="title" {% if sort_by == 'title' %}selected{% endif %}>Name (A-Z)</option>
                                 </select>
                             </form>
                         </div>
@@ -627,52 +606,68 @@
                     {% for scholarship in scholarships %}
                     <article class="scholarship-card">
                         <div class="scholarship-card-header">
-                            <div>
-                                <h3><a href="{% url 'scholarships:scholarship_detail' pk=scholarship.pk %}">{{ scholarship.name }}</a></h3>
-                                <div class="organization-name"><span class="icon-emoji">🏛️</span>{{ scholarship.organization }}</div>
+                            <div style="flex:1;">
+                                <h3><a href="{% url 'scholarships:scholarship_detail' pk=scholarship.pk %}">{{ scholarship.title }}</a></h3>
+                                <div class="organization-name">
+                                    <span class="icon-emoji">🏛️</span>
+                                    {% if scholarship.org_profile %}{{ scholarship.org_profile.organization_name }}{% else %}{{ scholarship.organization }}{% endif %}
+                                </div>
                             </div>
-                            <div class="amount-badge">₹{{ scholarship.award_amount }}</div>
+                            <div class="amount-badge">
+                                {% if scholarship.total_budget %}₹{{ scholarship.total_budget|floatformat:0 }}{% else %}—{% endif %}
+                            </div>
                         </div>
 
-                        <div class="scholarship-details">{{ scholarship.details|truncatewords:30 }}</div>
+                        <!-- Eligibility chips -->
+                        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;">
+                            {% if scholarship.education_level and scholarship.education_level != 'ANY' %}
+                            <span style="background:#f3e5f5;color:#6A1B9A;padding:.25rem .7rem;border:1.5px solid #CE93D8;font-size:.78rem;font-weight:700;text-transform:uppercase;">{{ scholarship.get_education_level_display }}</span>
+                            {% endif %}
+                            {% if scholarship.num_winners %}
+                            <span style="background:#e8f5e9;color:#2E7D32;padding:.25rem .7rem;border:1.5px solid #A5D6A7;font-size:.78rem;font-weight:700;">{{ scholarship.num_winners }} Winner{{ scholarship.num_winners|pluralize }}</span>
+                            {% endif %}
+                            {% if scholarship.min_karma %}
+                            <span style="background:#fff8e1;color:#F57F17;padding:.25rem .7rem;border:1.5px solid #FFE082;font-size:.78rem;font-weight:700;">⭐ {{ scholarship.min_karma }}+ Karma</span>
+                            {% endif %}
+                            {% if scholarship.max_family_income %}
+                            <span style="background:#e3f2fd;color:#1565C0;padding:.25rem .7rem;border:1.5px solid #90CAF9;font-size:.78rem;font-weight:700;">≤₹{{ scholarship.max_family_income|floatformat:0 }} Income</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="scholarship-details">{{ scholarship.description|default:scholarship.details|truncatewords:25 }}</div>
 
                         <div class="scholarship-meta">
                             <div class="deadline-badge"><span class="icon-emoji">📅</span>Due: {{ scholarship.deadline|date:"M d, Y" }}</div>
-                            <a href="{% url 'scholarships:scholarship_detail' pk=scholarship.pk %}" class="view-details-btn">
-                                View Details →
-                            </a>
+                            {% if scholarship.verification_strictness == 'STRICT' %}
+                            <div class="deadline-badge" style="background:#fff3e0;border-color:#FFB300;">🔐 Strict Verify</div>
+                            {% endif %}
+                            <a href="{% url 'scholarships:scholarship_detail' pk=scholarship.pk %}" class="view-details-btn">View Details →</a>
                         </div>
                     </article>
                     {% endfor %}
                 </div>
                 {% else %}
-                <!-- NO RESULTS -->
                 <div class="no-results">
                     <h3><span class="icon-emoji">😔</span>No Scholarships Found</h3>
                     <p>Try adjusting your filters or search terms.</p>
                     <a href="{% url 'scholarships:scholarship_list' %}" class="btn-filter">View All Scholarships</a>
                 </div>
                 {% endif %}
+
             </main>
         </div>
     </div>
 </div>
 
-<!-- VIEW TOGGLE JAVASCRIPT -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const viewButtons = document.querySelectorAll('.view-btn');
         const scholarshipGrid = document.getElementById('scholarshipGrid');
 
         viewButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                // Remove active class from all buttons
+            button.addEventListener('click', function () {
                 viewButtons.forEach(btn => btn.classList.remove('active'));
-                
-                // Add active class to clicked button
                 this.classList.add('active');
-
-                // Toggle grid view
                 const view = this.getAttribute('data-view');
                 if (view === 'grid') {
                     scholarshipGrid.classList.add('grid-view');

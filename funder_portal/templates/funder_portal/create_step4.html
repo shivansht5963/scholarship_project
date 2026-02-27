@@ -1,0 +1,469 @@
+{% extends "base.html" %}
+{% block title %}Create Scholarship — Step 4: Platform Filters{% endblock %}
+
+{% block content %}
+<style>
+    .wizard-container {
+        max-width: 780px;
+        margin: 2.5rem auto;
+        padding: 0 1.5rem;
+    }
+
+    .wizard-progress {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+        margin-bottom: 2.5rem;
+    }
+
+    .wp-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .wp-circle {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.1rem;
+        border: 3px solid #e0e0e0;
+        background: white;
+        color: #aaa;
+        transition: all .3s;
+    }
+
+    .wp-step.active .wp-circle {
+        background: linear-gradient(135deg, #E65100, #FF9800);
+        border-color: #E65100;
+        color: white;
+        box-shadow: 0 4px 16px rgba(230, 81, 0, .4);
+    }
+
+    .wp-step.done .wp-circle {
+        background: #4CAF50;
+        border-color: #4CAF50;
+        color: white;
+    }
+
+    .wp-label {
+        font-size: .78rem;
+        margin-top: .4rem;
+        font-weight: 600;
+        color: #999;
+    }
+
+    .wp-step.active .wp-label {
+        color: #E65100;
+    }
+
+    .wp-step.done .wp-label {
+        color: #2E7D32;
+    }
+
+    .wp-line {
+        flex: 1;
+        height: 3px;
+        background: #e0e0e0;
+        margin-bottom: 1.4rem;
+    }
+
+    .wp-line.done {
+        background: #4CAF50;
+    }
+
+    .wizard-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 8px 40px rgba(0, 0, 0, .1);
+        overflow: hidden;
+    }
+
+    .wizard-header {
+        background: linear-gradient(135deg, #BF360C 0%, #E64A19 60%, #FFAB91 100%);
+        padding: 2rem 2.5rem;
+        color: white;
+    }
+
+    .wizard-header h1 {
+        margin: 0;
+        font-size: 1.8rem;
+        font-weight: 700;
+    }
+
+    .wizard-header p {
+        margin: .4rem 0 0;
+        opacity: .9;
+    }
+
+    .wizard-step-tag {
+        display: inline-block;
+        background: rgba(255, 255, 255, .2);
+        padding: .25rem .8rem;
+        border-radius: 20px;
+        font-size: .8rem;
+        font-weight: 600;
+        margin-bottom: .75rem;
+        letter-spacing: .5px;
+    }
+
+    .wizard-body {
+        padding: 2.5rem;
+    }
+
+    .field-group {
+        margin-bottom: 2rem;
+    }
+
+    .field-label {
+        display: block;
+        font-weight: 600;
+        color: #BF360C;
+        margin-bottom: .5rem;
+        font-size: .95rem;
+    }
+
+    .field-help {
+        font-size: .82rem;
+        color: #888;
+        margin-top: .3rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: .8rem 1rem;
+        border: 2px solid #FBE9E7;
+        border-radius: 10px;
+        font-size: .97rem;
+        background: #fffaf8;
+        transition: .2s;
+        box-sizing: border-box;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #E64A19;
+        box-shadow: 0 0 0 3px rgba(230, 74, 25, .12);
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .errorlist {
+        list-style: none;
+        padding: 0;
+        margin: .4rem 0 0;
+    }
+
+    .errorlist li {
+        color: #e53935;
+        font-size: .85rem;
+    }
+
+    .wizard-footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1.5rem 2.5rem;
+        background: #f9f9f9;
+        border-top: 1px solid #f0f0f0;
+    }
+
+    .btn-wizard-next {
+        background: linear-gradient(135deg, #E65100, #FF9800);
+        color: white;
+        border: none;
+        padding: .85rem 2.5rem;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: .2s;
+    }
+
+    .btn-wizard-next:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(230, 81, 0, .4);
+    }
+
+    .btn-wizard-back {
+        background: white;
+        border: 2px solid #e0e0e0;
+        color: #666;
+        padding: .85rem 2rem;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        transition: .2s;
+    }
+
+    .btn-wizard-back:hover {
+        border-color: #E64A19;
+        color: #BF360C;
+    }
+
+    .karma-row {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .karma-slider {
+        flex: 1;
+        -webkit-appearance: none;
+        height: 6px;
+        border-radius: 4px;
+        background: #FBE9E7;
+        outline: none;
+    }
+
+    .karma-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #E65100, #FF9800);
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(230, 81, 0, .4);
+    }
+
+    .karma-display {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #E65100;
+        min-width: 60px;
+        text-align: center;
+    }
+
+    .karma-note {
+        font-size: .82rem;
+        color: #888;
+        margin-top: .5rem;
+    }
+
+    .doc-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: .6rem;
+        margin-top: .6rem;
+    }
+
+    .doc-item {
+        border: 2px solid #FBE9E7;
+        border-radius: 8px;
+        padding: .75rem 1rem;
+        cursor: pointer;
+        transition: .2s;
+        background: #fffaf8;
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+    }
+
+    .doc-item:hover {
+        border-color: #E64A19;
+        background: #FBE9E7;
+    }
+
+    .doc-item.selected {
+        border-color: #E65100;
+        background: #FBE9E7;
+    }
+
+    .doc-item input[type=checkbox] {
+        width: 18px;
+        height: 18px;
+        accent-color: #E65100;
+        flex-shrink: 0;
+    }
+
+    .doc-item label {
+        font-size: .88rem;
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+    .verif-cards {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: .5rem;
+    }
+
+    .verif-card {
+        border: 2px solid #FBE9E7;
+        border-radius: 12px;
+        padding: 1.2rem;
+        cursor: pointer;
+        transition: .2s;
+        position: relative;
+    }
+
+    .verif-card:hover {
+        border-color: #E64A19;
+    }
+
+    .verif-card input[type=radio] {
+        position: absolute;
+        opacity: 0;
+    }
+
+    .verif-card.selected {
+        border-color: #E65100;
+        background: #FEF3EE;
+    }
+
+    .verif-card-icon {
+        font-size: 2rem;
+        margin-bottom: .5rem;
+        display: block;
+    }
+
+    .verif-card-title {
+        font-weight: 700;
+        color: #BF360C;
+        margin-bottom: .25rem;
+    }
+
+    .verif-card-desc {
+        font-size: .82rem;
+        color: #777;
+    }
+</style>
+
+<div class="wizard-container">
+    <div class="wizard-progress">
+        <div class="wp-step done">
+            <div class="wp-circle">✓</div>
+            <div class="wp-label">Basics</div>
+        </div>
+        <div class="wp-line done"></div>
+        <div class="wp-step done">
+            <div class="wp-circle">✓</div>
+            <div class="wp-label">Eligibility</div>
+        </div>
+        <div class="wp-line done"></div>
+        <div class="wp-step done">
+            <div class="wp-circle">✓</div>
+            <div class="wp-label">Financials</div>
+        </div>
+        <div class="wp-line done"></div>
+        <div class="wp-step active">
+            <div class="wp-circle">4</div>
+            <div class="wp-label">Filters</div>
+        </div>
+    </div>
+
+    <div class="wizard-card">
+        <div class="wizard-header">
+            <div class="wizard-step-tag">STEP 4 OF 4</div>
+            <h1>🔍 Platform Filters</h1>
+            <p>Set quality gates unique to Scholar Match — powered by our karma engine</p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="wizard-body">
+
+                <!-- Karma Slider -->
+                <div class="field-group">
+                    <label class="field-label">Minimum Karma Points Required</label>
+                    <div class="karma-row">
+                        <input type="range" class="karma-slider" name="{{ form.min_karma.html_name }}" id="karma_slider"
+                            min="0" max="500" step="10" value="{{ form.min_karma.value|default:0 }}"
+                            oninput="document.getElementById('karma_display').textContent = this.value">
+                        <div class="karma-display" id="karma_display">{{ form.min_karma.value|default:0 }}</div>
+                    </div>
+                    <div class="karma-note">⭐ Only students with ≥ this many karma points can apply. Set to 0 for no restriction.</div>
+                    {{ form.min_karma.errors }}
+                </div>
+
+                <!-- Required Documents -->
+                <div class="field-group">
+                    <label class="field-label">Mandatory Documents to Verify</label>
+                    <div class="doc-grid">
+                        {% for val, label in form.fields.required_documents.choices %}
+                        <div class="doc-item {% if val in form.required_documents.value %}selected{% endif %}" id="doc-{{ val }}">
+                            <input type="checkbox" name="{{ form.required_documents.html_name }}" id="doc_cb_{{ val }}"
+                                value="{{ val }}" {% if val in form.required_documents.value %}checked{% endif %}
+                                onchange="toggleDoc('doc-{{ val }}', this)">
+                            <label for="doc_cb_{{ val }}">{{ label }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="field-help">Students must upload all checked documents when applying.</div>
+                    {{ form.required_documents.errors }}
+                </div>
+
+                <!-- Verification Strictness -->
+                <div class="field-group">
+                    <label class="field-label">Verification Strictness</label>
+                    <div class="verif-cards">
+
+                        <div class="verif-card {% if form.verification_strictness.value == 'STANDARD' or not form.verification_strictness.value %}selected{% endif %}" id="verif-STANDARD" onclick="selectVerif('STANDARD')">
+                            <span class="verif-card-icon">📄</span>
+                            <div class="verif-card-title">Standard</div>
+                            <div class="verif-card-desc">Manual upload. Our AI checks for tampering automatically.</div>
+                            <input type="radio" name="{{ form.verification_strictness.html_name }}" value="STANDARD" id="verif_STANDARD" {% if form.verification_strictness.value == 'STANDARD' or not form.verification_strictness.value %}checked{% endif %}>
+                        </div>
+
+                        <div class="verif-card {% if form.verification_strictness.value == 'STRICT' %}selected{% endif %}" id="verif-STRICT" onclick="selectVerif('STRICT')">
+                            <span class="verif-card-icon">🔐</span>
+                            <div class="verif-card-title">Strict</div>
+                            <div class="verif-card-desc">Requires DigiLocker / Government API. Zero fraud risk.</div>
+                            <input type="radio" name="{{ form.verification_strictness.html_name }}" value="STRICT" id="verif_STRICT" {% if form.verification_strictness.value == 'STRICT' %}checked{% endif %}>
+                        </div>
+
+                    </div>
+                    {{ form.verification_strictness.errors }}
+                </div>
+
+                <!-- Essay Question -->
+                <div class="field-group">
+                    <label class="field-label">
+                        Custom Essay / Question
+                        <span style="font-weight:400;color:#999;">(Optional)</span>
+                    </label>
+                    <textarea name="{{ form.essay_question.html_name }}" class="form-control"
+                        placeholder="e.g. Why do you need this scholarship? What impact will it have on your career?">{{ form.essay_question.value|default:'' }}</textarea>
+                    <div class="field-help">Students will see this question on the application form. Leave blank to skip.</div>
+                    {{ form.essay_question.errors }}
+                </div>
+
+            </div>
+
+            <div class="wizard-footer">
+                <a href="{% url 'funder_portal:create_step3' draft_id=scholarship.pk %}" class="btn-wizard-back">← Back</a>
+                <button type="submit" class="btn-wizard-next">Review & Pay →</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function toggleDoc(wrapId, cb) {
+        document.getElementById(wrapId).classList.toggle('selected', cb.checked);
+    }
+
+    function selectVerif(val) {
+        document.querySelectorAll('.verif-card').forEach(c => c.classList.remove('selected'));
+        document.getElementById('verif-' + val).classList.add('selected');
+        document.getElementById('verif_' + val).checked = true;
+    }
+
+    document.querySelectorAll('.doc-item input:checked').forEach(cb => {
+        cb.closest('.doc-item').classList.add('selected');
+    });
+</script>
+{% endblock %}

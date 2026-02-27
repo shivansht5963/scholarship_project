@@ -1,10 +1,8 @@
 {% extends 'base.html' %}
-
-{% block title %}{{ scholarship.name }} - Scholar Match{% endblock %}
+{% block title %}{{ scholarship.title }} - Scholar Match{% endblock %}
 
 {% block content %}
 <style>
-    /* === SCHOLARMATCH THEME VARIABLES === */
     :root {
         --sm-yellow: #FFD700;
         --sm-black: #000000;
@@ -19,10 +17,8 @@
         --sm-border-width: 3px;
     }
 
-    /* === DOTTED BACKGROUND === */
     .detail-page-wrapper {
-        background: 
-            radial-gradient(circle, #00000008 1px, transparent 1px);
+        background: radial-gradient(circle, #00000008 1px, transparent 1px);
         background-size: 20px 20px;
         background-color: var(--sm-white);
         min-height: 100vh;
@@ -35,7 +31,6 @@
         padding: 0 2rem;
     }
 
-    /* === ICONS === */
     .icon {
         display: inline-flex;
         align-items: center;
@@ -51,47 +46,15 @@
         flex-shrink: 0;
     }
 
-    .icon.icon-org::before {
-        content: 'ORG';
-        font-size: 0.65rem;
-    }
+    .icon.icon-org::before { content: 'ORG'; font-size: 0.65rem; }
+    .icon.icon-date::before { content: 'DL'; font-size: 0.7rem; }
+    .icon.icon-verified::before { content: '✓'; font-size: 1rem; }
+    .icon.icon-about::before { content: 'i'; font-size: 1.1rem; }
+    .icon.icon-info::before { content: '#'; font-size: 1.2rem; }
+    .icon.icon-apply::before { content: '→'; font-size: 1.2rem; }
+    .icon.icon-web::before { content: '⊕'; font-size: 1.2rem; }
+    .icon.icon-related::before { content: '★'; font-size: 1.1rem; }
 
-    .icon.icon-date::before {
-        content: 'DL';
-        font-size: 0.7rem;
-    }
-
-    .icon.icon-verified::before {
-        content: '✓';
-        font-size: 1rem;
-    }
-
-    .icon.icon-about::before {
-        content: 'i';
-        font-size: 1.1rem;
-    }
-
-    .icon.icon-info::before {
-        content: '#';
-        font-size: 1.2rem;
-    }
-
-    .icon.icon-apply::before {
-        content: '→';
-        font-size: 1.2rem;
-    }
-
-    .icon.icon-web::before {
-        content: '⊕';
-        font-size: 1.2rem;
-    }
-
-    .icon.icon-related::before {
-        content: '★';
-        font-size: 1.1rem;
-    }
-
-    /* === BACK LINK === */
     .back-link {
         display: inline-flex;
         align-items: center;
@@ -116,7 +79,6 @@
         box-shadow: 6px 6px 0 var(--sm-black);
     }
 
-    /* === SCHOLARSHIP DETAIL CARD === */
     .scholarship-detail-card {
         background: var(--sm-white);
         border: var(--sm-border-width) solid var(--sm-black);
@@ -125,7 +87,6 @@
         margin-bottom: 3rem;
     }
 
-    /* === SCHOLARSHIP HERO === */
     .scholarship-hero {
         background: var(--sm-purple);
         padding: 3rem;
@@ -167,12 +128,10 @@
         margin-right: 0.75rem;
     }
 
-    /* === SCHOLARSHIP CONTENT === */
     .scholarship-content {
         padding: 3rem;
     }
 
-    /* === AMOUNT HIGHLIGHT === */
     .amount-highlight {
         background: var(--sm-yellow);
         padding: 2rem;
@@ -198,7 +157,6 @@
         letter-spacing: 1px;
     }
 
-    /* === CONTENT SECTIONS === */
     .content-section {
         margin-bottom: 3rem;
         padding-bottom: 3rem;
@@ -231,7 +189,6 @@
         font-weight: 500;
     }
 
-    /* === INFO GRID === */
     .info-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -267,7 +224,6 @@
         font-size: 1.15rem;
     }
 
-    /* === ACTION BUTTONS === */
     .action-buttons {
         display: flex;
         gap: 1.5rem;
@@ -339,7 +295,6 @@
         box-shadow: 4px 4px 0 var(--sm-black);
     }
 
-    /* === RELATED SECTION === */
     .related-section {
         margin-top: 4rem;
     }
@@ -360,7 +315,6 @@
         gap: 2rem;
     }
 
-    /* === RELATED CARD === */
     .related-card {
         background: var(--sm-white);
         border: var(--sm-border-width) solid var(--sm-black);
@@ -429,7 +383,6 @@
         letter-spacing: 0.5px;
     }
 
-    /* === RESPONSIVE === */
     @media (max-width: 1024px) {
         .related-grid {
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -437,13 +390,8 @@
     }
 
     @media (max-width: 768px) {
-        .detail-page-wrapper {
-            padding: 1rem 0;
-        }
-
-        .detail-container {
-            padding: 0 1rem;
-        }
+        .detail-page-wrapper { padding: 1rem 0; }
+        .detail-container { padding: 0 1rem; }
 
         .back-link {
             font-size: 0.8rem;
@@ -452,47 +400,26 @@
             box-shadow: 3px 3px 0 var(--sm-black);
         }
 
-        .scholarship-detail-card {
-            box-shadow: 6px 6px 0 var(--sm-black);
-        }
-
-        .scholarship-hero {
-            padding: 2rem 1.5rem;
-        }
-
-        .scholarship-hero h1 {
-            font-size: 2rem;
-        }
+        .scholarship-detail-card { box-shadow: 6px 6px 0 var(--sm-black); }
+        .scholarship-hero { padding: 2rem 1.5rem; }
+        .scholarship-hero h1 { font-size: 2rem; }
 
         .hero-meta-item {
             font-size: 0.75rem;
             padding: 0.6rem 1.25rem;
         }
 
-        .scholarship-content {
-            padding: 2rem 1.5rem;
-        }
+        .scholarship-content { padding: 2rem 1.5rem; }
 
         .amount-highlight {
             padding: 1.5rem;
             box-shadow: 4px 4px 0 var(--sm-black);
         }
 
-        .amount-value {
-            font-size: 2.5rem;
-        }
-
-        .content-section h2 {
-            font-size: 1.5rem;
-        }
-
-        .info-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .action-buttons {
-            flex-direction: column;
-        }
+        .amount-value { font-size: 2.5rem; }
+        .content-section h2 { font-size: 1.5rem; }
+        .info-grid { grid-template-columns: 1fr; }
+        .action-buttons { flex-direction: column; }
 
         .btn-apply,
         .btn-website {
@@ -503,13 +430,8 @@
             box-shadow: 4px 4px 0 var(--sm-black);
         }
 
-        .related-section h2 {
-            font-size: 2rem;
-        }
-
-        .related-grid {
-            grid-template-columns: 1fr;
-        }
+        .related-section h2 { font-size: 2rem; }
+        .related-grid { grid-template-columns: 1fr; }
 
         .related-card {
             padding: 1.5rem;
@@ -525,24 +447,28 @@
 
 <div class="detail-page-wrapper">
     <div class="detail-container">
+
         <!-- BACK LINK -->
-        <a href="{% url 'scholarships:scholarship_list' %}" class="back-link">
-            ← Back to All Scholarships
-        </a>
+        <a href="{% url 'scholarships:scholarship_list' %}" class="back-link">← Back to All Scholarships</a>
 
         <!-- SCHOLARSHIP DETAIL CARD -->
         <div class="scholarship-detail-card">
+
             <!-- HERO SECTION -->
             <div class="scholarship-hero">
-                <h1>{{ scholarship.name }}</h1>
+                {% if scholarship.logo %}
+                <img src="{{ scholarship.logo.url }}" alt="{{ scholarship.title }} logo"
+                    style="height:60px;object-fit:contain;margin-bottom:1rem;background:white;padding:.5rem;border:2px solid black;">
+                {% endif %}
+                <h1>{{ scholarship.title }}</h1>
                 <div class="hero-meta">
                     <div class="hero-meta-item">
                         <span class="icon icon-org"></span>
-                        <span>{{ scholarship.organization }}</span>
+                        <span>{% if scholarship.org_profile %}{{ scholarship.org_profile.organization_name }}{% else %}{{ scholarship.organization }}{% endif %}</span>
                     </div>
                     <div class="hero-meta-item">
                         <span class="icon icon-date"></span>
-                        <span>Deadline: {{ scholarship.deadline|date:"M d, Y" }}</span>
+                        <span>Deadline: {{ scholarship.deadline|date:"M d, Y, g:i A" }}</span>
                     </div>
                     {% if scholarship.is_verified %}
                     <div class="hero-meta-item">
@@ -550,57 +476,135 @@
                         <span>Verified</span>
                     </div>
                     {% endif %}
+                    {% if scholarship.is_active and scholarship.is_funded %}
+                    <div class="hero-meta-item" style="background:#00C853;color:white;border-color:#00C853;">
+                        ✅ Funded & Active
+                    </div>
+                    {% endif %}
                 </div>
             </div>
 
             <!-- CONTENT SECTION -->
             <div class="scholarship-content">
-                <!-- AMOUNT HIGHLIGHT -->
+
+                <!-- BUDGET HIGHLIGHT -->
                 <div class="amount-highlight">
-                    <h3>Scholarship Amount</h3>
-                    <div class="amount-value">₹{{ scholarship.award_amount }}</div>
+                    <h3>💰 Scholarship Budget</h3>
+                    <div class="amount-value">₹{{ scholarship.total_budget|default:scholarship.award_amount }}</div>
+                    {% if scholarship.distribution_type == 'FIXED' and scholarship.fixed_amount and scholarship.num_winners %}
+                    <div style="margin-top:.75rem;font-weight:700;color:#333;font-size:1rem;">
+                        ₹{{ scholarship.fixed_amount }} × {{ scholarship.num_winners }} winner{{ scholarship.num_winners|pluralize }} · {{ scholarship.get_disbursement_method_display }}
+                    </div>
+                    {% elif scholarship.num_winners %}
+                    <div style="margin-top:.75rem;font-weight:700;color:#333;font-size:1rem;">
+                        {{ scholarship.num_winners }} winner{{ scholarship.num_winners|pluralize }} · {{ scholarship.get_distribution_type_display }} · {{ scholarship.get_disbursement_method_display }}
+                    </div>
+                    {% endif %}
                 </div>
 
                 <!-- ABOUT SECTION -->
                 <div class="content-section">
                     <h2><span class="icon icon-about"></span>About This Scholarship</h2>
-                    <p>{{ scholarship.details|linebreaks }}</p>
+                    <div style="color:#111;line-height:1.8;font-size:1.05rem;font-weight:500;">{{ scholarship.description|default:scholarship.details|linebreaks }}</div>
                 </div>
 
-                <!-- KEY INFORMATION SECTION -->
+                <!-- ELIGIBILITY SECTION -->
                 <div class="content-section">
-                    <h2><span class="icon icon-info"></span>Key Information</h2>
+                    <h2><span class="icon icon-info"></span>Eligibility Criteria</h2>
                     <div class="info-grid">
                         <div class="info-card">
-                            <label>Organization</label>
-                            <value>{{ scholarship.organization }}</value>
+                            <label>Education Level</label>
+                            <value>{{ scholarship.get_education_level_display }}</value>
                         </div>
+                        {% if scholarship.max_family_income %}
                         <div class="info-card">
-                            <label>Award Amount</label>
-                            <value>₹{{ scholarship.award_amount }}</value>
+                            <label>Max Family Income</label>
+                            <value>₹{{ scholarship.max_family_income|floatformat:0 }} / year</value>
                         </div>
+                        {% endif %}
+                        {% if scholarship.min_percentage %}
+                        <div class="info-card">
+                            <label>Min Academic Score</label>
+                            <value>{{ scholarship.min_percentage }}%</value>
+                        </div>
+                        {% endif %}
                         <div class="info-card">
                             <label>Application Deadline</label>
                             <value>{{ scholarship.deadline|date:"F d, Y" }}</value>
                         </div>
                         <div class="info-card">
-                            <label>Last Updated</label>
-                            <value>{{ scholarship.last_updated|date:"M d, Y" }}</value>
+                            <label>Min Karma Required</label>
+                            <value>⭐ {{ scholarship.min_karma }} points</value>
+                        </div>
+                        <div class="info-card">
+                            <label>Document Verification</label>
+                            <value>{{ scholarship.get_verification_strictness_display }}</value>
                         </div>
                     </div>
+
+                    {% with courses=scholarship.get_courses %}
+                    {% if courses %}
+                    <div style="margin-top:1.5rem;">
+                        <div style="font-size:.8rem;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:#757575;margin-bottom:.75rem;">Eligible Courses / Streams</div>
+                        <div style="display:flex;flex-wrap:wrap;gap:.5rem;">
+                            {% for c in courses %}
+                            <span style="background:#f3e5f5;color:#6A1B9A;padding:.35rem .85rem;border:2px solid #CE93D8;font-weight:700;font-size:.85rem;">{{ c }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endwith %}
+
+                    {% with demos=scholarship.get_demographic_focus %}
+                    {% if demos %}
+                    <div style="margin-top:1.5rem;">
+                        <div style="font-size:.8rem;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:#757575;margin-bottom:.75rem;">Priority Groups</div>
+                        <div style="display:flex;flex-wrap:wrap;gap:.5rem;">
+                            {% for d in demos %}
+                            <span style="background:#e8f5e9;color:#2E7D32;padding:.35rem .85rem;border:2px solid #A5D6A7;font-weight:700;font-size:.85rem;">{{ d }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endwith %}
                 </div>
+
+                <!-- REQUIRED DOCUMENTS -->
+                {% if required_docs %}
+                <div class="content-section">
+                    <h2><span class="icon" style="font-size:.75rem;">📄</span>Required Documents</h2>
+                    <div style="display:flex;flex-wrap:wrap;gap:.75rem;">
+                        {% for doc in required_docs %}
+                        <div style="background:white;border:2.5px solid black;padding:.75rem 1.25rem;font-weight:700;font-size:.9rem;box-shadow:3px 3px 0 black;">
+                            📎 {{ doc.get_document_name_display }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- ESSAY QUESTION -->
+                {% if scholarship.essay_question %}
+                <div class="content-section">
+                    <h2><span class="icon" style="font-size:.75rem;">✍️</span>Essay Question</h2>
+                    <div style="background:#fffbf0;border:2.5px solid #FFD700;padding:1.5rem;font-size:1.05rem;font-weight:600;line-height:1.7;box-shadow:4px 4px 0 black;">
+                        ❝ {{ scholarship.essay_question }} ❞
+                    </div>
+                </div>
+                {% endif %}
 
                 <!-- ACTION BUTTONS -->
                 <div class="action-buttons">
                     <a href="{% url 'applications:create_application' scholarship_pk=scholarship.pk %}" class="btn-apply">
                         <span class="icon icon-apply"></span> Apply Now
                     </a>
-                    {% if scholarship.official_website %}
-                    <a href="{{ scholarship.official_website }}" target="_blank" class="btn-website" rel="noopener noreferrer">
-                        <span class="icon icon-web"></span> View Official Website
+                    {% if scholarship.source_url %}
+                    <a href="{{ scholarship.source_url }}" target="_blank" class="btn-website" rel="noopener noreferrer">
+                        <span class="icon icon-web"></span> Official Website
                     </a>
                     {% endif %}
                 </div>
+
             </div>
         </div>
 
@@ -611,10 +615,10 @@
             <div class="related-grid">
                 {% for related in related_scholarships %}
                 <div class="related-card">
-                    <h3><a href="{% url 'scholarships:scholarship_detail' pk=related.pk %}">{{ related.name }}</a></h3>
-                    <div class="related-org">{{ related.organization }}</div>
+                    <h3><a href="{% url 'scholarships:scholarship_detail' pk=related.pk %}">{{ related.title }}</a></h3>
+                    <div class="related-org">{% if related.org_profile %}{{ related.org_profile.organization_name }}{% else %}{{ related.organization }}{% endif %}</div>
                     <div class="related-meta">
-                        <span class="related-amount">₹{{ related.award_amount }}</span>
+                        <span class="related-amount">{% if related.total_budget %}₹{{ related.total_budget|floatformat:0 }}{% else %}—{% endif %}</span>
                         <span class="related-deadline">Due: {{ related.deadline|date:"M d" }}</span>
                     </div>
                 </div>
@@ -622,6 +626,7 @@
             </div>
         </div>
         {% endif %}
+
     </div>
 </div>
 
