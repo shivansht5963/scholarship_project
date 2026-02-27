@@ -138,6 +138,20 @@ class StudentDocument(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
     is_verified = models.BooleanField(default=False)
     notes = models.TextField(blank=True)
+
+    VERIFICATION_STATUS_CHOICES = [
+        ('pending', 'Pending Verification'),
+        ('verified', 'Verified'),
+        ('failed', 'Verification Failed'),
+        ('not_applicable', 'Not Required'),
+    ]
+    verification_status = models.CharField(
+        max_length=20,
+        choices=VERIFICATION_STATUS_CHOICES,
+        default='pending'
+    )
+    # Stores the raw JSON result from Gemini: extracted_name, data, rejection_reason etc.
+    verification_result = models.JSONField(null=True, blank=True)
     
     class Meta:
         unique_together = ['student', 'document_type']  # One document of each type per student

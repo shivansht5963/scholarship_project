@@ -26,6 +26,7 @@ urlpatterns = [
     path('otr/step3/', otr_views.otr_step3, name='otr_step3'),
     path('otr/step4/', otr_views.otr_step4, name='otr_step4'),
     path('otr/step5/', otr_views.otr_step5, name='otr_step5'),
+    path('otr/step5/status/', otr_views.otr_step5_status, name='otr_step5_status'),
     path('otr/step6/', otr_views.otr_step6, name='otr_step6'),
     path('otr/step7/', otr_views.otr_step7, name='otr_step7'),
 ]

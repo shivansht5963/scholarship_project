@@ -2,11 +2,10 @@ services:
   - type: web
     name: scholar-match
     runtime: python
+    pythonVersion: "3.12.0"
     buildCommand: "./build.sh"
     startCommand: "gunicorn scholar_match.wsgi:application"
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.10.0
       - key: SECRET_KEY
         generateValue: true
       - key: DEBUG

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load scholarship_tags %}
 {% block title %}{{ scholarship.title }} - Scholar Match{% endblock %}
 
 {% block content %}
@@ -124,13 +125,9 @@
         letter-spacing: 0.5px;
     }
 
-    .hero-meta-item .icon {
-        margin-right: 0.75rem;
-    }
+    .hero-meta-item .icon { margin-right: 0.75rem; }
 
-    .scholarship-content {
-        padding: 3rem;
-    }
+    .scholarship-content { padding: 3rem; }
 
     .amount-highlight {
         background: var(--sm-yellow);
@@ -203,9 +200,7 @@
         transition: all 0.2s;
     }
 
-    .info-card:hover {
-        background: var(--sm-light-gray);
-    }
+    .info-card:hover { background: var(--sm-light-gray); }
 
     .info-card label {
         display: block;
@@ -260,15 +255,8 @@
         color: var(--sm-green);
     }
 
-    .btn-apply:hover {
-        transform: translate(2px, 2px);
-        box-shadow: 4px 4px 0 var(--sm-black);
-    }
-
-    .btn-apply:active {
-        transform: translate(6px, 6px);
-        box-shadow: 0 0 0 var(--sm-black);
-    }
+    .btn-apply:hover { transform: translate(2px, 2px); box-shadow: 4px 4px 0 var(--sm-black); }
+    .btn-apply:active { transform: translate(6px, 6px); box-shadow: 0 0 0 var(--sm-black); }
 
     .btn-website {
         padding: 1.5rem 2rem;
@@ -295,9 +283,7 @@
         box-shadow: 4px 4px 0 var(--sm-black);
     }
 
-    .related-section {
-        margin-top: 4rem;
-    }
+    .related-section { margin-top: 4rem; }
 
     .related-section h2 {
         font-size: 2.5rem;
@@ -338,15 +324,8 @@
         line-height: 1.3;
     }
 
-    .related-card h3 a {
-        color: var(--sm-black);
-        text-decoration: none;
-        transition: color 0.2s;
-    }
-
-    .related-card h3 a:hover {
-        color: var(--sm-purple);
-    }
+    .related-card h3 a { color: var(--sm-black); text-decoration: none; transition: color 0.2s; }
+    .related-card h3 a:hover { color: var(--sm-purple); }
 
     .related-org {
         color: var(--sm-gray);
@@ -384,65 +363,118 @@
     }
 
     @media (max-width: 1024px) {
-        .related-grid {
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        }
+        .related-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
     }
 
     @media (max-width: 768px) {
         .detail-page-wrapper { padding: 1rem 0; }
         .detail-container { padding: 0 1rem; }
-
-        .back-link {
-            font-size: 0.8rem;
-            padding: 0.6rem 1.25rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 3px 3px 0 var(--sm-black);
-        }
-
+        .back-link { font-size: 0.8rem; padding: 0.6rem 1.25rem; margin-bottom: 1.5rem; box-shadow: 3px 3px 0 var(--sm-black); }
         .scholarship-detail-card { box-shadow: 6px 6px 0 var(--sm-black); }
         .scholarship-hero { padding: 2rem 1.5rem; }
         .scholarship-hero h1 { font-size: 2rem; }
-
-        .hero-meta-item {
-            font-size: 0.75rem;
-            padding: 0.6rem 1.25rem;
-        }
-
+        .hero-meta-item { font-size: 0.75rem; padding: 0.6rem 1.25rem; }
         .scholarship-content { padding: 2rem 1.5rem; }
-
-        .amount-highlight {
-            padding: 1.5rem;
-            box-shadow: 4px 4px 0 var(--sm-black);
-        }
-
+        .amount-highlight { padding: 1.5rem; box-shadow: 4px 4px 0 var(--sm-black); }
         .amount-value { font-size: 2.5rem; }
         .content-section h2 { font-size: 1.5rem; }
         .info-grid { grid-template-columns: 1fr; }
         .action-buttons { flex-direction: column; }
-
-        .btn-apply,
-        .btn-website {
-            width: 100%;
-            min-width: auto;
-            padding: 1.25rem 1.5rem;
-            font-size: 1rem;
-            box-shadow: 4px 4px 0 var(--sm-black);
-        }
-
+        .btn-apply, .btn-website { width: 100%; min-width: auto; padding: 1.25rem 1.5rem; font-size: 1rem; box-shadow: 4px 4px 0 var(--sm-black); }
         .related-section h2 { font-size: 2rem; }
         .related-grid { grid-template-columns: 1fr; }
-
-        .related-card {
-            padding: 1.5rem;
-            box-shadow: 4px 4px 0 var(--sm-black);
-        }
-
-        .related-card:hover {
-            transform: translate(-2px, -2px);
-            box-shadow: 6px 6px 0 var(--sm-black);
-        }
+        .related-card { padding: 1.5rem; box-shadow: 4px 4px 0 var(--sm-black); }
+        .related-card:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--sm-black); }
     }
+
+    .match-hero-bar {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        background: var(--sm-yellow);
+        border: var(--sm-border-width) solid var(--sm-black);
+        padding: 1.2rem 1.8rem;
+        box-shadow: 4px 4px 0 var(--sm-black);
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .match-hero-score {
+        font-size: 2.8rem;
+        font-weight: 900;
+        line-height: 1;
+        color: var(--sm-black);
+    }
+
+    .match-hero-label {
+        font-size: .85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .8px;
+        margin-top: .2rem;
+    }
+
+    .match-full-bar-track {
+        flex: 1;
+        min-width: 150px;
+        height: 14px;
+        background: rgba(0, 0, 0, .15);
+        border: 2px solid var(--sm-black);
+        overflow: hidden;
+    }
+
+    .match-full-bar-fill {
+        height: 100%;
+        background: var(--sm-black);
+        transition: width .5s ease;
+    }
+
+    .elig-tracker {
+        border: var(--sm-border-width) solid var(--sm-black);
+        box-shadow: 4px 4px 0 var(--sm-black);
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+
+    .elig-tracker-head {
+        background: var(--sm-black);
+        color: var(--sm-white);
+        padding: .9rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 900;
+        letter-spacing: .5px;
+        text-transform: uppercase;
+    }
+
+    .elig-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: .85rem 1.5rem;
+        border-bottom: 2px solid #F0F0F0;
+        background: var(--sm-white);
+    }
+
+    .elig-row:last-child { border-bottom: none; }
+
+    .elig-icon {
+        width: 26px;
+        height: 26px;
+        border: 2px solid var(--sm-black);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: .9rem;
+        flex-shrink: 0;
+    }
+
+    .elig-pass { background: #C8E6C9; color: #1B5E20; }
+    .elig-fail { background: #FFCDD2; color: #B71C1C; }
+
+    .elig-label { font-weight: 700; font-size: .9rem; flex: 1; }
+    .elig-detail { font-size: .82rem; color: #666; text-align: right; }
+    .elig-detail strong { color: var(--sm-black); }
 </style>
 
 <div class="detail-page-wrapper">
@@ -591,6 +623,60 @@
                         ❝ {{ scholarship.essay_question }} ❞
                     </div>
                 </div>
+                {% endif %}
+
+                <!-- ELIGIBILITY TRACKER (students only) -->
+                {% if is_student and match_score is not None %}
+
+                <!-- Match Score Hero Bar -->
+                <div class="match-hero-bar">
+                    <div>
+                        <div class="match-hero-score">{{ match_score }}%</div>
+                        <div class="match-hero-label">{{ match_score|match_label }}</div>
+                    </div>
+                    <div class="match-full-bar-track">
+                        <div class="match-full-bar-fill" style="width:{{ match_score|match_bar_width }}%;"></div>
+                    </div>
+                    <div style="font-size:.82rem;font-weight:700;color:var(--sm-black);">Your match score</div>
+                </div>
+
+                <!-- Per-criterion tracker -->
+                {% if eligibility %}
+                <div class="elig-tracker">
+                    <div class="elig-tracker-head">Your Eligibility Check</div>
+
+                    <div class="elig-row">
+                        <div class="elig-icon {% if eligibility.education.passed %}elig-pass{% else %}elig-fail{% endif %}">{% if eligibility.education.passed %}+{% else %}-{% endif %}</div>
+                        <div class="elig-label">Education Level</div>
+                        <div class="elig-detail">You: <strong>{{ eligibility.education.student_value }}</strong> &nbsp;|&nbsp; Required: <strong>{{ eligibility.education.required_value }}</strong></div>
+                    </div>
+
+                    <div class="elig-row">
+                        <div class="elig-icon {% if eligibility.income.passed %}elig-pass{% else %}elig-fail{% endif %}">{% if eligibility.income.passed %}+{% else %}-{% endif %}</div>
+                        <div class="elig-label">Family Income</div>
+                        <div class="elig-detail">You: <strong>{{ eligibility.income.student_value }}</strong> &nbsp;|&nbsp; Limit: <strong>{{ eligibility.income.required_value }}</strong></div>
+                    </div>
+
+                    <div class="elig-row">
+                        <div class="elig-icon {% if eligibility.score.passed %}elig-pass{% else %}elig-fail{% endif %}">{% if eligibility.score.passed %}+{% else %}-{% endif %}</div>
+                        <div class="elig-label">Academic Score</div>
+                        <div class="elig-detail">You: <strong>{{ eligibility.score.student_value }}</strong> &nbsp;|&nbsp; Min: <strong>{{ eligibility.score.required_value }}</strong></div>
+                    </div>
+
+                    <div class="elig-row">
+                        <div class="elig-icon {% if eligibility.karma.passed %}elig-pass{% else %}elig-fail{% endif %}">{% if eligibility.karma.passed %}+{% else %}-{% endif %}</div>
+                        <div class="elig-label">Karma Points</div>
+                        <div class="elig-detail">You: <strong>{{ eligibility.karma.student_value }}</strong> &nbsp;|&nbsp; Min: <strong>{{ eligibility.karma.required_value }}</strong></div>
+                    </div>
+
+                    <div class="elig-row">
+                        <div class="elig-icon {% if eligibility.documents.passed %}elig-pass{% else %}elig-fail{% endif %}">{% if eligibility.documents.passed %}+{% else %}-{% endif %}</div>
+                        <div class="elig-label">Documents Ready</div>
+                        <div class="elig-detail">{{ eligibility.documents.student_value }} &nbsp;|&nbsp; Required: <strong>{{ eligibility.documents.required_value }}</strong></div>
+                    </div>
+
+                </div>
+                {% endif %}
                 {% endif %}
 
                 <!-- ACTION BUTTONS -->

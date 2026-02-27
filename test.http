@@ -2,39 +2,10 @@
 ### Use VS Code "REST Client" extension to run these.
 ### Server must be running: python manage.py runserver
 
-@baseUrl = http://127.0.0.1:8000
+@baseUrl = https://rokda-exe.onrender.com
 
 # ============================================================
-# TEST 1: ✅ Valid Signup (should return 201 Created)
-# ============================================================
-POST {{baseUrl}}/accounts/api/student-signup/
-Content-Type: application/json
-
-{
-  "username": "rahul_sharma",
-  "email": "rahul.sharma@student.com",
-  "password": "pass1234",
-  "full_name": "Rahul Sharma",
-  "phone": "9876543210",
-  "gender": "Male",
-  "dob": "2003-05-15",
-  "father_name": "Ramesh Sharma",
-  "mother_name": "Sunita Sharma",
-  "annual_income": 180000.00,
-  "caste_category": "OBC",
-  "is_disabled": false,
-  "address": "123, Gandhi Nagar, Near Bus Stand",
-  "city": "Jaipur",
-  "state": "Rajasthan",
-  "pin_code": "302001",
-  "aadhaar_number": "987612345678",
-  "bank_account_number": "1234567890123",
-  "bank_ifsc_code": "SBIN0001234",
-  "bank_name": "State Bank of India"
-}
-
-###
-
+# 
 # ============================================================
 # TEST 2: ❌ Missing Required Fields (should return 400)
 # ============================================================
