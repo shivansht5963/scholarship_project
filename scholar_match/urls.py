@@ -32,6 +32,6 @@ urlpatterns = [
     path('organization/', include('funder_portal.urls')),
 ]
 
-# Serve media files in development
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# Serve media files always — required for public document access on Render
+# (For hackathon: fine to serve via Django/gunicorn directly)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

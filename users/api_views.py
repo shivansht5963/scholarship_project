@@ -168,3 +168,76 @@ def get_user_info(request):
         pass  # user exists but has no student profile yet
 
     return Response(data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def get_user_documents(request):
+    """
+    Open GET endpoint — no authentication required.
+    Returns all uploaded documents for a student by username.
+
+    GET /accounts/api/user-documents/?username=<username>
+
+    Response includes document type name, full file URL,
+    verification status, upload time, and any notes.
+    """
+    username = request.query_params.get('username', '').strip()
+    if not username:
+        return Response(
+            {"success": False, "error": "'username' query parameter is required."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return Response(
+            {"success": False, "error": f"No user found with username '{username}'."},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    try:
+        profile = user.studentprofile
+    except StudentProfile.DoesNotExist:
+        return Response(
+            {
+                "success": True,
+                "username": username,
+                "document_count": 0,
+                "documents": [],
+                "message": "User exists but has no student profile yet.",
+            },
+            status=status.HTTP_200_OK
+        )
+
+    documents = profile.documents.all().order_by('document_type')
+
+    doc_list = []
+    for doc in documents:
+        # Build an absolute URL so the caller can directly download the file
+        try:
+            file_url = request.build_absolute_uri(doc.file.url) if doc.file else None
+        except Exception:
+            file_url = None
+
+        doc_list.append({
+            "id": doc.id,
+            "document_type": doc.document_type,
+            "document_type_label": doc.get_document_type_display(),
+            "file_url": file_url,
+            "uploaded_at": doc.uploaded_at,
+            "is_verified": doc.is_verified,
+            "verification_status": doc.verification_status,
+            "notes": doc.notes,
+        })
+
+    return Response(
+        {
+            "success": True,
+            "username": username,
+            "full_name": profile.full_name,
+            "document_count": len(doc_list),
+            "documents": doc_list,
+        },
+        status=status.HTTP_200_OK
+    )

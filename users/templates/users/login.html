@@ -3,7 +3,6 @@
 
 {% block content %}
 <style>
-    /* Modern Login Page Styles */
     .login-container {
         min-height: 100vh;
         display: flex;
@@ -73,9 +72,7 @@
         letter-spacing: 2px;
     }
 
-    .form-group-modern {
-        margin-bottom: 25px;
-    }
+    .form-group-modern { margin-bottom: 25px; }
 
     .form-label-modern {
         display: block;
@@ -102,9 +99,7 @@
         letter-spacing: 0.5px;
     }
 
-    .forgot-link:hover {
-        color: #333;
-    }
+    .forgot-link:hover { color: #333; }
 
     .form-input-modern {
         width: 100%;
@@ -148,22 +143,10 @@
         box-shadow: 5px 5px 0 #000;
     }
 
-    .btn-login:hover {
-        background: #FFC700;
-        transform: translate(2px, 2px);
-        box-shadow: 3px 3px 0 #000;
-    }
+    .btn-login:hover { background: #FFC700; transform: translate(2px, 2px); box-shadow: 3px 3px 0 #000; }
+    .btn-login:active { transform: translate(5px, 5px); box-shadow: 0 0 0 #000; }
 
-    .btn-login:active {
-        transform: translate(5px, 5px);
-        box-shadow: 0 0 0 #000;
-    }
-
-    .divider {
-        border: 0;
-        border-top: 2px dashed #ccc;
-        margin: 30px 0;
-    }
+    .divider { border: 0; border-top: 2px dashed #ccc; margin: 30px 0; }
 
     .signup-text {
         text-align: center;
@@ -174,16 +157,8 @@
         letter-spacing: 0.5px;
     }
 
-    .signup-link {
-        color: #000;
-        text-decoration: underline;
-        font-weight: 700;
-        margin-left: 5px;
-    }
-
-    .signup-link:hover {
-        color: #333;
-    }
+    .signup-link { color: #000; text-decoration: underline; font-weight: 700; margin-left: 5px; }
+    .signup-link:hover { color: #333; }
 
     .google-btn {
         width: 100%;
@@ -233,36 +208,18 @@
         border-radius: 4px;
     }
 
-    /* Responsive Design */
     @media (max-width: 576px) {
-        .login-card {
-            padding: 40px 25px;
-        }
-
-        .login-title {
-            font-size: 36px;
-        }
-
-        .brand-name {
-            font-size: 24px;
-        }
-
-        .logo-square {
-            width: 40px;
-            height: 40px;
-            font-size: 22px;
-        }
-
-        .btn-login,
-        .google-btn {
-            padding: 16px;
-            font-size: 14px;
-        }
+        .login-card { padding: 40px 25px; }
+        .login-title { font-size: 36px; }
+        .brand-name { font-size: 24px; }
+        .logo-square { width: 40px; height: 40px; font-size: 22px; }
+        .btn-login, .google-btn { padding: 16px; font-size: 14px; }
     }
 </style>
 
 <div class="login-container">
     <div class="login-wrapper">
+
         <!-- Brand Logo -->
         <div class="brand-logo">
             <div class="brand-logo-icon">
@@ -277,32 +234,20 @@
 
             <!-- Error Messages -->
             {% if form.errors %}
-                <div class="error-message">
-                    {% for field in form %}
-                        {% for error in field.errors %}
-                            {{ error }}<br>
-                        {% endfor %}
-                    {% endfor %}
-                    Your username and password didn't match. Please try again.
-                </div>
+            <div class="error-message">
+                {% for field in form %}{% for error in field.errors %}{{ error }}<br>{% endfor %}{% endfor %}
+                Your username and password didn't match. Please try again.
+            </div>
             {% endif %}
 
             <!-- Login Form -->
             <form method="post">
                 {% csrf_token %}
-                
-                <!-- Email/Username Field -->
+
+                <!-- Username Field -->
                 <div class="form-group-modern">
                     <label for="{{ form.username.id_for_label }}" class="form-label-modern">Username</label>
-                    <input 
-                        type="text" 
-                        name="{{ form.username.name }}" 
-                        id="{{ form.username.id_for_label }}"
-                        class="form-input-modern" 
-                        placeholder="shivansh123"
-                        required
-                        {% if form.username.value %}value="{{ form.username.value }}"{% endif %}
-                    >
+                    <input type="text" name="{{ form.username.name }}" id="{{ form.username.id_for_label }}" class="form-input-modern" placeholder="shivansh123" required {% if form.username.value %}value="{{ form.username.value }}"{% endif %}>
                 </div>
 
                 <!-- Password Field -->
@@ -311,34 +256,26 @@
                         <label for="{{ form.password.id_for_label }}" class="form-label-modern">Password</label>
                         <a href="#" class="forgot-link">Forgot?</a>
                     </div>
-                    <input 
-                        type="password" 
-                        name="{{ form.password.name }}" 
-                        id="{{ form.password.id_for_label }}"
-                        class="form-input-modern" 
-                        placeholder="••••••••"
-                        required
-                    >
+                    <input type="password" name="{{ form.password.name }}" id="{{ form.password.id_for_label }}" class="form-input-modern" placeholder="••••••••" required>
                 </div>
 
                 <!-- Login Button -->
                 <button type="submit" class="btn-login">Login</button>
             </form>
 
-            <!-- Divider -->
             <hr class="divider">
 
-            <!-- Signup Link -->
             <div class="signup-text">
-                New to Scholar Match? <a href="#" class="signup-link">Create Account</a>
+                New to Scholar Match? <a href="https://student-verification-app.onrender.com/" target="_blank" rel="noopener noreferrer" class="signup-link">Create Account</a>
             </div>
         </div>
 
         <!-- Google Login Button -->
-        <a href="#" class="google-btn">Continue with Google</a>
+        <!-- <a href="#" class="google-btn">Continue with Google</a> -->
 
         <!-- Tagline -->
         <div class="tagline">Secure. High Contrast. Professional.</div>
+
     </div>
 </div>
 {% endblock content %}

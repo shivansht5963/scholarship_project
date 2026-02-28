@@ -1,8 +1,36 @@
 ### ============================================================
+### USER DOCUMENTS API — GET /accounts/api/user-documents/
+### ============================================================
+### The file_url in the response is a direct download link to the doc.
+### On Render, media is served at: https://rokda-exe.onrender.com/media/...
+
+# 👇 Switch between local and Render by commenting/uncommenting one line:
+@baseUrl = http://127.0.0.1:8000
+# @baseUrl = https://rokda-exe.onrender.com
+
+# ✅ TEST: Get all documents for an existing student
+GET {{baseUrl}}/accounts/api/user-documents/?username=rishab
+
+###
+
+# ✅ TEST: Try another username
+GET {{baseUrl}}/accounts/api/user-documents/?username=rahul_sharma
+
+###
+
+# ❌ TEST: Missing username param (should return 400)
+GET {{baseUrl}}/accounts/api/user-documents/
+
+###
+
+# ❌ TEST: Non-existent user (should return 404)
+GET {{baseUrl}}/accounts/api/user-documents/?username=nobody_here
+
+###
+
+### ============================================================
 ### USER INFO API — GET /accounts/api/user-info/
 ### ============================================================
-
-@baseUrl = https://resq-server.onrender.com
 
 # ✅ TEST: Get full info for an existing student
 GET {{baseUrl}}/accounts/api/user-info/?username=rishab
