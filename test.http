@@ -2,7 +2,7 @@
 ### USER INFO API — GET /accounts/api/user-info/
 ### ============================================================
 
-@baseUrl = http://127.0.0.1:8000
+@baseUrl = https://resq-server.onrender.com
 
 # ✅ TEST: Get full info for an existing student
 GET {{baseUrl}}/accounts/api/user-info/?username=rishab

@@ -601,7 +601,7 @@
             <div class="domain-switcher-label">Browse by Domain</div>
             <div class="domain-pills">
                 {% for slug, label in domain_options %}
-                <a href="?domain={{ slug }}" class="domain-pill {% if domain == slug %}active{% endif %}">
+                <a href="?category={{ slug }}" class="domain-pill {% if domain == slug %}active{% endif %}">
                     {{ label }}
                 </a>
                 {% endfor %}

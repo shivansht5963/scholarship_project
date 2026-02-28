@@ -202,81 +202,76 @@ def recommended_scholarships(request):
 
 # ── External Scholarships (via external API) ──────────────────────────────────
 
-# Maps (degree_level, stream_keyword) → domain string for the API
+# Maps (degree_level, stream_keyword) → category string for the API
 _DEGREE_DOMAIN_MAP = [
     ('Diploma',  None,          'diploma'),
-    ('10th',     None,          '10th pass'),
-    ('12th',     'science',     'science'),
-    ('12th',     'commerce',    'commerce'),
-    ('12th',     'arts',        'arts'),
-    ('12th',     None,          '12th pass'),
-    ('UG',       'engineering', 'engineering'),
+    ('10th',     None,          '10th'),
+    ('12th',     'science',     '12th'),
+    ('12th',     'commerce',    '12th'),
+    ('12th',     'arts',        '12th'),
+    ('12th',     None,          '12th'),
+    ('UG',       'engineering', 'btech'),
     ('UG',       'medical',     'medical'),
     ('UG',       'law',         'law'),
-    ('UG',       'management',  'management'),
-    ('UG',       None,          'undergraduate'),
+    ('UG',       'management',  'bba'),
+    ('UG',       None,          'btech'),
     ('PG',       'engineering', 'mtech'),
     ('PG',       'management',  'mba'),
-    ('PG',       None,          'postgraduate'),
+    ('PG',       None,          'mtech'),
     ('PhD',      None,          'phd'),
 ]
 
 # Quick list shown as switcher pills on the page
 DOMAIN_OPTIONS = [
-    ('diploma',       'Diploma'),
-    ('engineering',   'Engineering'),
-    ('science',       '12th Science'),
-    ('commerce',      '12th Commerce'),
-    ('undergraduate', 'Undergraduate'),
-    ('postgraduate',  'Postgraduate'),
-    ('msbte',         'MSBTE'),
-    ('medical',       'Medical'),
-    ('phd',           'PhD'),
+    ('diploma',  'Diploma'),
+    ('btech',    'B.Tech'),
+    ('mtech',    'M.Tech'),
+    ('mba',      'MBA'),
+    ('bba',      'BBA'),
+    ('medical',  'Medical'),
+    ('law',      'Law'),
+    ('phd',      'PhD'),
+    ('12th',     '12th Pass'),
 ]
 
 
 def _detect_domain(student_profile):
-    """Auto-detect the best API domain string from student's AcademicRecord."""
+    """Auto-detect the best API category string from student's AcademicRecord."""
     if not student_profile:
-        return 'undergraduate'
+        return 'btech'
     try:
         record = student_profile.academic_records.order_by('-id').first()
         if not record:
-            return 'undergraduate'
+            return 'btech'
         degree = record.degree_level or ''
         stream = (record.stream or '').lower()
-        institution = (record.institution_name or '').lower()
 
-        # MSBTE special case — check institution name
-        if 'msbte' in institution:
-            return 'msbte'
-
-        for deg, stream_kw, domain in _DEGREE_DOMAIN_MAP:
+        for deg, stream_kw, category in _DEGREE_DOMAIN_MAP:
             if deg == degree:
                 if stream_kw is None or stream_kw in stream:
-                    return domain
+                    return category
     except Exception:
         pass
-    return 'undergraduate'
+    return 'btech'
 
 
-def _fetch_external_scholarships(domain):
+def _fetch_external_scholarships(category):
     """
     Call the external scholarship search API.
     Returns (list_of_scholarships, total_found, error_message).
     """
-    API_BASE = 'https://scholarship-4pxs.onrender.com/api/main-search/'
-    params = urllib.parse.urlencode({'domain': domain})
+    API_BASE = 'https://scholarship-4pxs.onrender.com/api/saved-scholarships/'
+    params = urllib.parse.urlencode({'category': category})
     url = f'{API_BASE}?{params}'
     try:
         req = urllib.request.Request(url, headers={'Accept': 'application/json'})
         with urllib.request.urlopen(req, timeout=10) as resp:
-            data = json.loads(resp.read().decode())
-            scholarships = data.get('scholarships', [])
-            total = data.get('total_found', len(scholarships))
+            payload = json.loads(resp.read().decode())
+            scholarships = payload.get('data', [])
+            total = payload.get('total_results', len(scholarships))
             return scholarships, total, None
     except Exception as exc:
-        logger.warning(f'External scholarship API error for domain={domain!r}: {exc}')
+        logger.warning(f'External scholarship API error for category={category!r}: {exc}')
         return [], 0, str(exc)
 
 
@@ -285,9 +280,9 @@ def external_scholarships(request):
     """Show live external scholarships fetched from the third-party API."""
     student = _get_student_profile(request.user)
 
-    # Determine domain: manual override > auto-detected from profile
+    # Determine category: manual override > auto-detected from profile
     auto_domain = _detect_domain(student)
-    domain = request.GET.get('domain', '').strip().lower() or auto_domain
+    domain = request.GET.get('category', '').strip().lower() or auto_domain
     manual = (domain != auto_domain)
 
     scholarships, total_found, api_error = _fetch_external_scholarships(domain)
