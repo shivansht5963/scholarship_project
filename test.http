@@ -5,11 +5,11 @@
 ### On Render, media is served at: https://rokda-exe.onrender.com/media/...
 
 # 👇 Switch between local and Render by commenting/uncommenting one line:
-@baseUrl = http://127.0.0.1:8000
-# @baseUrl = https://rokda-exe.onrender.com
+# @baseUrl = http://127.0.0.1:8000
+@baseUrl = https://rokda-exe.onrender.com
 
 # ✅ TEST: Get all documents for an existing student
-GET {{baseUrl}}/accounts/api/user-documents/?username=rishab
+GET {{baseUrl}}/accounts/api/user-documents/?username=Shivansh
 
 ###
 

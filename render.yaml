@@ -4,7 +4,7 @@ services:
     runtime: python
     pythonVersion: "3.12.0"
     buildCommand: "./build.sh"
-    startCommand: "gunicorn scholar_match.wsgi:application"
+    startCommand: "gunicorn scholar_match.wsgi:application --timeout 120"
     envVars:
       - key: SECRET_KEY
         generateValue: true
