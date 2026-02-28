@@ -153,6 +153,15 @@ class Scholarship(models.Model):
         default=False,
         help_text="True once Razorpay payment is verified"
     )
+    # ── Application close control ────────────────────────────────────────────
+    applications_closed = models.BooleanField(
+        default=False,
+        help_text="Org can manually close applications before deadline"
+    )
+    closed_at = models.DateTimeField(
+        null=True, blank=True,
+        help_text="Timestamp when org manually closed applications"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
 
@@ -327,3 +336,212 @@ class RequiredDocument(models.Model):
 
     def __str__(self):
         return f"{self.get_document_name_display()} — {self.scholarship.title}"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# MARKSHEET VERIFICATION  (Phase 7 — Award Engine)
+# ─────────────────────────────────────────────────────────────────────────────
+
+class MarksheetVerification(models.Model):
+    """
+    Stores a student's last semester marksheet and Gemini-extracted academic score.
+    Created / updated during OTR Step 7.
+    """
+    student = models.OneToOneField(
+        'users.StudentProfile',
+        on_delete=models.CASCADE,
+        related_name='marksheet_verification'
+    )
+    marksheet_file = models.FileField(
+        upload_to='otr/marksheets/%Y/%m/',
+        verbose_name="Last Semester Marksheet"
+    )
+    # Gemini-extracted fields
+    last_sem_marks = models.DecimalField(
+        max_digits=5, decimal_places=2,
+        null=True, blank=True,
+        verbose_name="Last Semester Marks (%)",
+        help_text="Percentage extracted by Gemini from the marksheet"
+    )
+    extracted_institution = models.CharField(
+        max_length=255, blank=True,
+        help_text="Institution name as extracted by Gemini"
+    )
+    extracted_semester = models.CharField(
+        max_length=50, blank=True,
+        help_text="Semester / year as extracted by Gemini"
+    )
+    extracted_student_name = models.CharField(
+        max_length=150, blank=True,
+        help_text="Student name as extracted by Gemini"
+    )
+    gemini_verified = models.BooleanField(
+        default=False,
+        help_text="True when Gemini extraction matched the student profile"
+    )
+    raw_gemini_response = models.TextField(
+        blank=True,
+        help_text="Raw JSON response from Gemini for audit purposes"
+    )
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    verified_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Marksheet Verification"
+
+    def __str__(self):
+        return f"{self.student} — {self.last_sem_marks}% (verified: {self.gemini_verified})"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# FEES VERIFICATION  (Phase 7 — Award Engine)
+# ─────────────────────────────────────────────────────────────────────────────
+
+class FeesVerification(models.Model):
+    """
+    Stores a student's college fees receipt and Gemini-extracted fees amount.
+    College name on receipt is cross-checked against the student's AcademicRecord.
+    Created / updated during OTR Step 7.
+    """
+    student = models.OneToOneField(
+        'users.StudentProfile',
+        on_delete=models.CASCADE,
+        related_name='fees_verification'
+    )
+    fees_receipt_file = models.FileField(
+        upload_to='otr/fees_receipts/%Y/%m/',
+        verbose_name="College Fees Receipt"
+    )
+    # Gemini-extracted fields
+    total_annual_fees = models.PositiveIntegerField(
+        null=True, blank=True,
+        verbose_name="Total Annual Fees (Rs.)",
+        help_text="Fees amount extracted by Gemini from the receipt"
+    )
+    extracted_college_name = models.CharField(
+        max_length=255, blank=True,
+        help_text="College/institution name as extracted by Gemini"
+    )
+    extracted_student_name = models.CharField(
+        max_length=150, blank=True,
+        help_text="Student name as extracted by Gemini"
+    )
+    extracted_academic_year = models.CharField(
+        max_length=20, blank=True,
+        help_text="Academic year extracted from the receipt (e.g. 2023-24)"
+    )
+    college_match = models.BooleanField(
+        default=False,
+        help_text="True when receipt college name matches the student's registered institution"
+    )
+    gemini_verified = models.BooleanField(
+        default=False,
+        help_text="True when Gemini successfully extracted and matched receipt data"
+    )
+    raw_gemini_response = models.TextField(
+        blank=True,
+        help_text="Raw JSON response from Gemini for audit purposes"
+    )
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    verified_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Fees Verification"
+
+    def __str__(self):
+        return f"{self.student} — Rs.{self.total_annual_fees} (college match: {self.college_match})"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SCHOLARSHIP AWARD  (Phase 7 — Award Engine)
+# ─────────────────────────────────────────────────────────────────────────────
+
+class ScholarshipAward(models.Model):
+    """
+    Created for each student who wins a scholarship.
+    Tracks the full lifecycle from merit-list approval to bank transfer completion.
+    """
+
+    TRANSFER_STATUS_CHOICES = [
+        ('PENDING',    'Pending Approval'),
+        ('APPROVED',   'Approved by Organisation'),
+        ('PROCESSING', 'Bank Transfer Initiated'),
+        ('DONE',       'Transfer Completed'),
+        ('FAILED',     'Transfer Failed — Retry Needed'),
+    ]
+
+    application = models.OneToOneField(
+        'applications.Application',
+        on_delete=models.CASCADE,
+        related_name='award'
+    )
+    scholarship = models.ForeignKey(
+        Scholarship,
+        on_delete=models.CASCADE,
+        related_name='awards'
+    )
+    student = models.ForeignKey(
+        'users.StudentProfile',
+        on_delete=models.CASCADE,
+        related_name='awards'
+    )
+
+    # Merit calculation snapshot (stored at award time so record is self-contained)
+    merit_score      = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    merit_rank       = models.PositiveIntegerField(default=0)
+    marks_at_award   = models.DecimalField(
+        max_digits=5, decimal_places=2, null=True, blank=True,
+        help_text="last_sem_marks at the time of award"
+    )
+    fees_at_award    = models.PositiveIntegerField(
+        null=True, blank=True,
+        help_text="total_annual_fees at the time of award"
+    )
+    prior_received   = models.PositiveIntegerField(
+        default=0,
+        help_text="Total scholarship Rs. received before this award (for need score)"
+    )
+
+    # Award financials
+    amount_awarded   = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Amount Awarded (Rs.)"
+    )
+
+    # Transfer tracking
+    transfer_status  = models.CharField(
+        max_length=12,
+        choices=TRANSFER_STATUS_CHOICES,
+        default='PENDING'
+    )
+    razorpay_payout_id = models.CharField(max_length=100, blank=True)
+    transfer_ref       = models.CharField(
+        max_length=255, blank=True,
+        help_text="Razorpay payout reference or UTR number"
+    )
+    transfer_initiated_at = models.DateTimeField(null=True, blank=True)
+    transfer_completed_at = models.DateTimeField(null=True, blank=True)
+    failure_reason        = models.TextField(blank=True)
+
+    awarded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['merit_rank']
+        verbose_name = "Scholarship Award"
+
+    def __str__(self):
+        return (
+            f"Award #{self.merit_rank}: {self.student} — "
+            f"{self.scholarship.title} — Rs.{self.amount_awarded} ({self.transfer_status})"
+        )
+
+    @property
+    def is_bank_transfer(self):
+        return self.scholarship.disbursement_method == 'BANK_TRANSFER'
+
+    @property
+    def coverage_before(self):
+        """Scholarship coverage % before this award."""
+        if self.fees_at_award:
+            return round((self.prior_received / self.fees_at_award) * 100, 1)
+        return 0

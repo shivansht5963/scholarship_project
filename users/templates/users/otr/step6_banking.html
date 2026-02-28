@@ -340,10 +340,10 @@
 <div class="otr-container">
     <!-- Header -->
     <div class="step-header">
-        <div class="step-badge">STEP 6 OF 6: BANKING DETAILS</div>
+        <div class="step-badge">STEP 6 OF 8: BANKING DETAILS</div>
         <h1 class="step-title">BANKING DETAILS</h1>
         <p class="step-subtitle">For scholarship disbursement - your funds need a home!</p>
-        <div class="completion-badge">90% COMPLETE</div>
+        <div class="completion-badge">75% COMPLETE</div>
     </div>
 
     <form method="post">
@@ -352,7 +352,8 @@
         <!-- Security Info Box -->
         <div class="info-box">
             <strong><span class="info-icon">🔒</span>SECURE INFORMATION</strong>
-            Your banking details are encrypted and used only for scholarship payments. We never share your financial information.
+            Your banking details are encrypted and used only for scholarship payments. We never share your financial
+            information.
         </div>
 
         <!-- Aadhaar Section -->
@@ -399,26 +400,27 @@
 
             <div class="info-box" style="background: #E3F2FD; border-color: var(--blue-primary);">
                 <strong>💡 TIP:</strong>
-                You can find your IFSC code on your bank passbook, cheque book, or by searching online with your bank name and branch.
+                You can find your IFSC code on your bank passbook, cheque book, or by searching online with your bank
+                name and branch.
             </div>
         </div>
 
         <!-- Navigation Buttons -->
         <div class="button-group">
             <a href="{% url 'otr_step5' %}" class="btn-secondary">← Back</a>
-            <button type="submit" class="btn-primary">Next: Review →</button>
+            <button type="submit" class="btn-primary">Next: Academic &amp; Financial &rarr;</button>
         </div>
     </form>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Make Aadhaar number field readonly
-    const aadhaarInput = document.querySelector('#{{ form.aadhaar_number.id_for_label }}');
-    if (aadhaarInput) {
-        aadhaarInput.setAttribute('readonly', 'readonly');
-        aadhaarInput.classList.add('readonly-field');
-    }
-});
+    document.addEventListener('DOMContentLoaded', function () {
+        // Make Aadhaar number field readonly
+        const aadhaarInput = document.querySelector('#{{ form.aadhaar_number.id_for_label }}');
+        if (aadhaarInput) {
+            aadhaarInput.setAttribute('readonly', 'readonly');
+            aadhaarInput.classList.add('readonly-field');
+        }
+    });
 </script>
 {% endblock %}

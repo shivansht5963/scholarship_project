@@ -3,10 +3,14 @@ users/document_verifier.py
 --------------------------
 Gemini Vision API integration for verifying student documents uploaded in OTR Step 5.
 Each document type has a tailored prompt. Results are stored as JSON on the StudentDocument.
+
+LOGGING: All steps are printed to the terminal (Django dev server stdout) for easy debugging.
 """
 
 import json
 import re
+import time
+import threading
 import google.generativeai as genai
 from django.conf import settings
 from PIL import Image
@@ -15,6 +19,8 @@ import io
 
 # ─── Configure Gemini ──────────────────────────────────────────────────────────
 genai.configure(api_key=settings.GEMINI_API_KEY)
+
+GEMINI_TIMEOUT_SECONDS = 45  # Hard timeout per document
 
 
 # ─── Document-type-specific prompts ────────────────────────────────────────────
@@ -211,10 +217,14 @@ Respond ONLY with a valid JSON object and no other text:
     'photo': """
 You are a document verification AI.
 
-Analyze this image. Determine if it is a clear passport-size photograph of a single person. A valid passport photo should:
-- Show a person's face clearly (front-facing)
-- Have a plain or light background
-- Not be a group photo, scenery, document, screenshot, or cartoon
+Analyze this image. Determine if it shows a clear photograph of a single person's face.
+
+Accept the photo as valid if:
+- A person's face is clearly visible
+- It is a photo of a real person (not a cartoon, drawing, or icon)
+- It is not a group photo with multiple people
+
+Background color, setting, or lighting do NOT matter — any background is acceptable.
 
 Respond ONLY with a valid JSON object and no other text:
 {
@@ -222,7 +232,7 @@ Respond ONLY with a valid JSON object and no other text:
   "document_type": "passport_photo",
   "extracted_name": null,
   "face_visible": true or false,
-  "rejection_reason": "Reason if not valid (e.g., not a face photo, group photo, blurry) or null"
+  "rejection_reason": "Reason if not valid (e.g., no face visible, group photo, cartoon/drawing) or null"
 }
 """,
 }
@@ -248,6 +258,39 @@ def names_match(extracted_name: str, *candidate_names) -> bool:
     return False
 
 
+def _log(msg: str):
+    """Print a timestamped log line to the terminal."""
+    ts = time.strftime('%H:%M:%S')
+    print(f"[VERIFIER {ts}] {msg}", flush=True)
+
+
+def _call_gemini_with_timeout(model, prompt, image_part, timeout=GEMINI_TIMEOUT_SECONDS):
+    """
+    Calls model.generate_content in a background thread.
+    Raises TimeoutError if it doesn't complete within `timeout` seconds.
+    """
+    result_holder = [None]
+    error_holder = [None]
+
+    def _worker():
+        try:
+            result_holder[0] = model.generate_content([prompt.strip(), image_part])
+        except Exception as exc:
+            error_holder[0] = exc
+
+    t = threading.Thread(target=_worker, daemon=True)
+    t.start()
+    t.join(timeout=timeout)
+
+    if t.is_alive():
+        raise TimeoutError(
+            f"Gemini API did not respond within {timeout}s — request timed out."
+        )
+    if error_holder[0]:
+        raise error_holder[0]
+    return result_holder[0]
+
+
 # ─── Core verifier function ─────────────────────────────────────────────────────
 def verify_document(doc_instance, student_name: str, father_name: str = '', mother_name: str = '') -> dict:
     """
@@ -263,10 +306,15 @@ def verify_document(doc_instance, student_name: str, father_name: str = '', moth
         dict with keys: is_valid, name_matched, verification_status, gemini_result
     """
     doc_type = doc_instance.document_type
+    doc_id   = getattr(doc_instance, 'pk', '?')
+
+    _log(f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    _log(f"▶ START  doc_id={doc_id}  type='{doc_type}'  student='{student_name}'")
+
     prompt = DOCUMENT_PROMPTS.get(doc_type)
 
     if not prompt:
-        # Unknown doc type — mark as not applicable
+        _log(f"✗ SKIP   No prompt defined for doc_type='{doc_type}' → marking as not_applicable")
         doc_instance.verification_status = 'not_applicable'
         doc_instance.verification_result = {'note': 'No verification prompt for this document type'}
         doc_instance.save()
@@ -275,13 +323,21 @@ def verify_document(doc_instance, student_name: str, father_name: str = '', moth
     try:
         # ── Read the file ──
         file_path = doc_instance.file.path
+        file_size = 0
+        try:
+            import os
+            file_size = os.path.getsize(file_path)
+        except Exception:
+            pass
+        _log(f"  📂 Reading file: {file_path}  ({file_size} bytes)")
+
         with open(file_path, 'rb') as f:
             file_bytes = f.read()
+        _log(f"  ✅ File read OK  ({len(file_bytes)} bytes loaded)")
 
         # ── Determine mime type ──
         file_name = doc_instance.file.name.lower()
         if file_name.endswith('.pdf'):
-            # For PDFs: convert first page to image using Pillow (basic) or just send bytes
             mime_type = 'application/pdf'
         elif file_name.endswith('.png'):
             mime_type = 'image/png'
@@ -291,59 +347,84 @@ def verify_document(doc_instance, student_name: str, father_name: str = '', moth
             mime_type = 'image/webp'
         else:
             mime_type = 'image/jpeg'  # fallback
+        _log(f"  📄 MIME type determined: {mime_type}")
 
-        # ── Call Gemini ──
+        # ── Call Gemini (with timeout) ──
+        _log(f"  🤖 Calling Gemini API (model=gemini-2.5-flash, timeout={GEMINI_TIMEOUT_SECONDS}s) ...")
+        t0 = time.time()
+
         model = genai.GenerativeModel('gemini-2.5-flash')
         image_part = {'mime_type': mime_type, 'data': file_bytes}
-        response = model.generate_content([prompt.strip(), image_part])
+        response = _call_gemini_with_timeout(model, prompt, image_part, timeout=GEMINI_TIMEOUT_SECONDS)
+
+        elapsed = time.time() - t0
+        _log(f"  ⚡ Gemini responded in {elapsed:.1f}s")
 
         raw_text = response.text.strip()
+        _log(f"  📝 Raw Gemini response ({len(raw_text)} chars):")
+        # Print full response (truncated to 800 chars to avoid flooding terminal)
+        preview = raw_text if len(raw_text) <= 800 else raw_text[:800] + '...[truncated]'
+        for line in preview.splitlines():
+            _log(f"     {line}")
 
         # ── Parse JSON from response ──
-        # Strip markdown code fences if present
         json_match = re.search(r'\{.*\}', raw_text, re.DOTALL)
         if json_match:
             gemini_result = json.loads(json_match.group())
+            _log(f"  ✅ JSON parsed successfully")
         else:
             raise ValueError(f"No JSON found in Gemini response: {raw_text}")
 
         is_valid = gemini_result.get('is_valid', False)
-        extracted_name = gemini_result.get('extracted_name')
+        extracted_name   = gemini_result.get('extracted_name')
         extracted_father = gemini_result.get('extracted_father_name')
+
+        _log(f"  🔍 is_valid={is_valid}  extracted_name='{extracted_name}'")
 
         # ── Name check (skip for passport photo) ──
         if doc_type == 'photo':
             name_matched = True  # No name check for passport photo
+            _log(f"  👤 Name check: SKIPPED (passport photo)")
         elif doc_type == 'income_cert':
             # Income certs may be in parent's name — match student OR father OR mother
             name_matched = (
                 names_match(extracted_name, student_name, father_name, mother_name)
                 or names_match(extracted_father, student_name, father_name, mother_name)
             )
+            _log(f"  👤 Name check (income_cert): student='{student_name}', father='{father_name}', mother='{mother_name}' → matched={name_matched}")
         elif extracted_name:
             name_matched = names_match(extracted_name, student_name)
+            _log(f"  👤 Name check: doc='{extracted_name}' vs student='{student_name}' → matched={name_matched}")
         else:
             name_matched = False
+            _log(f"  👤 Name check: No name extracted from document → matched=False")
 
         # ── Determine final status ──
         if is_valid and (doc_type == 'photo' or name_matched):
             final_status = 'verified'
             doc_instance.is_verified = True
+            _log(f"  🎉 RESULT: VERIFIED ✅")
         else:
             final_status = 'failed'
             doc_instance.is_verified = False
-            # Add name mismatch note to result
             if is_valid and not name_matched:
-                gemini_result['rejection_reason'] = (
+                rejection = (
                     f"Name mismatch: Document shows '{extracted_name}' but "
                     f"could not match student ('{student_name}')"
-                    + (f", father ('{father_name}')", '')[not father_name]
-                    + (f" or mother ('{mother_name}')", '')[not mother_name]
+                    + (f", father ('{father_name}')" if father_name else '')
+                    + (f" or mother ('{mother_name}')" if mother_name else '')
                 )
+                gemini_result['rejection_reason'] = rejection
+                _log(f"  ❌ RESULT: FAILED — {rejection}")
+            else:
+                _log(f"  ❌ RESULT: FAILED — reason: {gemini_result.get('rejection_reason', 'unknown')}")
 
         doc_instance.verification_status = final_status
         doc_instance.verification_result = gemini_result
         doc_instance.save()
+        _log(f"  💾 Saved to DB  verification_status='{final_status}'")
+        _log(f"◀ END    doc_id={doc_id}  type='{doc_type}'  status='{final_status}'")
+        _log(f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
         return {
             'is_valid': is_valid,
@@ -352,7 +433,27 @@ def verify_document(doc_instance, student_name: str, father_name: str = '', moth
             'gemini_result': gemini_result,
         }
 
+    except TimeoutError as te:
+        _log(f"  ⏰ TIMEOUT  doc_id={doc_id}  type='{doc_type}'  after {GEMINI_TIMEOUT_SECONDS}s — {te}")
+        error_result = {
+            'is_valid': False,
+            'rejection_reason': f'Verification timeout: Gemini API did not respond within {GEMINI_TIMEOUT_SECONDS}s. Please try again.',
+        }
+        doc_instance.verification_status = 'failed'
+        doc_instance.is_verified = False
+        doc_instance.verification_result = error_result
+        doc_instance.save()
+        _log(f"◀ END(timeout) doc_id={doc_id}  type='{doc_type}'")
+        _log(f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        return {
+            'is_valid': False,
+            'name_matched': False,
+            'verification_status': 'failed',
+            'gemini_result': error_result,
+        }
+
     except Exception as e:
+        _log(f"  💥 ERROR  doc_id={doc_id}  type='{doc_type}'  exception={type(e).__name__}: {e}")
         error_result = {
             'is_valid': False,
             'rejection_reason': f'Verification error: {str(e)}',
@@ -361,7 +462,8 @@ def verify_document(doc_instance, student_name: str, father_name: str = '', moth
         doc_instance.is_verified = False
         doc_instance.verification_result = error_result
         doc_instance.save()
-
+        _log(f"◀ END(error) doc_id={doc_id}  type='{doc_type}'")
+        _log(f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
         return {
             'is_valid': False,
             'name_matched': False,

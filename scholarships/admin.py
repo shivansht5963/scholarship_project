@@ -1,5 +1,8 @@
 from django.contrib import admin
-from .models import Scholarship, EligibilityCriteria, RequiredDocument, ScholarshipFunding
+from .models import (
+    Scholarship, EligibilityCriteria, RequiredDocument, ScholarshipFunding,
+    MarksheetVerification, FeesVerification, ScholarshipAward,
+)
 
 
 class RequiredDocumentInline(admin.TabularInline):
@@ -23,8 +26,8 @@ class ScholarshipFundingInline(admin.StackedInline):
 
 @admin.register(Scholarship)
 class ScholarshipAdmin(admin.ModelAdmin):
-    list_display = ['title', 'org_profile', 'organization', 'deadline', 'total_budget', 'is_active', 'is_funded', 'is_verified']
-    list_filter  = ['is_active', 'is_funded', 'is_verified', 'education_level', 'distribution_type', 'disbursement_method']
+    list_display = ['title', 'org_profile', 'organization', 'deadline', 'total_budget', 'is_active', 'is_funded', 'applications_closed']
+    list_filter  = ['is_active', 'is_funded', 'applications_closed', 'education_level', 'distribution_type', 'disbursement_method']
     search_fields = ['title', 'organization', 'description', 'details']
     readonly_fields = ['created_at', 'last_updated']
     date_hierarchy = 'deadline'
@@ -48,7 +51,7 @@ class ScholarshipAdmin(admin.ModelAdmin):
             'fields': ('source_url', 'award_amount', 'details', 'found_by_student', 'finder_karma_awarded')
         }),
         ('Status', {
-            'fields': ('is_active', 'is_funded', 'is_verified', 'created_at', 'last_updated')
+            'fields': ('is_active', 'is_funded', 'is_verified', 'applications_closed', 'closed_at', 'created_at', 'last_updated')
         }),
     )
 
@@ -73,3 +76,29 @@ class ScholarshipFundingAdmin(admin.ModelAdmin):
     list_filter   = ['status']
     search_fields = ['scholarship__title', 'razorpay_order_id', 'razorpay_payment_id']
     readonly_fields = ['created_at', 'paid_at']
+
+
+@admin.register(MarksheetVerification)
+class MarksheetVerificationAdmin(admin.ModelAdmin):
+    list_display   = ['student', 'last_sem_marks', 'extracted_institution', 'gemini_verified', 'uploaded_at']
+    list_filter    = ['gemini_verified']
+    search_fields  = ['student__full_name', 'extracted_institution', 'extracted_student_name']
+    readonly_fields = ['uploaded_at', 'verified_at', 'raw_gemini_response']
+
+
+@admin.register(FeesVerification)
+class FeesVerificationAdmin(admin.ModelAdmin):
+    list_display   = ['student', 'total_annual_fees', 'extracted_college_name', 'college_match', 'gemini_verified', 'uploaded_at']
+    list_filter    = ['gemini_verified', 'college_match']
+    search_fields  = ['student__full_name', 'extracted_college_name', 'extracted_student_name']
+    readonly_fields = ['uploaded_at', 'verified_at', 'raw_gemini_response']
+
+
+@admin.register(ScholarshipAward)
+class ScholarshipAwardAdmin(admin.ModelAdmin):
+    list_display   = ['merit_rank', 'student', 'scholarship', 'amount_awarded', 'merit_score', 'transfer_status', 'awarded_at']
+    list_filter    = ['transfer_status', 'scholarship']
+    search_fields  = ['student__full_name', 'scholarship__title', 'razorpay_payout_id', 'transfer_ref']
+    readonly_fields = ['awarded_at', 'transfer_initiated_at', 'transfer_completed_at']
+    ordering       = ['scholarship', 'merit_rank']
+

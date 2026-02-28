@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+
+# Load .env from project root
+load_dotenv(Path(__file__).resolve().parent.parent / '.env')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -152,6 +156,6 @@ RAZORPAY_KEY_ID     = os.environ.get('RAZORPAY_KEY_ID', 'rzp_test_SKkTal12swC3kN
 RAZORPAY_KEY_SECRET = os.environ.get('RAZORPAY_KEY_SECRET', 'D5lG67pwKB3TEEVjfN0ZyUFr')
 
 # ── Gemini AI ─────────────────────────────────────────────────────────────────
-GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', 'AIzaSyAnpWzJYdm_tok44VCW2oFNyEdiau37jdg')
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
 
 

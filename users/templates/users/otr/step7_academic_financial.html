@@ -1,0 +1,416 @@
+{% extends 'base.html' %}
+
+{% block title %}Step 7 - Academic & Financial Verification{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-yellow: #FFD700;
+        --text-dark: #000000;
+        --border-black: #000000;
+        --blue-primary: #0066FF;
+        --green-success: #00C853;
+        --red-error: #FF3B30;
+        --bg-white: #FFFFFF;
+    }
+
+    body {
+        background: #FFFFFF;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        position: relative;
+    }
+
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: radial-gradient(circle, #e0e0e0 1px, transparent 1px);
+        background-size: 20px 20px;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .otr-container {
+        max-width: 900px;
+        margin: 3rem auto;
+        padding: 0 2rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .step-badge {
+        display: inline-block;
+        background: var(--primary-yellow);
+        color: var(--text-dark);
+        padding: 0.5rem 1.5rem;
+        font-size: 0.85rem;
+        font-weight: 900;
+        letter-spacing: 0.5px;
+        border: 3px solid var(--border-black);
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+    }
+
+    .step-title {
+        font-size: 3rem;
+        font-weight: 900;
+        font-style: italic;
+        line-height: 1.1;
+        margin-bottom: 0.5rem;
+        letter-spacing: -1px;
+    }
+
+    .step-subtitle {
+        color: #666;
+        font-size: 1.05rem;
+        margin-bottom: 0;
+    }
+
+    .completion-badge {
+        display: inline-block;
+        background: var(--primary-yellow);
+        color: var(--text-dark);
+        padding: 0.5rem 1.25rem;
+        font-size: 0.9rem;
+        font-weight: 700;
+        border: 3px solid var(--border-black);
+        margin-top: 1.5rem;
+        text-transform: uppercase;
+    }
+
+    .info-box {
+        background: var(--primary-yellow);
+        padding: 1.25rem 1.5rem;
+        border: 4px solid var(--border-black);
+        margin-bottom: 2rem;
+    }
+
+    .info-box strong {
+        display: block;
+        font-size: 1rem;
+        font-weight: 900;
+        margin-bottom: 0.35rem;
+    }
+
+    .upload-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .upload-card {
+        background: var(--bg-white);
+        border: 4px solid var(--border-black);
+        padding: 2rem;
+        transition: box-shadow 0.2s;
+    }
+
+    .upload-card:hover {
+        box-shadow: 6px 6px 0 var(--border-black);
+    }
+
+    .card-icon {
+        width: 48px;
+        height: 48px;
+        background: var(--primary-yellow);
+        border: 3px solid var(--border-black);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        font-weight: 900;
+        margin-bottom: 1rem;
+    }
+
+    .card-title {
+        font-size: 1.1rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        margin-bottom: 0.35rem;
+    }
+
+    .card-desc {
+        font-size: 0.85rem;
+        color: #666;
+        margin-bottom: 1.25rem;
+        line-height: 1.5;
+    }
+
+    .required-tag {
+        display: inline-block;
+        background: #000;
+        color: #fff;
+        padding: 0.2rem 0.6rem;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.75rem;
+    }
+
+    .optional-tag {
+        display: inline-block;
+        background: #e0e0e0;
+        color: #555;
+        padding: 0.2rem 0.6rem;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.75rem;
+    }
+
+    .file-input-wrapper { position: relative; }
+
+    .file-input-wrapper input[type="file"] {
+        width: 100%;
+        padding: 0.9rem;
+        border: 3px solid var(--border-black);
+        background: #FAFAFA;
+        font-size: 0.9rem;
+        cursor: pointer;
+    }
+
+    .file-input-wrapper input[type="file"]:focus {
+        outline: none;
+        border-color: var(--blue-primary);
+    }
+
+    .already-uploaded {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #E8F5E9;
+        border: 2px solid var(--green-success);
+        padding: 0.6rem 1rem;
+        margin-bottom: 0.75rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .already-uploaded .check {
+        color: var(--green-success);
+        font-weight: 900;
+        font-size: 1rem;
+    }
+
+    .gemini-result {
+        margin-top: 0.75rem;
+        padding: 0.75rem;
+        border: 2px solid;
+        font-size: 0.8rem;
+    }
+
+    .gemini-result.verified { border-color: var(--green-success); background: #E8F5E9; }
+    .gemini-result.unverified { border-color: #FF9800; background: #FFF3E0; }
+
+    .gemini-result strong {
+        display: block;
+        font-weight: 900;
+        margin-bottom: 0.25rem;
+    }
+
+    .ai-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: #000;
+        color: #FFD700;
+        padding: 0.3rem 0.75rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: 2px solid #000;
+        margin-bottom: 1rem;
+    }
+
+    .check-list { list-style: none; padding: 0; margin: 0; }
+
+    .check-list li {
+        padding: 0.3rem 0;
+        font-size: 0.82rem;
+        color: #444;
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .check-list li::before {
+        content: '[+]';
+        color: var(--green-success);
+        font-weight: 900;
+        flex-shrink: 0;
+    }
+
+    .button-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 2.5rem;
+        gap: 1rem;
+    }
+
+    .btn-secondary,
+    .btn-primary {
+        padding: 1rem 2.5rem;
+        border: 3px solid var(--border-black);
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        font-weight: 900;
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.2s;
+    }
+
+    .btn-secondary { background: #fff; color: #000; }
+    .btn-secondary:hover { background: #f0f0f0; transform: translateY(-2px); }
+
+    .btn-primary { background: var(--blue-primary); color: #fff; }
+    .btn-primary:hover { background: #0052cc; transform: translateY(-2px); }
+
+    .btn-skip { background: #f0f0f0; color: #666; border-color: #ccc; }
+    .btn-skip:hover { background: #e0e0e0; }
+
+    @media (max-width: 768px) {
+        .upload-grid { grid-template-columns: 1fr; }
+        .step-title { font-size: 2.2rem; }
+        .button-group { flex-direction: column; }
+        .btn-secondary, .btn-primary { width: 100%; text-align: center; }
+    }
+</style>
+
+<div class="otr-container">
+
+    <!-- Header -->
+    <div class="step-header" style="margin-bottom: 2.5rem;">
+        <div class="step-badge">STEP 7 OF 8: ACADEMIC &amp; FINANCIAL VERIFICATION</div>
+        <h1 class="step-title">ACADEMIC &amp; FINANCIAL</h1>
+        <p class="step-subtitle">Upload your last semester marksheet and college fees receipt for AI verification.</p>
+        <div class="completion-badge">85% COMPLETE</div>
+    </div>
+
+    <!-- AI Badge -->
+    <div class="ai-badge">
+        <span>[AI]</span> GEMINI AI WILL EXTRACT &amp; VERIFY YOUR DOCUMENTS
+    </div>
+
+    <!-- Info box -->
+    <div class="info-box">
+        <strong>[i] WHY DO WE NEED THESE?</strong>
+        These documents help us calculate your merit score for scholarships. Your last semester marks
+        and annual college fees are used to ensure scholarships reach students with the greatest academic
+        potential and financial need. You can upload one or both documents now.
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="upload-grid">
+
+            <!-- Marksheet Card -->
+            <div class="upload-card">
+                <div class="card-icon">Mk</div>
+                <div class="required-tag">Required for Merit</div>
+                <div class="card-title">Last Semester Marksheet</div>
+                <div class="card-desc">
+                    Upload your most recent semester/year result marksheet.
+                    Gemini AI will extract your marks percentage and institution name.
+                </div>
+
+                {% if existing_marksheet and existing_marksheet.marksheet_file %}
+                <div class="already-uploaded">
+                    <span class="check">[+]</span>
+                    Previously uploaded
+                    {% if existing_marksheet.last_sem_marks %}&mdash; <strong>{{ existing_marksheet.last_sem_marks }}%</strong>{% endif %}
+                </div>
+                {% if existing_marksheet.gemini_verified %}
+                <div class="gemini-result verified">
+                    <strong>[+] AI Verified</strong>
+                    {% if existing_marksheet.extracted_institution %}Institution: {{ existing_marksheet.extracted_institution }}{% endif %}
+                    {% if existing_marksheet.extracted_semester %} &bull; {{ existing_marksheet.extracted_semester }}{% endif %}
+                </div>
+                {% else %}
+                <div class="gemini-result unverified">
+                    <strong>[!] Verification Incomplete</strong>
+                    Re-upload a clearer image to improve verification.
+                </div>
+                {% endif %}
+                {% endif %}
+
+                <div class="file-input-wrapper" style="margin-top: 1rem;">
+                    <input type="file" name="marksheet_file" id="marksheet_file" accept=".jpg,.jpeg,.png,.pdf,.webp">
+                </div>
+                <div style="font-size: 0.78rem; color: #888; margin-top: 0.5rem;">
+                    JPG, PNG, PDF or WebP &bull; Max 10MB
+                </div>
+
+                <ul class="check-list" style="margin-top: 1rem;">
+                    <li>Extracts your marks / percentage</li>
+                    <li>Verifies institution name matches profile</li>
+                    <li>Confirms it is a semester/year result</li>
+                </ul>
+            </div>
+
+            <!-- Fees Receipt Card -->
+            <div class="upload-card">
+                <div class="card-icon">Rs</div>
+                <div class="required-tag">Required for Need Score</div>
+                <div class="card-title">College Fees Receipt</div>
+                <div class="card-desc">
+                    Upload your college fees receipt for the current academic year.
+                    Gemini AI will extract the total fees amount and verify your college name.
+                </div>
+
+                {% if existing_fees and existing_fees.fees_receipt_file %}
+                <div class="already-uploaded">
+                    <span class="check">[+]</span>
+                    Previously uploaded
+                    {% if existing_fees.total_annual_fees %}&mdash; <strong>Rs. {{ existing_fees.total_annual_fees|floatformat:0 }}</strong>{% endif %}
+                </div>
+                {% if existing_fees.gemini_verified %}
+                <div class="gemini-result {% if existing_fees.college_match %}verified{% else %}unverified{% endif %}">
+                    {% if existing_fees.college_match %}<strong>[+] College Verified</strong>{% else %}<strong>[!] College Name Mismatch</strong>{% endif %}
+                    {% if existing_fees.extracted_college_name %}{{ existing_fees.extracted_college_name }}{% endif %}
+                </div>
+                {% else %}
+                <div class="gemini-result unverified">
+                    <strong>[!] Verification Incomplete</strong>
+                    Re-upload a clearer receipt to improve verification.
+                </div>
+                {% endif %}
+                {% endif %}
+
+                <div class="file-input-wrapper" style="margin-top: 1rem;">
+                    <input type="file" name="fees_receipt_file" id="fees_receipt_file" accept=".jpg,.jpeg,.png,.pdf,.webp">
+                </div>
+                <div style="font-size: 0.78rem; color: #888; margin-top: 0.5rem;">
+                    JPG, PNG, PDF or WebP &bull; Max 10MB
+                </div>
+
+                <ul class="check-list" style="margin-top: 1rem;">
+                    <li>Extracts total annual fees amount</li>
+                    <li>Cross-checks college name against profile</li>
+                    <li>Confirms it is a valid college receipt</li>
+                </ul>
+            </div>
+
+        </div><!-- /upload-grid -->
+
+        <!-- Navigation -->
+        <div class="button-group">
+            <a href="{% url 'otr_step6' %}" class="btn-secondary">&larr; Back</a>
+            <div style="display: flex; gap: 1rem;">
+                <a href="{% url 'otr_step8' %}" class="btn-secondary btn-skip" onclick="return confirm('Are you sure you want to skip this step? Your merit score may be lower without these documents.');">Skip for now</a>
+                <button type="submit" class="btn-primary">Upload &amp; Verify &rarr;</button>
+            </div>
+        </div>
+    </form>
+
+</div>
+{% endblock %}
