@@ -402,8 +402,8 @@
     <div class="step-header">
         <div class="step-badge">STEP 5 OF 6: DOCUMENT UPLOAD</div>
         <h1 class="step-title">UPLOAD YOUR<br>DOCUMENTS</h1>
-        <p class="step-subtitle">Upload your documents for OTR. <strong>Aadhaar Card, Income Certificate, 10th Marksheet
-                &amp; Passport Photo are all required</strong> — all 4 must be AI-verified to proceed.</p>
+        <p class="step-subtitle">Upload your documents for OTR. <strong>Aadhaar Card, 10th Marksheet
+                &amp; Passport Photo are required</strong> — all 3 must be AI-verified to proceed.</p>
         <div class="completion-badge">75% COMPLETE</div>
     </div>
 
@@ -479,32 +479,6 @@
                     </div>
                 </div>
 
-                <!-- Income Certificate -->
-                <div class="upload-item" id="card-income_cert">
-                    {% if existing_docs.income_cert %}
-                    {% if existing_docs.income_cert.verification_status == 'verified' %}
-                    <span class="status-badge status-verified" style="background:#2ecc71;color:white;">✓ Verified</span>
-                    {% else %}
-                    <span class="status-badge" style="background:#f39c12;color:white;">Uploaded — Re-verify</span>
-                    {% endif %}
-                    {% else %}
-                    <span class="status-badge status-not-uploaded">Not Uploaded</span>
-                    {% endif %}
-                    <div class="upload-icon">💰</div>
-                    <label for="{{ form.income_cert.id_for_label }}">Income Certificate</label>
-                    <p class="upload-description">Issued within the current financial year.</p>
-                    {% if existing_docs.income_cert and existing_docs.income_cert.verification_status == 'verified' %}
-                    <div
-                        style="background:#d4edda;border:2px solid #2ecc71;padding:0.5rem 0.75rem;font-size:0.8rem;font-weight:700;color:#155724;margin-bottom:0.5rem;">
-                        ✅ Already verified — upload again to replace
-                    </div>
-                    {% endif %}
-                    <div class="file-upload-area" data-upload="income_cert">
-                        <div class="preview-container"></div>
-                        <div class="upload-placeholder">📤 No file chosen</div>
-                        {{ form.income_cert }}
-                    </div>
-                </div>
 
                 <!-- 10th Marksheet -->
                 <div class="upload-item" id="card-marksheet_10">
@@ -607,6 +581,33 @@
             </h3>
 
             <div class="upload-grid">
+                <!-- Income Certificate (Optional) -->
+                <div class="upload-item" id="card-income_cert">
+                    {% if existing_docs.income_cert %}
+                    {% if existing_docs.income_cert.verification_status == 'verified' %}
+                    <span class="status-badge status-verified" style="background:#2ecc71;color:white;">✓ Verified</span>
+                    {% else %}
+                    <span class="status-badge" style="background:#f39c12;color:white;">Uploaded — Re-verify</span>
+                    {% endif %}
+                    {% else %}
+                    <span class="status-badge status-not-uploaded">Not Uploaded</span>
+                    {% endif %}
+                    <div class="upload-icon">💰</div>
+                    <label for="{{ form.income_cert.id_for_label }}">Income Certificate</label>
+                    <p class="upload-description">Improves your financial need score.</p>
+                    {% if existing_docs.income_cert and existing_docs.income_cert.verification_status == 'verified' %}
+                    <div
+                        style="background:#d4edda;border:2px solid #2ecc71;padding:0.5rem 0.75rem;font-size:0.8rem;font-weight:700;color:#155724;margin-bottom:0.5rem;">
+                        ✅ Already verified — upload again to replace
+                    </div>
+                    {% endif %}
+                    <div class="file-upload-area" data-upload="income_cert">
+                        <div class="preview-container"></div>
+                        <div class="upload-placeholder">📤 No file chosen</div>
+                        {{ form.income_cert }}
+                    </div>
+                </div>
+
                 <!-- Caste Certificate -->
                 <div class="upload-item">
                     <span class="status-badge status-not-uploaded">Not Uploaded</span>
@@ -668,7 +669,6 @@
             {# Pass server-side verified state as data attrs so JS can read them #}
             <button type="submit" class="btn-primary" id="upload-submit-btn"
                 data-verified-aadhaar="{% if existing_docs.aadhaar and existing_docs.aadhaar.verification_status == 'verified' %}1{% else %}0{% endif %}"
-                data-verified-income="{% if existing_docs.income_cert and existing_docs.income_cert.verification_status == 'verified' %}1{% else %}0{% endif %}"
                 data-verified-marksheet="{% if existing_docs.marksheet_10 and existing_docs.marksheet_10.verification_status == 'verified' %}1{% else %}0{% endif %}"
                 data-verified-photo="{% if existing_docs.photo and existing_docs.photo.verification_status == 'verified' %}1{% else %}0{% endif %}"
                 style="opacity:0.45;cursor:not-allowed;" disabled>
@@ -676,7 +676,7 @@
             </button>
         </div>
         <p id="submit-hint" style="text-align:right;font-size:0.8rem;color:#e74c3c;font-weight:700;margin-top:0.5rem;">
-            ⚠️ Upload all 4 required documents to enable this button
+            ⚠️ Upload all 3 required documents to enable this button
         </p>
     </form>
 </div>
@@ -944,17 +944,16 @@
         // Server-side verified state (1 = already verified, 0 = not)
         const alreadyVerified = {
             aadhaar: btn.dataset.verifiedAadhaar === '1',
-            income_cert: btn.dataset.verifiedIncome === '1',
             marksheet_10: btn.dataset.verifiedMarksheet === '1',
             photo: btn.dataset.verifiedPhoto === '1',
         };
 
         // Track whether a NEW file has been selected for each required input
-        const newFileSelected = { aadhaar: false, income_cert: false, marksheet_10: false, photo: false };
+        const newFileSelected = { aadhaar: false, marksheet_10: false, photo: false };
 
         function checkRequirements() {
             const remaining = [];
-            const LABELS = { aadhaar: 'Aadhaar Card', income_cert: 'Income Certificate', marksheet_10: '10th Marksheet', photo: 'Photo / Selfie' };
+            const LABELS = { aadhaar: 'Aadhaar Card', marksheet_10: '10th Marksheet', photo: 'Photo / Selfie' };
 
             for (const [key, label] of Object.entries(LABELS)) {
                 if (!alreadyVerified[key] && !newFileSelected[key]) {
@@ -976,8 +975,8 @@
             }
         }
 
-        // Watch regular file inputs for aadhaar/income_cert/marksheet_10
-        ['aadhaar', 'income_cert', 'marksheet_10'].forEach(name => {
+        // Watch regular file inputs for aadhaar/marksheet_10
+        ['aadhaar', 'marksheet_10'].forEach(name => {
             const inp = document.querySelector(`input[name="${name}"]`);
             if (inp) inp.addEventListener('change', () => {
                 newFileSelected[name] = inp.files && inp.files.length > 0;

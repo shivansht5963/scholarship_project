@@ -1,0 +1,524 @@
+{% extends 'base.html' %}
+
+{% block title %}Merit List — {{ scholarship.title }}{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --yellow: #FFD700;
+        --black: #000000;
+        --green: #00C853;
+        --red: #FF3B30;
+        --blue: #0066FF;
+        --bg: #FFFFFF;
+    }
+
+    body {
+        background: #fff;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image: radial-gradient(circle, #e0e0e0 1px, transparent 1px);
+        background-size: 20px 20px;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 2.5rem auto;
+        padding: 0 2rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Header */
+    .page-badge {
+        display: inline-block;
+        background: var(--black);
+        color: var(--yellow);
+        padding: 0.4rem 1.25rem;
+        font-size: 0.8rem;
+        font-weight: 900;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        border: 2px solid var(--black);
+        margin-bottom: 0.75rem;
+    }
+
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 900;
+        font-style: italic;
+        line-height: 1.1;
+        letter-spacing: -1px;
+    }
+
+    .page-sub {
+        color: #666;
+        font-size: 1rem;
+        margin-top: 0.35rem;
+    }
+
+    /* Stats row */
+    .stats-row {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin: 1.5rem 0;
+    }
+
+    .stat-box {
+        background: var(--bg);
+        border: 3px solid var(--black);
+        padding: 1rem 1.5rem;
+        flex: 1;
+        min-width: 140px;
+    }
+
+    .stat-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #888;
+    }
+
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--black);
+    }
+
+    /* Action bar */
+    .action-bar {
+        background: var(--yellow);
+        border: 4px solid var(--black);
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .action-bar-text {
+        font-weight: 700;
+        font-size: 0.95rem;
+    }
+
+    /* Not-closed banner */
+    .not-closed-banner {
+        background: #fff;
+        border: 4px solid var(--black);
+        padding: 2.5rem;
+        text-align: center;
+        margin: 2rem 0;
+    }
+
+    .not-closed-banner h2 {
+        font-size: 1.5rem;
+        font-weight: 900;
+        margin-bottom: 0.5rem;
+    }
+
+    .not-closed-banner p {
+        color: #666;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Merit table */
+    .merit-table-wrap {
+        overflow-x: auto;
+        border: 4px solid var(--black);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+    }
+
+    thead {
+        background: var(--black);
+        color: var(--yellow);
+    }
+
+    thead th {
+        padding: 0.85rem 1rem;
+        text-align: left;
+        font-size: 0.8rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    tbody tr {
+        border-bottom: 2px solid #e0e0e0;
+    }
+
+    tbody tr:hover {
+        background: #FFFDE7;
+    }
+
+    tbody tr.winner-row {
+        background: #E8F5E9;
+    }
+
+    tbody td {
+        padding: 0.85rem 1rem;
+        font-size: 0.88rem;
+        vertical-align: middle;
+    }
+
+    /* Rank badge */
+    .rank-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border: 2px solid var(--black);
+        font-weight: 900;
+        font-size: 0.85rem;
+    }
+
+    .rank-1 {
+        background: #FFD700;
+    }
+
+    .rank-2 {
+        background: #e0e0e0;
+    }
+
+    .rank-3 {
+        background: #CD7F32;
+        color: #fff;
+    }
+
+    .rank-other {
+        background: #f5f5f5;
+    }
+
+    /* Score bar */
+    .score-wrap {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .score-bar-bg {
+        width: 80px;
+        height: 8px;
+        background: #e0e0e0;
+        border: 1px solid #ccc;
+        flex-shrink: 0;
+    }
+
+    .score-bar-fill {
+        height: 100%;
+        background: var(--green);
+    }
+
+    .score-num {
+        font-weight: 700;
+        font-size: 0.88rem;
+        white-space: nowrap;
+    }
+
+    /* Pill */
+    .pill {
+        display: inline-block;
+        padding: 0.2rem 0.6rem;
+        font-size: 0.72rem;
+        font-weight: 700;
+        border: 2px solid;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .pill-green {
+        border-color: var(--green);
+        background: #E8F5E9;
+        color: #1B5E20;
+    }
+
+    .pill-orange {
+        border-color: #FF9800;
+        background: #FFF3E0;
+        color: #E65100;
+    }
+
+    .pill-grey {
+        border-color: #ccc;
+        background: #f5f5f5;
+        color: #888;
+    }
+
+    .pill-awarded {
+        border-color: var(--blue);
+        background: #E3F2FD;
+        color: #0D47A1;
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 0.75rem 1.75rem;
+        border: 3px solid var(--black);
+        cursor: pointer;
+        font-weight: 900;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.2s;
+    }
+
+    .btn-approve {
+        background: var(--green);
+        color: #fff;
+    }
+
+    .btn-approve:hover {
+        filter: brightness(0.9);
+        transform: translateY(-1px);
+    }
+
+    .btn-close-apps {
+        background: var(--red);
+        color: #fff;
+    }
+
+    .btn-close-apps:hover {
+        filter: brightness(0.9);
+        transform: translateY(-1px);
+    }
+
+    .btn-back {
+        background: #fff;
+        color: var(--black);
+    }
+
+    .btn-back:hover {
+        background: #f0f0f0;
+    }
+
+    /* Winner cutoff line */
+    .cutoff-row td {
+        background: #000;
+        color: var(--yellow);
+        font-size: 0.75rem;
+        font-weight: 900;
+        text-align: center;
+        padding: 0.4rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Empty state */
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #888;
+    }
+
+    .empty-state strong {
+        display: block;
+        font-size: 1.1rem;
+        color: #000;
+        margin-bottom: 0.5rem;
+    }
+</style>
+
+<div class="container">
+    <!-- Header -->
+    <div style="margin-bottom: 2rem;">
+        <a href="{% url 'funder_portal:funder_dashboard' %}" class="btn btn-back"
+            style="margin-bottom: 1rem; padding: 0.5rem 1rem;">&larr; Dashboard</a>
+        <div class="page-badge">[M] MERIT LIST</div>
+        <h1 class="page-title">{{ scholarship.title|upper }}</h1>
+        <p class="page-sub">
+            Ranked applicants by academic score (35) + financial need (40) + income (25)
+        </p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+        <div class="stat-box">
+            <div class="stat-label">Winners to Select</div>
+            <div class="stat-value">{{ num_winners }}</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Eligible Applicants</div>
+            <div class="stat-value">{{ merit_list|length }}</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Already Awarded</div>
+            <div class="stat-value">{{ already_awarded }}</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Per Winner Amount</div>
+            <div class="stat-value">
+                {% if scholarship.distribution_type == 'FIXED' %}
+                Rs.{{ scholarship.fixed_amount|default:"?" }}
+                {% else %}
+                Dynamic
+                {% endif %}
+            </div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Deadline</div>
+            <div class="stat-value" style="font-size: 1rem; padding-top: 0.35rem;">
+                {{ scholarship.deadline|date:"d M Y" }}
+            </div>
+        </div>
+    </div>
+
+    {% if not is_closed %}
+    <!-- Not yet closed -->
+    <div class="not-closed-banner">
+        <h2>[L] Applications Still Open</h2>
+        <p>
+            The merit list will appear automatically after the deadline
+            <strong>({{ scholarship.deadline|date:"d M Y, H:i" }})</strong>,
+            or you can close applications manually now.
+        </p>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="close">
+            <button type="submit" class="btn btn-close-apps"
+                onclick="return confirm('Close applications now? Students will no longer be able to apply.');">
+                Close Applications Now
+            </button>
+        </form>
+    </div>
+
+    {% else %}
+    <!-- Closed — show action bar -->
+    <div class="action-bar">
+        <div class="action-bar-text">
+            {% if already_awarded %}
+            [+] {{ already_awarded }} winner(s) already approved.
+            {% else %}
+            Applications closed. Ready to approve top {{ num_winners }} winner(s).
+            {% endif %}
+        </div>
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            {% if merit_list and already_awarded < num_winners %} <form method="post"
+                action="{% url 'funder_portal:approve_winners' pk=scholarship.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-approve"
+                    onclick="return confirm('Approve top {{ num_winners }} winner(s) and initiate transfers?');">
+                    Approve Top {{ num_winners }} &amp; Transfer
+                </button>
+                </form>
+                {% endif %}
+        </div>
+    </div>
+
+    {% if merit_list %}
+    <div class="merit-table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Student</th>
+                    <th>Merit Score</th>
+                    <th>Last Sem Marks</th>
+                    <th>Annual Fees</th>
+                    <th>Income</th>
+                    <th>Prior Received</th>
+                    <th>Docs Status</th>
+                    <th>Award</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in merit_list %}
+                {% if forloop.counter == num_winners|add:1 %}
+                <tr class="cutoff-row">
+                    <td colspan="9">--- Winners cutoff: top {{ num_winners }} selected above this line ---</td>
+                </tr>
+                {% endif %}
+                <tr class="{% if forloop.counter <= num_winners %}winner-row{% endif %}">
+                    <td>
+                        <span
+                            class="rank-badge rank-{% if forloop.counter <= 3 %}{{ forloop.counter }}{% else %}other{% endif %}">
+                            {{ entry.rank }}
+                        </span>
+                    </td>
+                    <td>
+                        <strong>{{ entry.student.full_name|default:"—" }}</strong><br>
+                        <span style="color: #888; font-size: 0.78rem;">
+                            {{ entry.student.get_category_display|default:"" }}
+                            {% if entry.student.state %}&bull; {{ entry.student.state }}{% endif %}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="score-wrap">
+                            <div class="score-bar-bg">
+                                <div class="score-bar-fill" style="width: {{ entry.merit_score }}%;"></div>
+                            </div>
+                            <span class="score-num">{{ entry.merit_score }}%</span>
+                        </div>
+                    </td>
+                    <td>
+                        {% if entry.marks %}
+                        <strong>{{ entry.marks }}%</strong>
+                        {% if entry.marksheet_verified %}<span class="pill pill-green">[+]</span>{% else %}<span
+                            class="pill pill-orange">[!]</span>{% endif %}
+                        {% else %}—{% endif %}
+                    </td>
+                    <td>
+                        {% if entry.fees %}
+                        Rs.{{ entry.fees|floatformat:0 }}
+                        {% if entry.college_match %}<span class="pill pill-green">[+]</span>{% else %}<span
+                            class="pill pill-orange">[!]</span>{% endif %}
+                        {% else %}—{% endif %}
+                    </td>
+                    <td>Rs.{{ entry.income|floatformat:0 }}</td>
+                    <td>
+                        {% if entry.prior_received %}
+                        Rs.{{ entry.prior_received|floatformat:0 }}
+                        {% else %}
+                        <span style="color: #bbb;">None</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if entry.marksheet_verified and entry.fees_verified %}
+                        <span class="pill pill-green">All OK</span>
+                        {% elif entry.marksheet_verified or entry.fees_verified %}
+                        <span class="pill pill-orange">Partial</span>
+                        {% else %}
+                        <span class="pill pill-grey">Missing</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if entry.application.award %}
+                        <span class="pill pill-awarded">[+] Awarded</span>
+                        {% elif forloop.counter <= num_winners %} <span class="pill pill-green">Will Award</span>
+                            {% else %}
+                            <span class="pill pill-grey">Not Selected</span>
+                            {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+        <strong>No eligible applicants found</strong>
+        Applicants must have their marksheet and fees receipt verified by Gemini AI to appear here.
+        Students who haven't completed OTR Step 7 will not show.
+    </div>
+    {% endif %}
+    {% endif %}
+
+</div>
+{% endblock %}

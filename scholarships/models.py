@@ -101,7 +101,9 @@ class Scholarship(models.Model):
     # ── FINANCIALS ──────────────────────────────────────────────────────────
     total_budget = models.PositiveIntegerField(
         verbose_name="Total Budget (₹)",
-        help_text="Full amount the organization deposits into escrow (INR)"
+        help_text="Full amount the organization deposits into escrow (INR)",
+        null=True,
+        blank=True,
     )
     distribution_type = models.CharField(
         max_length=10,

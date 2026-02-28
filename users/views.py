@@ -36,23 +36,28 @@ def student_dashboard(request):
     """Student dashboard - redirects to OTR if not completed"""
     try:
         profile = request.user.studentprofile
-        
+
         # If OTR not completed, redirect to OTR
         if not profile.otr_completed:
             return redirect('otr_welcome')
-        
+
         # OTR complete - show dashboard
+        from scholarships.models import ScholarshipAward
         academic_records = profile.academic_records.all()
-        documents = profile.documents.all()
-        
+        documents        = profile.documents.all()
+        awards           = ScholarshipAward.objects.filter(
+            student=profile
+        ).select_related('scholarship').order_by('-awarded_at')
+
         return render(request, 'users/student_dashboard.html', {
-            'profile': profile,
+            'profile':          profile,
             'academic_records': academic_records,
-            'documents': documents,
+            'documents':        documents,
+            'awards':           awards,
+            'awards_total':     sum(a.amount_awarded or 0 for a in awards),
         })
-        
+
     except StudentProfile.DoesNotExist:
-        # Create profile and redirect to OTR
         profile = StudentProfile.objects.create(
             user=request.user,
             full_name=request.user.username

@@ -26,7 +26,14 @@ urlpatterns = [
     path('scholarship/<int:pk>/delete/',        views.delete_scholarship,  name='delete_scholarship'),
 
     # ── Application review ────────────────────────────────────────────────
-    path('applications/',                       views.view_applications,   name='view_applications'),
-    path('applications/<int:pk>/',              views.application_detail,  name='application_detail'),
-    path('applications/<int:pk>/decision/',     views.make_decision,       name='make_decision'),
+    path('applications/',                         views.view_applications,    name='view_applications'),
+    path('applications/<int:pk>/',                views.application_detail,   name='application_detail'),
+    path('applications/<int:pk>/decision/',       views.make_decision,        name='make_decision'),
+
+    # ── Merit List & Awards (Phase 7E) ────────────────────────────────────────
+    path('scholarship/<int:pk>/merit-list/',      views.merit_list_view,      name='merit_list'),
+    path('scholarship/<int:pk>/approve-winners/', views.approve_winners_view, name='approve_winners'),
+
+    # ── Razorpay Payout Webhook (Phase 7F) ───────────────────────────────────
+    path('webhooks/payout/',                      views.razorpay_payout_webhook, name='payout_webhook'),
 ]

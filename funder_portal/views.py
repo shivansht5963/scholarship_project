@@ -544,3 +544,192 @@ def delete_scholarship(request, pk):
         return redirect('funder_portal:funder_dashboard')
 
     return render(request, 'funder_portal/delete_scholarship.html', {'scholarship': scholarship})
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# MERIT LIST  (Phase 7E)
+# ─────────────────────────────────────────────────────────────────────────────
+
+@login_required
+@org_required
+def merit_list_view(request, pk):
+    """
+    Shows the ranked merit list for a scholarship.
+    Available once:
+      - scholarship.deadline has passed, OR
+      - org manually closes applications (applications_closed=True)
+
+    POST with action=close   → closes applications
+    """
+    scholarship = get_object_or_404(
+        Scholarship,
+        pk=pk,
+        org_profile=request.user.organizationprofile
+    )
+
+    # ── Handle manual close ───────────────────────────────────────────────────
+    if request.method == 'POST' and request.POST.get('action') == 'close':
+        scholarship.applications_closed = True
+        scholarship.closed_at = timezone.now()
+        scholarship.save(update_fields=['applications_closed', 'closed_at'])
+        messages.success(request, 'Applications closed. Merit list is now visible.')
+        return redirect('funder_portal:merit_list', pk=pk)
+
+    # ── Check if merit list should be shown ───────────────────────────────────
+    from scholarships.models import ScholarshipAward
+    from scholarships.award_engine import get_merit_list
+
+    now = timezone.now()
+    is_closed = scholarship.applications_closed or (scholarship.deadline and scholarship.deadline < now)
+    merit_list_data = []
+    if is_closed:
+        merit_list_data = get_merit_list(scholarship)
+
+    # ── Count already-awarded ─────────────────────────────────────────────────
+    already_awarded = ScholarshipAward.objects.filter(scholarship=scholarship).count()
+
+    return render(request, 'funder_portal/merit_list.html', {
+        'scholarship':     scholarship,
+        'is_closed':       is_closed,
+        'merit_list':      merit_list_data,
+        'num_winners':     scholarship.num_winners or 1,
+        'already_awarded': already_awarded,
+        'now':             now,
+    })
+
+
+@login_required
+@org_required
+def approve_winners_view(request, pk):
+    """
+    POST-only view.  Approves top N applicants from the merit list and
+    triggers bank transfers for BANK_TRANSFER scholarships.
+    """
+    scholarship = get_object_or_404(
+        Scholarship,
+        pk=pk,
+        org_profile=request.user.organizationprofile
+    )
+
+    if request.method != 'POST':
+        return redirect('funder_portal:merit_list', pk=pk)
+
+    from scholarships.award_engine import auto_approve_winners, trigger_bank_transfer
+    from scholarships.models import ScholarshipAward
+
+    awards = auto_approve_winners(scholarship)
+
+    if not awards:
+        messages.warning(request, 'No eligible applicants found or all already awarded.')
+        return redirect('funder_portal:merit_list', pk=pk)
+
+    # Trigger bank transfers for BANK_TRANSFER scholarships
+    transfer_count = 0
+    if scholarship.disbursement_method == 'BANK_TRANSFER':
+        for award in awards:
+            payout_id = trigger_bank_transfer(award)
+            if payout_id:
+                transfer_count += 1
+
+    messages.success(
+        request,
+        f'{len(awards)} winner(s) approved. '
+        + (f'{transfer_count} bank transfer(s) initiated.' if transfer_count else
+           'Manual disbursement required — check your disbursement settings.')
+    )
+    return redirect('funder_portal:merit_list', pk=pk)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# RAZORPAY PAYOUT WEBHOOK  (Phase 7F)
+# ─────────────────────────────────────────────────────────────────────────────
+
+import logging
+_wh_logger = logging.getLogger(__name__)
+
+
+@csrf_exempt
+def razorpay_payout_webhook(request):
+    """
+    Receives Razorpay Payouts webhooks.
+    Events handled:
+        payout.processed  → transfer_status = DONE
+        payout.failed     → transfer_status = FAILED
+        payout.reversed   → transfer_status = FAILED
+
+    Verification: HMAC-SHA256 of raw body with RAZORPAY_WEBHOOK_SECRET.
+    Configure this URL in the Razorpay dashboard → Webhooks → Add New.
+    """
+    if request.method != 'POST':
+        from django.http import HttpResponseNotAllowed
+        return HttpResponseNotAllowed(['POST'])
+
+    # ── Signature verification ────────────────────────────────────────────────
+    webhook_secret = getattr(settings, 'RAZORPAY_WEBHOOK_SECRET', '')
+    signature      = request.headers.get('X-Razorpay-Signature', '')
+
+    if webhook_secret and signature:
+        expected = hmac.new(
+            webhook_secret.encode(),
+            request.body,
+            hashlib.sha256
+        ).hexdigest()
+        if not hmac.compare_digest(expected, signature):
+            _wh_logger.warning("Payout webhook: invalid signature")
+            return JsonResponse({'error': 'invalid signature'}, status=400)
+
+    # ── Parse payload ─────────────────────────────────────────────────────────
+    try:
+        payload = json.loads(request.body)
+    except Exception:
+        return JsonResponse({'error': 'invalid JSON'}, status=400)
+
+    event      = payload.get('event', '')
+    payout_obj = payload.get('payload', {}).get('payout', {}).get('entity', {})
+    payout_id  = payout_obj.get('id', '')
+    reference  = payout_obj.get('reference_id', '')   # e.g. "award_42"
+
+    _wh_logger.info("Payout webhook event=%s payout_id=%s ref=%s", event, payout_id, reference)
+
+    if not payout_id:
+        return JsonResponse({'status': 'ignored — no payout id'}, status=200)
+
+    # ── Locate award ──────────────────────────────────────────────────────────
+    from scholarships.models import ScholarshipAward
+
+    award = None
+    # Try by stored payout ID first
+    try:
+        award = ScholarshipAward.objects.get(razorpay_payout_id=payout_id)
+    except ScholarshipAward.DoesNotExist:
+        # Try by reference_id "award_<pk>"
+        if reference.startswith('award_'):
+            try:
+                pk = int(reference.split('_')[1])
+                award = ScholarshipAward.objects.get(pk=pk)
+            except (ValueError, ScholarshipAward.DoesNotExist):
+                pass
+
+    if not award:
+        _wh_logger.warning("Payout webhook: award not found for payout_id=%s ref=%s", payout_id, reference)
+        return JsonResponse({'status': 'award not found'}, status=200)
+
+    # ── Update transfer status ────────────────────────────────────────────────
+    if event == 'payout.processed':
+        award.transfer_status = 'DONE'
+        award.razorpay_payout_id = payout_id
+        award.save(update_fields=['transfer_status', 'razorpay_payout_id'])
+        _wh_logger.info("Award %s marked DONE", award.pk)
+
+    elif event in ('payout.failed', 'payout.reversed'):
+        failure_reason = payout_obj.get('failure_reason', '') or event
+        award.transfer_status = 'FAILED'
+        award.failure_reason  = failure_reason
+        award.razorpay_payout_id = payout_id
+        award.save(update_fields=['transfer_status', 'failure_reason', 'razorpay_payout_id'])
+        _wh_logger.warning("Award %s marked FAILED: %s", award.pk, failure_reason)
+
+    else:
+        _wh_logger.info("Payout webhook: unhandled event %s — ignored", event)
+
+    return JsonResponse({'status': 'ok'}, status=200)

@@ -74,9 +74,7 @@
         margin-bottom: 1.4rem;
     }
 
-    .wp-line.done {
-        background: #4CAF50;
-    }
+    .wp-line.done { background: #4CAF50; }
 
     .wizard-card {
         background: white;
@@ -91,16 +89,8 @@
         color: white;
     }
 
-    .wizard-header h1 {
-        margin: 0;
-        font-size: 1.8rem;
-        font-weight: 700;
-    }
-
-    .wizard-header p {
-        margin: .4rem 0 0;
-        opacity: .9;
-    }
+    .wizard-header h1 { margin: 0; font-size: 1.8rem; font-weight: 700; }
+    .wizard-header p { margin: .4rem 0 0; opacity: .9; }
 
     .wizard-step-tag {
         display: inline-block;
@@ -113,13 +103,8 @@
         letter-spacing: .5px;
     }
 
-    .wizard-body {
-        padding: 2.5rem;
-    }
-
-    .field-group {
-        margin-bottom: 1.8rem;
-    }
+    .wizard-body { padding: 2.5rem; }
+    .field-group { margin-bottom: 1.8rem; }
 
     .field-label {
         display: block;
@@ -129,11 +114,7 @@
         font-size: .95rem;
     }
 
-    .field-help {
-        font-size: .82rem;
-        color: #888;
-        margin-top: .3rem;
-    }
+    .field-help { font-size: .82rem; color: #888; margin-top: .3rem; }
 
     .form-control {
         width: 100%;
@@ -153,16 +134,8 @@
         background: white;
     }
 
-    .errorlist {
-        list-style: none;
-        padding: 0;
-        margin: .4rem 0 0;
-    }
-
-    .errorlist li {
-        color: #e53935;
-        font-size: .85rem;
-    }
+    .errorlist { list-style: none; padding: 0; margin: .4rem 0 0; }
+    .errorlist li { color: #e53935; font-size: .85rem; }
 
     .wizard-footer {
         display: flex;
@@ -205,10 +178,7 @@
         transition: .2s;
     }
 
-    .btn-wizard-back:hover {
-        border-color: #AB47BC;
-        color: #6A1B9A;
-    }
+    .btn-wizard-back:hover { border-color: #AB47BC; color: #6A1B9A; }
 
     .radio-cards {
         display: grid;
@@ -226,38 +196,12 @@
         position: relative;
     }
 
-    .radio-card:hover {
-        border-color: #AB47BC;
-        background: #F3E5F5;
-    }
-
-    .radio-card input[type=radio] {
-        position: absolute;
-        opacity: 0;
-        width: 0;
-    }
-
-    .radio-card.selected {
-        border-color: #7B1FA2;
-        background: #F3E5F5;
-    }
-
-    .radio-card-icon {
-        font-size: 2rem;
-        margin-bottom: .5rem;
-        display: block;
-    }
-
-    .radio-card-title {
-        font-weight: 700;
-        color: #4A148C;
-        margin-bottom: .25rem;
-    }
-
-    .radio-card-desc {
-        font-size: .82rem;
-        color: #777;
-    }
+    .radio-card:hover { border-color: #AB47BC; background: #F3E5F5; }
+    .radio-card input[type=radio] { position: absolute; opacity: 0; width: 0; }
+    .radio-card.selected { border-color: #7B1FA2; background: #F3E5F5; }
+    .radio-card-icon { font-size: 2rem; margin-bottom: .5rem; display: block; }
+    .radio-card-title { font-weight: 700; color: #4A148C; margin-bottom: .25rem; }
+    .radio-card-desc { font-size: .82rem; color: #777; }
 
     .conditional-section {
         display: none;
@@ -268,9 +212,7 @@
         margin-top: 1rem;
     }
 
-    .conditional-section.show {
-        display: block;
-    }
+    .conditional-section.show { display: block; }
 
     .two-col {
         display: grid;
@@ -278,9 +220,7 @@
         gap: 1.2rem;
     }
 
-    .inr-wrap {
-        position: relative;
-    }
+    .inr-wrap { position: relative; }
 
     .inr-prefix {
         position: absolute;
@@ -291,9 +231,7 @@
         color: #6A1B9A;
     }
 
-    .inr-wrap .form-control {
-        padding-left: 2.2rem;
-    }
+    .inr-wrap .form-control { padding-left: 2.2rem; }
 
     .budget-preview {
         background: linear-gradient(135deg, #4A148C, #7B1FA2);
@@ -305,19 +243,9 @@
         display: none;
     }
 
-    .budget-preview.show {
-        display: block;
-    }
-
-    .budget-preview .big-num {
-        font-size: 2.5rem;
-        font-weight: 700;
-    }
-
-    .budget-preview .sub {
-        opacity: .8;
-        font-size: .9rem;
-    }
+    .budget-preview.show { display: block; }
+    .budget-preview .big-num { font-size: 2.5rem; font-weight: 700; }
+    .budget-preview .sub { opacity: .8; font-size: .9rem; }
 </style>
 
 <div class="wizard-container">
@@ -395,38 +323,34 @@
 
                     <!-- Fixed fields -->
                     <div class="conditional-section {% if form.distribution_type.value == 'FIXED' or not form.distribution_type.value %}show{% endif %}" id="fixed-section">
-                        <div class="two-col">
-                            <div>
-                                <label class="field-label" style="font-size:.88rem;">Amount per Winner (₹)</label>
-                                <div class="inr-wrap">
-                                    <span class="inr-prefix">₹</span>
-                                    <input type="number" name="{{ form.fixed_amount.html_name }}" id="id_fixed_amount"
-                                        value="{{ form.fixed_amount.value|default:'' }}" class="form-control"
-                                        placeholder="e.g. 2000" min="1" oninput="updateBudgetPreview()">
-                                </div>
-                                {{ form.fixed_amount.errors }}
+                        <div>
+                            <label class="field-label" style="font-size:.88rem;">Amount per Winner (₹) <span style="color:#e53935;">*</span></label>
+                            <div class="inr-wrap">
+                                <span class="inr-prefix">&#x20B9;</span>
+                                <input type="number" name="{{ form.fixed_amount.html_name }}" id="id_fixed_amount"
+                                    value="{{ form.fixed_amount.value|default:'' }}" class="form-control"
+                                    placeholder="e.g. 2000" min="1" oninput="updateBudgetPreview()">
                             </div>
-                            <div>
-                                <label class="field-label" style="font-size:.88rem;">Number of Winners</label>
-                                <input type="number" name="{{ form.num_winners.html_name }}" id="id_num_winners"
-                                    value="{{ form.num_winners.value|default:'' }}" class="form-control"
-                                    placeholder="e.g. 5" min="1" oninput="updateBudgetPreview()">
-                                {{ form.num_winners.errors }}
-                            </div>
+                            {{ form.fixed_amount.errors }}
                         </div>
                         <div id="budget-math-msg" style="margin-top:.75rem;font-size:.88rem;"></div>
                     </div>
 
                     <!-- Dynamic fields -->
                     <div class="conditional-section {% if form.distribution_type.value == 'DYNAMIC' %}show{% endif %}" id="dynamic-section">
-                        <div>
-                            <label class="field-label" style="font-size:.88rem;">Number of Winners to Select</label>
-                            <input type="number" name="{{ form.num_winners.html_name }}"
-                                value="{{ form.num_winners.value|default:'' }}" class="form-control"
-                                placeholder="e.g. 10" min="1">
-                            <div class="field-help">The total budget will be split proportionally based on each winner's need score.</div>
+                        <div class="field-help" style="color:#6A1B9A;font-weight:600;margin-bottom:.5rem;">
+                            The total budget will be split proportionally based on each winner's need score.
                         </div>
                     </div>
+                </div>
+
+                <!-- Number of Winners -->
+                <div class="field-group" id="num-winners-row">
+                    <label class="field-label">Number of Winners <span style="color:#e53935;">*</span></label>
+                    <input type="number" name="{{ form.num_winners.html_name }}" id="id_num_winners"
+                        value="{{ form.num_winners.value|default:'' }}" class="form-control" placeholder="e.g. 5"
+                        min="1" oninput="updateBudgetPreview()">
+                    {{ form.num_winners.errors }}
                 </div>
 
                 <!-- Disbursement Method -->

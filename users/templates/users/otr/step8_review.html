@@ -254,7 +254,7 @@
             <div class="data-grid" style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #eee;">
                 <div class="data-item">
                     <div class="data-label">Degree / Level</div>
-                    <div class="data-value">{{ record.get_education_level_display|default:record.degree }}</div>
+                    <div class="data-value">{{ record.get_degree_level_display|default:record.degree_level }}</div>
                 </div>
                 <div class="data-item">
                     <div class="data-label">Institution</div>
@@ -262,11 +262,11 @@
                 </div>
                 <div class="data-item">
                     <div class="data-label">Percentage / CGPA</div>
-                    <div class="data-value">{{ record.percentage|default:"—" }}</div>
+                    <div class="data-value">{{ record.last_exam_score|default:"—" }}</div>
                 </div>
                 <div class="data-item">
-                    <div class="data-label">Year</div>
-                    <div class="data-value">{{ record.passing_year|default:"—" }}</div>
+                    <div class="data-label">Current Year</div>
+                    <div class="data-value">{{ record.current_year|default:"—" }}</div>
                 </div>
             </div>
             {% endfor %}

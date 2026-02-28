@@ -346,7 +346,10 @@
                         {% endif %}
                     </td>
                     <td>
-                        {% if scheme.is_active %}
+                        {% if scheme.applications_closed %}
+                        <span class="status-badge" style="background:rgba(33,150,243,.1);color:#1565C0;">🔒
+                            Closed</span>
+                        {% elif scheme.is_active %}
                         <span class="status-badge status-active">● Active</span>
                         {% else %}
                         <span class="status-badge status-inactive">○ Draft</span>
@@ -354,9 +357,11 @@
                     </td>
                     <td>
                         <div class="action-links">
-                            <a href="{% url 'funder_portal:create_step1' %}?edit={{ scheme.pk }}" class="btn-edit">✏️
-                                Edit</a>
+                            <a href="{% url 'funder_portal:merit_list' pk=scheme.pk %}" class="action-link"
+                                style="color:#6A1B9A;font-weight:700;" title="View Merit List">🏆 Merit</a>
                             <a href="{% url 'funder_portal:view_applications' %}" class="action-link">👥 Apps</a>
+                            <a href="{% url 'funder_portal:edit_scholarship' pk=scheme.pk %}" class="action-link">✏️
+                                Edit</a>
                             <a href="{% url 'funder_portal:delete_scholarship' pk=scheme.pk %}" class="action-link"
                                 style="color:#dc3545;">🗑️</a>
                         </div>

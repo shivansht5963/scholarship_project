@@ -21,7 +21,7 @@
 
     /* === DOTTED BACKGROUND === */
     .dashboard-page-wrapper {
-        background: 
+        background:
             radial-gradient(circle, #00000008 1px, transparent 1px);
         background-size: 20px 20px;
         background-color: var(--sm-white);
@@ -766,11 +766,12 @@
 
 <div class="dashboard-page-wrapper">
     <div class="dashboard-container">
-        
+
         <!-- WELCOME HEADER -->
         <div class="welcome-header">
             <h1>HELLO,<br>{{ profile.full_name|upper|default:"STUDENT" }}.</h1>
-            <p class="welcome-subtitle">Your scholarship profile is <u>fully optimized</u> for the Spring 2024 academic cycle.</p>
+            <p class="welcome-subtitle">Your scholarship profile is <u>fully optimized</u> for the Spring 2024 academic
+                cycle.</p>
         </div>
 
         <!-- PROGRESS SECTION -->
@@ -788,10 +789,10 @@
 
         <!-- MAIN GRID -->
         <div class="dashboard-main-grid">
-            
+
             <!-- LEFT COLUMN -->
             <div>
-                
+
                 <!-- PLATFORM INSIGHTS -->
                 <div class="insights-card">
                     <div class="insights-header">
@@ -801,22 +802,76 @@
                     <div class="insights-grid">
                         <div class="insight-item">
                             <div class="insight-value">{{ academic_records.count|stringformat:"02d" }}</div>
-                            <div class="insight-label">MATCHES</div>
+                            <div class="insight-label">ACADEMICS</div>
                         </div>
                         <div class="insight-item">
                             <div class="insight-value">{{ documents.count|stringformat:"02d" }}</div>
-                            <div class="insight-label">DRAFTS</div>
+                            <div class="insight-label">DOCUMENTS</div>
                         </div>
                         <div class="insight-item">
                             <div class="insight-value">00</div>
                             <div class="insight-label">APPLIED</div>
                         </div>
                         <div class="insight-item">
-                            <div class="insight-value highlight">00</div>
+                            <div class="insight-value highlight">{{ awards.count|stringformat:"02d" }}</div>
                             <div class="insight-label">AWARDED</div>
                         </div>
                     </div>
                 </div>
+
+                {% if awards %}
+                <!-- MY AWARDS SECTION -->
+                <div class="insights-card" style="margin-bottom: 2rem;">
+                    <div class="insights-header">
+                        <h2 class="insights-title">🏆 My Awards</h2>
+                        <div class="insights-icon" style="background: var(--sm-green);">₹</div>
+                    </div>
+                    <div style="padding: 0;">
+                        {% for award in awards %}
+                        <div
+                            style="padding: 1.5rem 2rem; border-bottom: 3px solid var(--sm-black); display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                            <div>
+                                <div
+                                    style="font-size: 1rem; font-weight: 900; text-transform: uppercase; color: var(--sm-black); margin-bottom: 0.25rem;">
+                                    {{ award.scholarship.title }}
+                                </div>
+                                <div
+                                    style="font-size: 0.75rem; font-weight: 700; color: var(--sm-gray); text-transform: uppercase; letter-spacing: 0.5px;">
+                                    Rank #{{ award.merit_rank }} &bull; Merit Score: {{ award.merit_score }}
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 1rem; flex-shrink: 0;">
+                                <span style="font-size: 1.4rem; font-weight: 900; color: var(--sm-black);">
+                                    ₹{{ award.amount_awarded|default:"—" }}
+                                </span>
+                                {% if award.transfer_status == 'DONE' %}
+                                <span
+                                    style="background: var(--sm-green); color: #fff; border: 3px solid var(--sm-black); padding: 0.3rem 0.75rem; font-size: 0.72rem; font-weight: 900; text-transform: uppercase;">✓
+                                    PAID</span>
+                                {% elif award.transfer_status == 'PROCESSING' %}
+                                <span
+                                    style="background: var(--sm-blue); color: #fff; border: 3px solid var(--sm-black); padding: 0.3rem 0.75rem; font-size: 0.72rem; font-weight: 900; text-transform: uppercase;">⟳
+                                    PROCESSING</span>
+                                {% elif award.transfer_status == 'FAILED' %}
+                                <span
+                                    style="background: var(--sm-red); color: #fff; border: 3px solid var(--sm-black); padding: 0.3rem 0.75rem; font-size: 0.72rem; font-weight: 900; text-transform: uppercase;">✗
+                                    FAILED</span>
+                                {% else %}
+                                <span
+                                    style="background: var(--sm-yellow); color: var(--sm-black); border: 3px solid var(--sm-black); padding: 0.3rem 0.75rem; font-size: 0.72rem; font-weight: 900; text-transform: uppercase;">APPROVED</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                        <!-- Total row -->
+                        <div
+                            style="padding: 1.25rem 2rem; background: var(--sm-black); color: var(--sm-yellow); display: flex; justify-content: space-between; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.9rem;">
+                            <span>TOTAL AWARDED</span>
+                            <span>₹{{ awards_total }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
 
                 <!-- ACTION BUTTONS -->
                 <div class="action-buttons">
@@ -873,7 +928,7 @@
 
             <!-- RIGHT COLUMN / SIDEBAR -->
             <div>
-                
+
                 <!-- PROFILE SUMMARY CARD -->
                 <div class="sidebar-card profile-summary-card">
                     <div class="sidebar-header profile-summary-header">
@@ -881,7 +936,7 @@
                         <a href="{% url 'otr_welcome' %}" class="edit-btn">EDIT<br>—</a>
                     </div>
                     <div class="sidebar-content profile-summary-content">
-                        
+
                         <div class="profile-summary-item">
                             <span class="profile-summary-label">CATEGORY</span>
                             <span class="profile-summary-value">{{ profile.caste_category|upper|default:"SC" }}</span>
@@ -894,7 +949,8 @@
 
                         <div class="profile-summary-item">
                             <span class="profile-summary-label">LOCATION</span>
-                            <span class="profile-summary-value">{{ profile.city|default:"Varanasi District" }}, {{ profile.state|default:"Uttar Pradesh" }}</span>
+                            <span class="profile-summary-value">{{ profile.city|default:"Varanasi District" }}, {{
+                                profile.state|default:"Uttar Pradesh" }}</span>
                         </div>
 
                     </div>
@@ -906,7 +962,7 @@
                         <h3 class="sidebar-title">Live Feed</h3>
                     </div>
                     <div class="sidebar-content">
-                        
+
                         <div class="feed-item">
                             <div class="feed-icon blue">🔵</div>
                             <div class="feed-content">

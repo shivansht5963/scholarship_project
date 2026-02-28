@@ -151,22 +151,28 @@ def otr_step3(request):
 # ─── Step 4 ──────────────────────────────────────────────────────────────────
 @login_required
 def otr_step4(request):
-    """Step 4: Academic Records"""
+    """Step 4: Academic Records — shows existing record if present, allows editing or adding."""
     profile = request.user.studentprofile
+    existing_records = profile.academic_records.all()
+
     if request.method == 'POST':
         form = OTRStep4Form(request.POST)
         if form.is_valid():
+            # Delete old records first so there's only ever one current record
+            existing_records.delete()
             academic_record = form.save(commit=False)
             academic_record.student = profile
             academic_record.save()
-            profile.otr_step = 5
-            profile.profile_completion = 45
+            profile.otr_step = max(profile.otr_step, 5)
+            profile.profile_completion = max(profile.profile_completion, 45)
             profile.save()
             messages.success(request, 'Academic information saved successfully!')
             return redirect('otr_step5')
     else:
-        form = OTRStep4Form()
-    existing_records = profile.academic_records.all()
+        # Pre-fill with the latest record if it exists
+        latest = existing_records.order_by('-id').first()
+        form = OTRStep4Form(instance=latest) if latest else OTRStep4Form()
+
     return render(request, 'users/otr/step4_academic.html', {
         'form': form, 'profile': profile,
         'existing_records': existing_records, 'step': 4
