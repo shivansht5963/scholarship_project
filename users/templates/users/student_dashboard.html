@@ -69,6 +69,8 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1.5rem;
         margin-bottom: 3rem;
         padding-bottom: 2rem;
         border-bottom: 3px solid var(--sm-black);
@@ -78,6 +80,7 @@
         display: flex;
         align-items: center;
         gap: 2rem;
+        flex-wrap: wrap;
     }
 
     .progress-label {
@@ -118,6 +121,77 @@
         z-index: 1;
     }
 
+    /* === HERO SEARCH BUTTON (Attractive) === */
+    .hero-search-btn {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: var(--sm-black);
+        color: var(--sm-yellow);
+        border: 3px solid var(--sm-black);
+        padding: 1rem 2rem;
+        font-size: 1rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: 6px 6px 0 var(--sm-yellow);
+        overflow: hidden;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .hero-search-btn::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: var(--sm-yellow);
+        transform: translateX(-101%);
+        transition: transform 0.25s ease;
+        z-index: 0;
+    }
+
+    .hero-search-btn:hover::before {
+        transform: translateX(0);
+    }
+
+    .hero-search-btn:hover {
+        color: var(--sm-black);
+        box-shadow: 8px 8px 0 var(--sm-black);
+        transform: translate(-2px, -2px);
+    }
+
+    .hero-search-btn .btn-icon,
+    .hero-search-btn .btn-label {
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-search-btn .btn-icon {
+        font-size: 1.3rem;
+        line-height: 1;
+    }
+
+    .hero-search-btn .btn-pulse {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--sm-yellow);
+        z-index: 2;
+        animation: heroPulse 1.6s ease-in-out infinite;
+    }
+
+    @keyframes heroPulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.4; transform: scale(1.5); }
+    }
+
     .milestone-btn {
         background: var(--sm-blue);
         color: var(--sm-white);
@@ -132,6 +206,7 @@
         display: inline-block;
         transition: all 0.2s;
         box-shadow: 4px 4px 0 var(--sm-black);
+        flex-shrink: 0;
     }
 
     .milestone-btn:hover {
@@ -139,12 +214,15 @@
         box-shadow: 6px 6px 0 var(--sm-black);
     }
 
-    /* === MAIN GRID LAYOUT === */
+    /* === MAIN GRID LAYOUT — FIXED === */
     .dashboard-main-grid {
         display: grid;
-        grid-template-columns: 1fr 580px;
+        /* Use minmax so the right column never overflows */
+        grid-template-columns: 1fr minmax(0, 580px);
         gap: 2rem;
         margin-bottom: 2rem;
+        /* Prevent children from escaping grid cell */
+        align-items: start;
     }
 
     /* === PLATFORM INSIGHTS === */
@@ -184,6 +262,7 @@
         justify-content: center;
         font-size: 1.2rem;
         color: var(--sm-white);
+        flex-shrink: 0;
     }
 
     .insights-grid {
@@ -272,6 +351,7 @@
         justify-content: center;
         font-size: 2rem;
         margin-bottom: 1.5rem;
+        flex-shrink: 0;
     }
 
     .action-card-title {
@@ -296,6 +376,8 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
     }
 
     .recommendations-title {
@@ -316,6 +398,7 @@
         text-transform: uppercase;
         letter-spacing: 1px;
         border: 3px solid var(--sm-black);
+        flex-shrink: 0;
     }
 
     .recommendations-table {
@@ -376,12 +459,16 @@
         color: var(--sm-white);
     }
 
-    /* === SIDEBAR === */
+    /* === SIDEBAR — FIXED overflow === */
     .sidebar-card {
         background: var(--sm-white);
         border: 3px solid var(--sm-black);
         box-shadow: 6px 6px 0 var(--sm-black);
         margin-bottom: 2rem;
+        /* Prevent card from overflowing its grid cell */
+        min-width: 0;
+        word-break: break-word;
+        overflow: hidden;
     }
 
     .sidebar-header {
@@ -488,15 +575,17 @@
         color: var(--sm-black);
     }
 
-    /* === PROFILE SUMMARY CARD === */
+    /* === PROFILE SUMMARY CARD — FIXED === */
     .profile-summary-card {
-        min-width: 580px;
+        /* Removed fixed min-width: 580px — caused overflow */
+        min-width: 0;
     }
 
     .profile-summary-header {
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
+        gap: 1rem;
         padding: 2rem 2rem 1.5rem 2rem;
         border-bottom: 3px solid var(--sm-black);
     }
@@ -510,6 +599,8 @@
         margin: 0;
         color: var(--sm-black);
         line-height: 0.95;
+        /* Prevent long heading from overflowing */
+        min-width: 0;
     }
 
     .edit-btn {
@@ -567,6 +658,8 @@
         font-size: 1.15rem;
         font-weight: 900;
         color: var(--sm-black);
+        /* Prevent long values from overflowing */
+        overflow-wrap: break-word;
     }
 
     /* === LIVE FEED === */
@@ -611,6 +704,7 @@
 
     .feed-content {
         flex: 1;
+        min-width: 0;
     }
 
     .feed-title {
@@ -707,10 +801,6 @@
         .insight-item:nth-child(4) {
             border-right: none;
         }
-
-        .profile-summary-card {
-            min-width: auto;
-        }
     }
 
     @media (max-width: 768px) {
@@ -761,6 +851,11 @@
         .recommendations-table td {
             padding: 1rem;
         }
+
+        .hero-search-btn {
+            font-size: 0.85rem;
+            padding: 0.9rem 1.5rem;
+        }
     }
 </style>
 
@@ -774,16 +869,17 @@
                 cycle.</p>
         </div>
 
-        <!-- PROGRESS SECTION -->
+        <!-- EXTERNAL SCHOLARSHIPS + MILESTONES -->
         <div class="progress-section">
-            <div class="progress-info">
-                <span class="progress-label">PROGRESS</span>
-                <div class="progress-bar-container">
-                    <div class="progress-bar-fill" style="width: {{ profile.profile_completion }}%;">
-                        <span class="progress-percentage">{{ profile.profile_completion }}%</span>
-                    </div>
-                </div>
-            </div>
+            <!-- Attractive Hero Search Button -->
+            <a href="https://scholarship-4pxs.onrender.com" target="_blank" rel="noopener noreferrer"
+                class="hero-search-btn"
+                title="Search External Scholarships">
+                <span class="btn-pulse"></span>
+                <span class="btn-icon">🔍</span>
+                <span class="btn-label">Search Scholarships</span>
+            </a>
+
             <a href="{% url 'otr_welcome' %}" class="milestone-btn">VIEW MILESTONES</a>
         </div>
 
@@ -840,7 +936,7 @@
                                     Rank #{{ award.merit_rank }} &bull; Merit Score: {{ award.merit_score }}
                                 </div>
                             </div>
-                            <div style="display: flex; align-items: center; gap: 1rem; flex-shrink: 0;">
+                            <div style="display: flex; align-items: center; gap: 1rem; flex-shrink: 0; flex-wrap: wrap;">
                                 <span style="font-size: 1.4rem; font-weight: 900; color: var(--sm-black);">
                                     ₹{{ award.amount_awarded|default:"—" }}
                                 </span>
@@ -874,10 +970,14 @@
                 {% endif %}
 
                 <!-- ACTION BUTTONS -->
-                <div class="action-buttons">
+                <div class="action-buttons" style="grid-template-columns: repeat(3, 1fr);">
                     <a href="{% url 'scholarships:scholarship_list' %}" class="action-card">
                         <div class="action-card-icon">🔍</div>
                         <h3 class="action-card-title">Browse<br>Scholarships</h3>
+                    </a>
+                    <a href="{% url 'scholarships:external_scholarships' %}" class="action-card">
+                        <div class="action-card-icon">🌐</div>
+                        <h3 class="action-card-title">External<br>Scholarships</h3>
                     </a>
                     <a href="{% url 'applications:my_applications' %}" class="action-card">
                         <div class="action-card-icon">▶</div>
@@ -892,7 +992,6 @@
                         <span class="season-badge">SPRING 2024</span>
                     </div>
 
-                    <!-- Check if there are recommendations -->
                     {% comment %}
                     <table class="recommendations-table">
                         <thead>
@@ -955,6 +1054,34 @@
 
                     </div>
                 </div>
+
+                <!-- EXTERNAL SCHOLARSHIP SEARCH -->
+                <div class="sidebar-card">
+                    <div class="sidebar-header" style="padding: 1.25rem 1.5rem;">
+                        <h3 class="sidebar-title">🌐 External Scholarships</h3>
+                        <p class="sidebar-subtitle">Search verified scholarship database</p>
+                    </div>
+                    <div style="padding: 1rem 1.5rem 1.25rem;">
+                        <form style="display:flex; border: 3px solid var(--sm-black);" onsubmit="doDashSearch(event)">
+                            <input type="text" id="dashExtSearch" placeholder="Diploma, MSBTE, Engineering..."
+                                autocomplete="off"
+                                style="flex:1; border:none; outline:none; padding:0.75rem 1rem; font-size:0.8rem; font-weight:700; font-family:inherit; background:var(--sm-white); color:var(--sm-black); min-width:0;" />
+                            <button type="submit"
+                                style="background:var(--sm-black); color:var(--sm-white); border:none; padding:0 1.1rem; font-size:0.75rem; font-weight:900; cursor:pointer; letter-spacing:0.5px; flex-shrink:0;">Go</button>
+                        </form>
+                        <a href="{% url 'scholarships:external_scholarships' %}"
+                            style="display:block; text-align:center; margin-top:0.75rem; font-size:0.7rem; font-weight:900; text-transform:uppercase; letter-spacing:0.5px; color:var(--sm-gray); text-decoration:none;">Browse
+                            All →</a>
+                    </div>
+                </div>
+                <script>
+                    function doDashSearch(e) {
+                        e.preventDefault();
+                        var q = document.getElementById('dashExtSearch').value.trim();
+                        var url = q ? 'https://scholarship-4pxs.onrender.com/?search=' + encodeURIComponent(q) : 'https://scholarship-4pxs.onrender.com';
+                        window.open(url, '_blank', 'noopener,noreferrer');
+                    }
+                </script>
 
                 <!-- LIVE FEED -->
                 <div class="sidebar-card">

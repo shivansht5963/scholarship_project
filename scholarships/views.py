@@ -2,6 +2,12 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from datetime import datetime, timedelta
+import urllib.request
+import urllib.parse
+import json
+import logging
+
+logger = logging.getLogger(__name__)
 from .models import Scholarship, RequiredDocument
 from .recommendation import (
     passes_hard_filter,
@@ -192,3 +198,108 @@ def recommended_scholarships(request):
         'is_student':   bool(student),
     }
     return render(request, 'scholarships/recommended.html', context)
+
+
+# ── External Scholarships (via external API) ──────────────────────────────────
+
+# Maps (degree_level, stream_keyword) → domain string for the API
+_DEGREE_DOMAIN_MAP = [
+    ('Diploma',  None,          'diploma'),
+    ('10th',     None,          '10th pass'),
+    ('12th',     'science',     'science'),
+    ('12th',     'commerce',    'commerce'),
+    ('12th',     'arts',        'arts'),
+    ('12th',     None,          '12th pass'),
+    ('UG',       'engineering', 'engineering'),
+    ('UG',       'medical',     'medical'),
+    ('UG',       'law',         'law'),
+    ('UG',       'management',  'management'),
+    ('UG',       None,          'undergraduate'),
+    ('PG',       'engineering', 'mtech'),
+    ('PG',       'management',  'mba'),
+    ('PG',       None,          'postgraduate'),
+    ('PhD',      None,          'phd'),
+]
+
+# Quick list shown as switcher pills on the page
+DOMAIN_OPTIONS = [
+    ('diploma',       'Diploma'),
+    ('engineering',   'Engineering'),
+    ('science',       '12th Science'),
+    ('commerce',      '12th Commerce'),
+    ('undergraduate', 'Undergraduate'),
+    ('postgraduate',  'Postgraduate'),
+    ('msbte',         'MSBTE'),
+    ('medical',       'Medical'),
+    ('phd',           'PhD'),
+]
+
+
+def _detect_domain(student_profile):
+    """Auto-detect the best API domain string from student's AcademicRecord."""
+    if not student_profile:
+        return 'undergraduate'
+    try:
+        record = student_profile.academic_records.order_by('-id').first()
+        if not record:
+            return 'undergraduate'
+        degree = record.degree_level or ''
+        stream = (record.stream or '').lower()
+        institution = (record.institution_name or '').lower()
+
+        # MSBTE special case — check institution name
+        if 'msbte' in institution:
+            return 'msbte'
+
+        for deg, stream_kw, domain in _DEGREE_DOMAIN_MAP:
+            if deg == degree:
+                if stream_kw is None or stream_kw in stream:
+                    return domain
+    except Exception:
+        pass
+    return 'undergraduate'
+
+
+def _fetch_external_scholarships(domain):
+    """
+    Call the external scholarship search API.
+    Returns (list_of_scholarships, total_found, error_message).
+    """
+    API_BASE = 'https://scholarship-4pxs.onrender.com/api/main-search/'
+    params = urllib.parse.urlencode({'domain': domain})
+    url = f'{API_BASE}?{params}'
+    try:
+        req = urllib.request.Request(url, headers={'Accept': 'application/json'})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode())
+            scholarships = data.get('scholarships', [])
+            total = data.get('total_found', len(scholarships))
+            return scholarships, total, None
+    except Exception as exc:
+        logger.warning(f'External scholarship API error for domain={domain!r}: {exc}')
+        return [], 0, str(exc)
+
+
+@login_required
+def external_scholarships(request):
+    """Show live external scholarships fetched from the third-party API."""
+    student = _get_student_profile(request.user)
+
+    # Determine domain: manual override > auto-detected from profile
+    auto_domain = _detect_domain(student)
+    domain = request.GET.get('domain', '').strip().lower() or auto_domain
+    manual = (domain != auto_domain)
+
+    scholarships, total_found, api_error = _fetch_external_scholarships(domain)
+
+    context = {
+        'scholarships':    scholarships,
+        'total_found':     total_found,
+        'domain':          domain,
+        'auto_domain':     auto_domain,
+        'manual_domain':   manual,
+        'api_error':       api_error,
+        'domain_options':  DOMAIN_OPTIONS,
+        'is_student':      bool(student),
+    }
+    return render(request, 'scholarships/external_scholarships.html', context)

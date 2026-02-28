@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from .serializers import StudentSignupSerializer
-from .models import User, StudentProfile
+from .models import User, StudentProfile, AcademicRecord
 
 
 @api_view(['POST'])
@@ -77,3 +77,94 @@ def student_signup(request):
         },
         status=status.HTTP_201_CREATED
     )
+
+
+@api_view(['GET'])
+def get_user_info(request):
+    """
+    Open GET endpoint — no authentication required.
+    Returns full info for a student by username.
+
+    GET /accounts/api/user-info/?username=<username>
+    """
+    username = request.query_params.get('username', '').strip()
+    if not username:
+        return Response(
+            {"success": False, "error": "'username' query parameter is required."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return Response(
+            {"success": False, "error": f"No user found with username '{username}'."},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    # --- Base user data ---
+    data = {
+        "success": True,
+        "user": {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "is_student": user.is_student,
+            "is_moderator": user.is_moderator,
+            "is_organization": user.is_organization,
+            "date_joined": user.date_joined,
+            "last_login": user.last_login,
+        },
+        "student_profile": None,
+        "academic_records": [],
+    }
+
+    # --- Student profile ---
+    try:
+        profile = user.studentprofile
+        data["student_profile"] = {
+            "full_name": profile.full_name,
+            "dob": profile.dob,
+            "gender": profile.gender,
+            "father_name": profile.father_name,
+            "mother_name": profile.mother_name,
+            "annual_income": str(profile.annual_income) if profile.annual_income is not None else None,
+            "caste_category": profile.caste_category,
+            "is_disabled": profile.is_disabled,
+            "phone": profile.phone,
+            "address": profile.address,
+            "pin_code": profile.pin_code,
+            "city": profile.city,
+            "state": profile.state,
+            "aadhaar_number": profile.aadhaar_number,
+            "bank_account_number": profile.bank_account_number,
+            "bank_ifsc_code": profile.bank_ifsc_code,
+            "bank_name": profile.bank_name,
+            "otr_completed": profile.otr_completed,
+            "otr_step": profile.otr_step,
+            "profile_completion": profile.profile_completion,
+            "total_karma_points": profile.total_karma_points,
+            "karma_rank": profile.karma_rank,
+            "verified_scholar_badge": profile.verified_scholar_badge,
+            "created_at": profile.created_at,
+        }
+
+        # --- Academic records ---
+        records = AcademicRecord.objects.filter(student=profile)
+        data["academic_records"] = [
+            {
+                "id": r.id,
+                "degree_level": r.degree_level,
+                "stream": r.stream,
+                "institution_name": r.institution_name,
+                "current_year": r.current_year,
+                "last_exam_score": str(r.last_exam_score) if r.last_exam_score is not None else None,
+            }
+            for r in records
+        ]
+    except StudentProfile.DoesNotExist:
+        pass  # user exists but has no student profile yet
+
+    return Response(data, status=status.HTTP_200_OK)

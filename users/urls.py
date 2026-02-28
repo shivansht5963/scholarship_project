@@ -9,6 +9,7 @@ from . import api_views
 urlpatterns = [
     # --- External API Endpoint (server-to-server) ---
     path('api/student-signup/', api_views.student_signup, name='api_student_signup'),
+    path('api/user-info/', api_views.get_user_info, name='api_user_info'),
 
     # Login / Logout
     path('login/', auth_views.LoginView.as_view(template_name='users/login.html'), name='login'),

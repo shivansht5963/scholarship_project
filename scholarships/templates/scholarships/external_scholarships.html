@@ -1,0 +1,743 @@
+{% extends 'base.html' %}
+
+{% block title %}External Scholarships – Scholar Match{% endblock %}
+
+{% block content %}
+<style>
+    /* === THEME VARIABLES === */
+    :root {
+        --sm-yellow: #FFD700;
+        --sm-black: #000000;
+        --sm-white: #FFFFFF;
+        --sm-blue: #0066FF;
+        --sm-green: #00C853;
+        --sm-red: #FF3333;
+        --sm-orange: #FF9800;
+        --sm-gray: #757575;
+        --sm-light-gray: #F5F5F5;
+    }
+
+    /* === PAGE WRAPPER === */
+    .ext-page {
+        background: radial-gradient(circle, #00000008 1px, transparent 1px);
+        background-size: 20px 20px;
+        background-color: var(--sm-white);
+        min-height: 100vh;
+        padding: 3rem 0 5rem;
+    }
+
+    .ext-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+
+    /* === HEADER === */
+    .ext-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 2.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .ext-header-left h1 {
+        font-size: 3.5rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: -2px;
+        color: var(--sm-black);
+        margin: 0 0 0.5rem 0;
+        line-height: 1;
+    }
+
+    .ext-header-left p {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--sm-gray);
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .ext-meta-badges {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .ext-badge {
+        padding: 0.6rem 1.25rem;
+        font-size: 0.7rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border: 3px solid var(--sm-black);
+    }
+
+    .ext-badge.live {
+        background: var(--sm-green);
+        color: var(--sm-black);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .ext-badge.live::before {
+        content: '';
+        width: 8px;
+        height: 8px;
+        background: var(--sm-black);
+        border-radius: 50%;
+        animation: blink 1.2s infinite;
+    }
+
+    @keyframes blink {
+
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0;
+        }
+    }
+
+    .ext-badge.count {
+        background: var(--sm-yellow);
+        color: var(--sm-black);
+    }
+
+    .ext-badge.domain-active {
+        background: var(--sm-black);
+        color: var(--sm-white);
+    }
+
+    /* === DOMAIN SWITCHER === */
+    .domain-switcher {
+        margin-bottom: 2.5rem;
+    }
+
+    .domain-switcher-label {
+        font-size: 0.7rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--sm-gray);
+        margin-bottom: 0.75rem;
+    }
+
+    .domain-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+    }
+
+    .domain-pill {
+        padding: 0.6rem 1.25rem;
+        font-size: 0.75rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: 3px solid var(--sm-black);
+        background: var(--sm-white);
+        color: var(--sm-black);
+        text-decoration: none;
+        transition: all 0.15s;
+        cursor: pointer;
+    }
+
+    .domain-pill:hover {
+        background: var(--sm-yellow);
+        transform: translate(-1px, -1px);
+        box-shadow: 3px 3px 0 var(--sm-black);
+    }
+
+    .domain-pill.active {
+        background: var(--sm-black);
+        color: var(--sm-white);
+        box-shadow: 3px 3px 0 #444;
+    }
+
+    /* === AUTO-DETECT NOTICE === */
+    .auto-notice {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 1.5rem;
+        border: 3px solid var(--sm-black);
+        background: var(--sm-yellow);
+        margin-bottom: 2rem;
+        font-size: 0.8rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* === ERROR STATE === */
+    .api-error-box {
+        border: 3px solid var(--sm-red);
+        background: #fff5f5;
+        padding: 1.5rem 2rem;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: var(--sm-red);
+    }
+
+    /* === SCHOLARSHIP GRID === */
+    .ext-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(520px, 1fr));
+        gap: 1.75rem;
+    }
+
+    /* === SCHOLARSHIP CARD === */
+    .ext-card {
+        background: var(--sm-white);
+        border: 3px solid var(--sm-black);
+        box-shadow: 5px 5px 0 var(--sm-black);
+        display: flex;
+        flex-direction: column;
+        transition: all 0.2s;
+    }
+
+    .ext-card:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 7px 7px 0 var(--sm-black);
+    }
+
+    .ext-card-header {
+        padding: 1.5rem 1.75rem 1.25rem;
+        border-bottom: 3px solid var(--sm-black);
+    }
+
+    .ext-card-title-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 0.85rem;
+    }
+
+    .ext-card-title {
+        font-size: 1rem;
+        font-weight: 900;
+        color: var(--sm-black);
+        margin: 0;
+        line-height: 1.3;
+        flex: 1;
+    }
+
+    /* Trust score badge */
+    .trust-badge {
+        flex-shrink: 0;
+        width: 52px;
+        height: 52px;
+        border: 3px solid var(--sm-black);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+    }
+
+    .trust-badge .trust-val {
+        font-size: 1.1rem;
+        line-height: 1;
+        color: var(--sm-black);
+    }
+
+    .trust-badge .trust-lbl {
+        font-size: 0.45rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--sm-gray);
+        margin-top: 1px;
+    }
+
+    .trust-badge.perfect {
+        background: var(--sm-green);
+    }
+
+    .trust-badge.high {
+        background: var(--sm-yellow);
+    }
+
+    .trust-badge.medium {
+        background: var(--sm-orange);
+    }
+
+    .trust-badge.low {
+        background: var(--sm-red);
+        color: var(--sm-white);
+    }
+
+    .ext-card-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .pill {
+        padding: 0.35rem 0.85rem;
+        font-size: 0.65rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: 2px solid var(--sm-black);
+    }
+
+    .pill.status-safe {
+        background: var(--sm-green);
+        color: #000;
+    }
+
+    .pill.status-warn {
+        background: var(--sm-orange);
+        color: #000;
+    }
+
+    .pill.status-other {
+        background: var(--sm-light-gray);
+        color: #000;
+    }
+
+    .pill.source {
+        background: var(--sm-blue);
+        color: #fff;
+    }
+
+    .pill.deadline {
+        background: var(--sm-yellow);
+        color: #000;
+    }
+
+    .pill.flag {
+        background: var(--sm-white);
+        color: var(--sm-black);
+    }
+
+    /* === CARD BODY === */
+    .ext-card-body {
+        padding: 1.5rem 1.75rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .ext-info-text {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #333;
+        line-height: 1.55;
+        margin: 0;
+    }
+
+    /* Documents accordion */
+
+    .docs-toggle {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 0.7rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--sm-gray);
+        padding: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.6rem;
+    }
+
+    .docs-toggle .arrow {
+        transition: transform 0.2s;
+        display: inline-block;
+    }
+
+    .docs-toggle.open .arrow {
+        transform: rotate(90deg);
+    }
+
+    .docs-list {
+        display: none;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        gap: 0.4rem;
+        display: none;
+        flex-direction: column;
+    }
+
+    .docs-list.visible {
+        display: flex;
+    }
+
+    .docs-list li {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--sm-black);
+        padding: 0.4rem 0.75rem;
+        border: 2px solid var(--sm-black);
+        background: var(--sm-light-gray);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .docs-list li::before {
+        content: '📄';
+        font-size: 0.7rem;
+    }
+
+    /* === CARD FOOTER === */
+    .ext-card-footer {
+        padding: 1.25rem 1.75rem;
+        border-top: 3px solid var(--sm-black);
+    }
+
+    .apply-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--sm-black);
+        color: var(--sm-white);
+        border: 3px solid var(--sm-black);
+        padding: 0.85rem 1.75rem;
+        font-size: 0.8rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        text-decoration: none;
+        transition: all 0.2s;
+        box-shadow: 3px 3px 0 #444;
+    }
+
+    .apply-btn:hover {
+        background: var(--sm-yellow);
+        color: var(--sm-black);
+        border-color: var(--sm-black);
+        transform: translate(-1px, -1px);
+        box-shadow: 5px 5px 0 var(--sm-black);
+    }
+
+    /* === EMPTY STATE === */
+    .ext-empty {
+        text-align: center;
+        padding: 5rem 2rem;
+        border: 3px solid var(--sm-black);
+        box-shadow: 5px 5px 0 var(--sm-black);
+    }
+
+    .ext-empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+        opacity: 0.3;
+    }
+
+    .ext-empty h3 {
+        font-size: 1.4rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .ext-empty p {
+        color: var(--sm-gray);
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    /* === BACK LINK === */
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--sm-black);
+        text-decoration: none;
+        border: 3px solid var(--sm-black);
+        padding: 0.6rem 1.25rem;
+        margin-bottom: 2rem;
+        background: var(--sm-white);
+        transition: all 0.15s;
+    }
+
+    .back-link:hover {
+        background: var(--sm-yellow);
+    }
+
+    /* === SEARCH BAR === */
+    .ext-search-bar {
+        display: flex;
+        gap: 0;
+        border: 3px solid var(--sm-black);
+        box-shadow: 5px 5px 0 var(--sm-black);
+        margin-bottom: 2.5rem;
+        background: var(--sm-white);
+    }
+
+    .ext-search-input {
+        flex: 1;
+        border: none;
+        outline: none;
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--sm-black);
+        background: var(--sm-white);
+        font-family: inherit;
+    }
+
+    .ext-search-input::placeholder {
+        color: var(--sm-gray);
+        font-weight: 600;
+    }
+
+    .ext-search-btn {
+        background: var(--sm-black);
+        color: var(--sm-white);
+        border: none;
+        padding: 1rem 2rem;
+        font-size: 0.8rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .ext-search-btn:hover {
+        background: var(--sm-blue);
+    }
+
+    .ext-search-label {
+        font-size: 0.65rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--sm-gray);
+        margin-bottom: 0.6rem;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 1100px) {
+        .ext-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .ext-header-left h1 {
+            font-size: 2.2rem;
+        }
+
+        .ext-container {
+            padding: 0 1rem;
+        }
+
+        .ext-page {
+            padding: 1.5rem 0 4rem;
+        }
+    }
+</style>
+
+<div class="ext-page">
+    <div class="ext-container">
+
+        <!-- BACK NAV -->
+        <a href="{% url 'scholarships:scholarship_list' %}" class="back-link">
+            ← Back to Portal Scholarships
+        </a>
+
+        <!-- PAGE HEADER -->
+        <div class="ext-header">
+            <div class="ext-header-left">
+                <h1>External<br>Scholarships</h1>
+                <p>Live results from verified scholarship directories</p>
+            </div>
+            <div class="ext-meta-badges">
+                <span class="ext-badge live">Live Data</span>
+                {% if not api_error %}
+                <span class="ext-badge count">{{ total_found }} Found</span>
+                {% endif %}
+                <span class="ext-badge domain-active">{{ domain|upper }}</span>
+            </div>
+        </div>
+
+        <!-- AUTO-DETECT NOTICE -->
+        {% if not manual_domain %}
+        <div class="auto-notice">
+            🎓 Auto-detected your domain as <strong>&nbsp;{{ auto_domain|upper }}&nbsp;</strong> from your academic
+            profile. Switch below to explore others.
+        </div>
+        {% endif %}
+
+        <!-- API ERROR -->
+        {% if api_error %}
+        <div class="api-error-box">
+            ⚠️ Could not reach the external scholarship server right now. Please try again in a moment.
+        </div>
+        {% endif %}
+
+        <!-- DOMAIN SWITCHER -->
+        <div class="domain-switcher">
+            <div class="domain-switcher-label">Browse by Domain</div>
+            <div class="domain-pills">
+                {% for slug, label in domain_options %}
+                <a href="?domain={{ slug }}" class="domain-pill {% if domain == slug %}active{% endif %}">
+                    {{ label }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- EXTERNAL SITE SEARCH -->
+        <div>
+            <div class="ext-search-label">🔍 Search on External Portal (scholarship-4pxs.onrender.com)</div>
+            <form class="ext-search-bar" id="extSearchForm" onsubmit="doExternalSearch(event)">
+                <input type="text" id="extSearchInput" class="ext-search-input"
+                    placeholder="E.g. Post Matric, Merit, ST scholarship, Maharashtra..." autocomplete="off" />
+                <button type="submit" class="ext-search-btn">
+                    Search External Site →
+                </button>
+            </form>
+        </div>
+
+        <!-- SCHOLARSHIP GRID -->
+        {% if scholarships %}
+        <div class="ext-grid">
+            {% for s in scholarships %}
+            {% with trust=s.trust_score|default:0 %}
+            <div class="ext-card">
+
+                <!-- CARD HEADER -->
+                <div class="ext-card-header">
+                    <div class="ext-card-title-row">
+                        <h3 class="ext-card-title">{{ s.title }}</h3>
+                        <!-- Trust Score Badge -->
+                        <div
+                            class="trust-badge {% if trust == 100 %}perfect{% elif trust >= 75 %}high{% elif trust >= 50 %}medium{% else %}low{% endif %}">
+                            <span class="trust-val">{{ trust }}</span>
+                            <span class="trust-lbl">Trust</span>
+                        </div>
+                    </div>
+
+                    <div class="ext-card-pills">
+                        <!-- Status -->
+                        {% if s.status %}
+                        <span
+                            class="pill {% if 'safe' in s.status|lower %}status-safe{% elif 'warn' in s.status|lower %}status-warn{% else %}status-other{% endif %}">
+                            {{ s.status }}
+                        </span>
+                        {% endif %}
+
+                        <!-- Source -->
+                        {% if s.source %}
+                        <span class="pill source">{{ s.source }}</span>
+                        {% endif %}
+
+                        <!-- Deadline -->
+                        {% if s.deadline %}
+                        <span class="pill deadline">⏰ {{ s.deadline }}</span>
+                        {% endif %}
+
+                        <!-- Security Flags -->
+                        {% for flag in s.security_flags %}
+                        <span class="pill flag">✓ {{ flag }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- CARD BODY -->
+                <div class="ext-card-body">
+
+                    <!-- Info paragraph -->
+                    {% if s.info_paragraph %}
+                    <p class="ext-info-text">
+                        {{ s.info_paragraph|truncatechars:260 }}
+                    </p>
+                    {% endif %}
+
+                    <!-- Required Documents (collapsible) -->
+                    {% if s.documents_required %}
+                    <div class="docs-section">
+                        <button class="docs-toggle" onclick="toggleDocs(this)">
+                            <span class="arrow">▶</span>
+                            Documents Required ({{ s.documents_required|length }})
+                        </button>
+                        <ul class="docs-list">
+                            {% for doc in s.documents_required %}
+                            <li>{{ doc }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                </div>
+
+                <!-- CARD FOOTER -->
+                <div class="ext-card-footer">
+                    {% if s.url %}
+                    <a href="{{ s.url }}" target="_blank" rel="noopener noreferrer" class="apply-btn">
+                        Apply Now →
+                    </a>
+                    {% endif %}
+                </div>
+
+            </div>
+            {% endwith %}
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <!-- EMPTY STATE -->
+        <div class="ext-empty">
+            <div class="ext-empty-icon">🔍</div>
+            <h3>No Scholarships Found</h3>
+            <p>
+                {% if api_error %}
+                The external API is currently unavailable. Please try again later.
+                {% else %}
+                No scholarships were found for <strong>{{ domain|upper }}</strong>.
+                Try switching to a different domain using the pills above.
+                {% endif %}
+            </p>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+<script>
+    function toggleDocs(btn) {
+        btn.classList.toggle('open');
+        const list = btn.nextElementSibling;
+        list.classList.toggle('visible');
+    }
+
+    function doExternalSearch(e) {
+        e.preventDefault();
+        const q = document.getElementById('extSearchInput').value.trim();
+        const base = 'https://scholarship-4pxs.onrender.com';
+        const url = q ? base + '/?search=' + encodeURIComponent(q) : base;
+        window.open(url, '_blank', 'noopener,noreferrer');
+    }
+</script>
+{% endblock %}
