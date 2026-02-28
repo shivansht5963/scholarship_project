@@ -25,7 +25,7 @@ def smart_dashboard_redirect(request):
     
     # 2. Check if organization
     elif user.is_organization:
-        return redirect('funder_dashboard')
+        return redirect('funder_portal:funder_dashboard')
     
     # 3. Otherwise, assume student (default)
     else:
