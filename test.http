@@ -9,12 +9,12 @@
 @baseUrl = https://rokda-exe.onrender.com
 
 # ✅ TEST: Get all documents for an existing student
-GET {{baseUrl}}/accounts/api/user-documents/?username=Shivansh
+GET {{baseUrl}}/accounts/api/user-documents/?username=test_1
 
 ###
 
 # ✅ TEST: Try another username
-GET {{baseUrl}}/accounts/api/user-documents/?username=rahul_sharma
+GET {{baseUrl}}/accounts/api/user-documents/?username=test_1
 
 ###
 
@@ -56,7 +56,7 @@ GET {{baseUrl}}/accounts/api/user-info/?username=nobody_here
 ### Use VS Code "REST Client" extension to run these.
 ### Server must be running: python manage.py runserver
 
-@baseUrl = http://127.0.0.1:8000
+# @baseUrl = http://127.0.0.1:8000
 
 # ============================================================
 # 
