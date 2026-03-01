@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>ScholarAssist — System Architecture</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #0f0f14;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            color: #e8e8f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px 60px;
+            min-height: 100vh;
+        }
+
+        h1 {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #FFE500;
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #888;
+            margin-bottom: 40px;
+        }
+
+        .canvas {
+            position: relative;
+            width: 1200px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 0;
+            position: relative;
+        }
+
+        .box {
+            border-radius: 6px;
+            padding: 16px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            position: relative;
+        }
+
+        .box-title {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .box-label {
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .box-desc {
+            font-size: 10.5px;
+            color: #aab;
+            line-height: 1.5;
+        }
+
+        .tag {
+            display: inline-block;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            padding: 2px 7px;
+            border-radius: 3px;
+            margin-top: 4px;
+            width: fit-content;
+        }
+
+        .yellow {
+            background: #1e1b00;
+            border: 2px solid #FFE500;
+        }
+
+        .yellow .box-title {
+            color: #FFE500;
+        }
+
+        .yellow .tag {
+            background: #FFE500;
+            color: #000;
+        }
+
+        .blue {
+            background: #001933;
+            border: 2px solid #3b9eff;
+        }
+
+        .blue .box-title {
+            color: #3b9eff;
+        }
+
+        .blue .tag {
+            background: #3b9eff;
+            color: #000;
+        }
+
+        .green {
+            background: #001a08;
+            border: 2px solid #22d46a;
+        }
+
+        .green .box-title {
+            color: #22d46a;
+        }
+
+        .green .tag {
+            background: #22d46a;
+            color: #000;
+        }
+
+        .purple {
+            background: #120020;
+            border: 2px solid #b06aff;
+        }
+
+        .purple .box-title {
+            color: #b06aff;
+        }
+
+        .purple .tag {
+            background: #b06aff;
+            color: #000;
+        }
+
+        .red {
+            background: #1a0005;
+            border: 2px solid #ff4d6a;
+        }
+
+        .red .box-title {
+            color: #ff4d6a;
+        }
+
+        .red .tag {
+            background: #ff4d6a;
+            color: #fff;
+        }
+
+        .orange {
+            background: #1a0d00;
+            border: 2px solid #ff9a3c;
+        }
+
+        .orange .box-title {
+            color: #ff9a3c;
+        }
+
+        .orange .tag {
+            background: #ff9a3c;
+            color: #000;
+        }
+
+        .grey {
+            background: #161620;
+            border: 2px solid #555570;
+        }
+
+        .grey .box-title {
+            color: #9999cc;
+        }
+
+        .grey .tag {
+            background: #555570;
+            color: #ddd;
+        }
+
+        .section {
+            border: 1.5px dashed #333;
+            border-radius: 10px;
+            padding: 18px 20px 20px;
+            margin-bottom: 28px;
+            position: relative;
+        }
+
+        .section-label {
+            position: absolute;
+            top: -11px;
+            left: 18px;
+            background: #0f0f14;
+            padding: 0 8px;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #557;
+        }
+
+        .arrow-down {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 36px;
+            position: relative;
+        }
+
+        .arrow-down::before {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 28px;
+            background: #404060;
+            top: 4px;
+        }
+
+        .arrow-down::after {
+            content: '▼';
+            position: absolute;
+            bottom: 0px;
+            font-size: 13px;
+            color: #404060;
+        }
+
+        .arrow-label {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #666;
+            position: absolute;
+            left: calc(50% + 8px);
+            top: 50%;
+            transform: translateY(-50%);
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .grid3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .grid2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .grid4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        .w160 {
+            width: 160px;
+            min-width: 160px;
+        }
+
+        .w180 {
+            width: 180px;
+            min-width: 180px;
+        }
+
+        .w200 {
+            width: 200px;
+            min-width: 200px;
+        }
+
+        .w240 {
+            width: 240px;
+            min-width: 240px;
+        }
+
+        .w260 {
+            width: 260px;
+            min-width: 260px;
+        }
+
+        .w300 {
+            width: 300px;
+            min-width: 300px;
+        }
+
+        hr.section-sep {
+            border: none;
+            border-top: 1px dashed #2a2a3a;
+            margin: 20px 0;
+        }
+
+        .flow-row {
+            display: flex;
+            align-items: stretch;
+            gap: 0;
+        }
+
+        .flow-arrow {
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            color: #404060;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .flow-arrow-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0 8px;
+            gap: 4px;
+        }
+
+        .flow-arrow-label .alabel {
+            font-size: 8px;
+            color: #555;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            word-break: break-word;
+            text-align: center;
+            max-width: 56px;
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 40px;
+            padding: 16px 24px;
+            border: 1.5px solid #2a2a3a;
+            border-radius: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 10.5px;
+            font-weight: 600;
+            color: #999;
+        }
+
+        .legend-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+            border: 2px solid;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>ScholarAssist — System Architecture</h1>
+    <p class="subtitle">Chrome Extension · AI Scholarship Helper · All APIs &amp; Data Flow</p>
+
+    <div class="canvas">
+
+        <!-- LAYER 1 -->
+        <div class="section">
+            <span class="section-label">Layer 1 — User &amp; Browser</span>
+            <div class="row" style="justify-content:flex-start; gap:20px;">
+
+                <div class="box yellow w240">
+                    <div class="box-title">👤 Student User</div>
+                    <div class="box-label">Browser on Scholarship Portal</div>
+                    <div class="box-desc">Visits MahaDBT / NSP / Buddy4Study / PM Portal — interacts with scholarship
+                        forms</div>
+                    <div class="tag">Human Actor</div>
+                </div>
+
+                <div class="flow-arrow">→</div>
+
+                <div class="box grey w260">
+                    <div class="box-title">🌐 Scholarship Portal Sites</div>
+                    <div class="box-label">Supported Websites</div>
+                    <div class="box-desc">
+                        mahadbt.maharashtra.gov.in<br>
+                        scholarships.gov.in (NSP)<br>
+                        buddy4study.com<br>
+                        scholarshipportal.pm.gov.in
+                    </div>
+                    <div class="tag">HTML DOM Pages</div>
+                </div>
+
+                <div class="flow-arrow">→</div>
+
+                <div class="box blue w300">
+                    <div class="box-title">📋 manifest.json</div>
+                    <div class="box-label">Extension Manifest (MV3)</div>
+                    <div class="box-desc">
+                        Registers content_scripts, background service worker, permissions (storage, activeTab, tabs),
+                        host_permissions for all HTTPS. Injects content.js at document_end.
+                    </div>
+                    <div class="tag">Chrome MV3</div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ARROW -->
+        <div class="arrow-down"><span class="arrow-label">Injected at document_end</span></div>
+
+        <!-- LAYER 2 -->
+        <div class="section">
+            <span class="section-label">Layer 2 — Content Script (content.js) — Runs in Every Matched Tab</span>
+
+            <div class="grid3" style="margin-bottom:16px;">
+
+                <div class="box yellow">
+                    <div class="box-title">🎓 Greeting Banner</div>
+                    <div class="box-label">showGreeting()</div>
+                    <div class="box-desc">Shown 1.5s after page load. Displays site name. Auto-dismisses in 6s. "OPEN →"
+                        triggers widget with prefilled query.</div>
+                    <div class="tag">DOM Overlay</div>
+                </div>
+
+                <div class="box yellow">
+                    <div class="box-title">🔘 Floating Action Button</div>
+                    <div class="box-label">injectFAB()</div>
+                    <div class="box-desc">Persistent 🎓 button fixed bottom-right. Toggles widget open/close. Changes to
+                        ✕ when widget is open.</div>
+                    <div class="tag">DOM Button</div>
+                </div>
+
+                <div class="box yellow">
+                    <div class="box-title">🪟 Shadow DOM Widget Panel</div>
+                    <div class="box-label">injectShadowWidget()</div>
+                    <div class="box-desc">
+                        380px fixed right-side panel. Isolated via Shadow DOM (mode: open). Contains textarea, response
+                        area, smart doc cards, CTA link, and settings link.
+                    </div>
+                    <div class="tag">Shadow DOM</div>
+                </div>
+
+            </div>
+
+            <div class="grid3">
+
+                <div class="box orange">
+                    <div class="box-title">🖱 Text Selection Detector</div>
+                    <div class="box-label">handleSelectionEvent()</div>
+                    <div class="box-desc">Listens mouseup + pointerup (capture phase). 500ms debounce. Shows "✦ ASK AI"
+                        floating bubble near cursor if ≥6 chars selected.</div>
+                    <div class="tag">Event Listener</div>
+                </div>
+
+                <div class="box orange">
+                    <div class="box-title">📝 Input Field Detector</div>
+                    <div class="box-label">focusin / extractFieldContext()</div>
+                    <div class="box-desc">300ms debounce on focusin. Extracts label text from: label[for], parent label,
+                        sibling label, placeholder/name/id. Shows "WHAT TO ENTER HERE?" hint bubble.</div>
+                    <div class="tag">Event Listener</div>
+                </div>
+
+                <div class="box orange">
+                    <div class="box-title">📤 submitQuery()</div>
+                    <div class="box-label">Query Sender</div>
+                    <div class="box-desc">
+                        Reads textarea. Builds payload: {url, selectedText, fieldContext, userQuery}. Sends
+                        <strong>chrome.runtime.sendMessage ASK_GEMINI</strong>. 30s safety timer. Renders response with
+                        formatResponse().
+                    </div>
+                    <div class="tag">Chrome Messaging</div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ARROW -->
+        <div class="arrow-down"><span class="arrow-label">chrome.runtime.sendMessage → onMessage</span></div>
+
+        <!-- LAYER 3 -->
+        <div class="section">
+            <span class="section-label">Layer 3 — Background Service Worker (background.js) — Message Router &amp; API
+                Orchestrator</span>
+
+            <div class="grid4" style="margin-bottom:16px;">
+
+                <div class="box purple">
+                    <div class="box-title">📨 Message Router</div>
+                    <div class="box-label">onMessage Listener</div>
+                    <div class="box-desc">
+                        Routes 3 message types:<br>
+                        • ASK_GEMINI → handleQuery()<br>
+                        • GET_SETTINGS → chrome.storage.local<br>
+                        • OPEN_OPTIONS → openOptionsPage()
+                    </div>
+                    <div class="tag">Service Worker</div>
+                </div>
+
+                <div class="box purple">
+                    <div class="box-title">⚙ Settings Store</div>
+                    <div class="box-label">chrome.storage.local</div>
+                    <div class="box-desc">
+                        Persists user config:<br>
+                        • groqKey (API key)<br>
+                        • backendUrl (profile API)<br>
+                        • docsUrl (documents API)<br>
+                        • username
+                    </div>
+                    <div class="tag">Local Storage</div>
+                </div>
+
+                <div class="box purple">
+                    <div class="box-title">⚡ Session Cache</div>
+                    <div class="box-label">chrome.storage.session</div>
+                    <div class="box-desc">
+                        Short-lived cache per browser session:<br>
+                        • userProfile (fetched once)<br>
+                        • userDocuments (fetched once)<br>
+                        Avoids redundant API calls
+                    </div>
+                    <div class="tag">Session Cache</div>
+                </div>
+
+                <div class="box purple">
+                    <div class="box-title">🔧 handleQuery()</div>
+                    <div class="box-label">Main Orchestrator</div>
+                    <div class="box-desc">
+                        1. Read settings from storage<br>
+                        2. Check session cache<br>
+                        3. Fetch profile + docs if needed<br>
+                        4. buildPrompt()<br>
+                        5. Call Groq API (25s timeout)<br>
+                        6. matchDocuments()<br>
+                        7. Return {answer, relevantDocs, cta}
+                    </div>
+                    <div class="tag">Core Logic</div>
+                </div>
+            </div>
+
+            <hr class="section-sep">
+
+            <div class="grid3">
+                <div class="box green">
+                    <div class="box-title">📝 buildPrompt()</div>
+                    <div class="box-label">Prompt Constructor</div>
+                    <div class="box-desc">
+                        System prompt: ScholarAssist persona + student profile data + uploaded documents list + response
+                        format rules.<br><br>
+                        User message: fieldContext + selectedText + page URL + question.<br><br>
+                        Temp: 0.4 · Max tokens: 1024
+                    </div>
+                    <div class="tag">Prompt Engineering</div>
+                </div>
+
+                <div class="box green">
+                    <div class="box-title">🔍 matchDocuments()</div>
+                    <div class="box-label">Smart Doc Matching</div>
+                    <div class="box-desc">
+                        Matches user's own words against DOC_KEYWORDS map.<br><br>
+                        10 keyword groups: aadhaar, income_cert, marksheet_10, marksheet_12, caste_cert, domicile,
+                        photo, bank_passbook, bonafide, caste_validity
+                    </div>
+                    <div class="tag">Keyword Matching</div>
+                </div>
+
+                <div class="box green">
+                    <div class="box-title">🛠 Toolbar Icon Handler</div>
+                    <div class="box-label">chrome.action.onClicked</div>
+                    <div class="box-desc">
+                        When user clicks extension icon in toolbar:<br>
+                        → Sends TOGGLE_WIDGET to active tab's content script<br>
+                        → Falls back to openOptionsPage() if content script not loaded
+                    </div>
+                    <div class="tag">Browser Action</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ARROW -->
+        <div class="arrow-down"><span class="arrow-label">Fetch (HTTPS) — parallel calls</span></div>
+
+        <!-- LAYER 4 -->
+        <div class="section">
+            <span class="section-label">Layer 4 — External APIs &amp; Backend Services</span>
+
+            <div class="row" style="align-items:stretch; flex-wrap:wrap;">
+
+                <div class="box red w300">
+                    <div class="box-title">🤖 Groq API — LLM</div>
+                    <div class="box-label">api.groq.com/openai/v1/chat/completions</div>
+                    <div class="box-desc">
+                        Model: <strong>llama-3.3-70b-versatile</strong><br>
+                        Format: OpenAI-compatible<br>
+                        Auth: Bearer groqKey<br>
+                        Free tier: 14,400 req/day · 30 RPM<br>
+                        Timeout: 25s AbortController<br>
+                        Returns: choices[0].message.content
+                    </div>
+                    <div class="tag">POST · JSON body</div>
+                </div>
+
+                <div style="display:flex;align-items:center;padding:0 8px;color:#333;font-size:22px;">|</div>
+
+                <div class="box blue w300">
+                    <div class="box-title">👤 User Profile API</div>
+                    <div class="box-label">rokda-exe.onrender.com</div>
+                    <div class="box-desc">
+                        <code style="font-size:10px;color:#7af;">/accounts/api/user-info/?username=…</code><br><br>
+                        Returns: success, user{}, student_profile{full_name, caste_category, annual_income, state, city,
+                        aadhaar_number, bank_account_number}, academic_records[]
+                    </div>
+                    <div class="tag">GET · JSON</div>
+                </div>
+
+                <div style="display:flex;align-items:center;padding:0 8px;color:#333;font-size:22px;">|</div>
+
+                <div class="box blue w300">
+                    <div class="box-title">📂 User Documents API</div>
+                    <div class="box-label">rokda-exe.onrender.com</div>
+                    <div class="box-desc">
+                        <code style="font-size:10px;color:#7af;">/accounts/api/user-documents/?username=…</code><br><br>
+                        Returns: success, documents[]{id, document_type, document_type_label, verification_status,
+                        file_url}
+                    </div>
+                    <div class="tag">GET · JSON</div>
+                </div>
+
+                <div style="display:flex;align-items:center;padding:0 8px;color:#333;font-size:22px;">|</div>
+
+                <div class="box green w240">
+                    <div class="box-title">🎓 ScholarMatch Portal</div>
+                    <div class="box-label">scholarship-4pxs.onrender.com</div>
+                    <div class="box-desc">
+                        CTA link appended to every AI response.<br>
+                        Ref param: <code style="font-size:10px;color:#7af;">?ref=extension</code><br><br>
+                        External scholarship matching platform for students
+                    </div>
+                    <div class="tag">External Link / CTA</div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- LAYER 5 -->
+        <div class="section">
+            <span class="section-label">Layer 5 — Options / Settings Page (options.html + options.js)</span>
+
+            <div class="row" style="justify-content:flex-start;">
+                <div class="box grey w300">
+                    <div class="box-title">⚙ options.html</div>
+                    <div class="box-label">Settings UI Page</div>
+                    <div class="box-desc">
+                        Opened via chrome.runtime.openOptionsPage() or "⚙ SETTINGS" link inside widget footer.<br><br>
+                        Fields: Groq API Key · Backend URL (profile) · Docs URL · Username<br><br>
+                        Saves to chrome.storage.local on submit
+                    </div>
+                    <div class="tag">options_ui · open_in_tab</div>
+                </div>
+
+                <div class="flow-arrow">↔</div>
+
+                <div class="box purple w260">
+                    <div class="box-title">💾 chrome.storage.local</div>
+                    <div class="box-label">Persistent Settings</div>
+                    <div class="box-desc">
+                        Shared between options.js and background.js.<br><br>
+                        Keys: groqKey, backendUrl, docsUrl, username<br><br>
+                        Defaults fall back to hardcoded constants in background.js if not set
+                    </div>
+                    <div class="tag">Cross-context Storage</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FLOW SUMMARY -->
+        <div class="section">
+            <span class="section-label">End-to-End Request Flow — 6 Steps</span>
+
+            <div class="flow-row" style="flex-wrap:wrap; gap:0; align-items:center; overflow-x:auto;">
+
+                <div class="box yellow w160" style="min-height:80px;">
+                    <div class="box-title" style="font-size:9px;">① User Action</div>
+                    <div class="box-label" style="font-size:11px;">Select text / Focus field / Click FAB</div>
+                </div>
+                <div class="flow-arrow-label">
+                    <div class="alabel">trigger</div>
+                    <div style="font-size:18px;color:#404060;">→</div>
+                </div>
+
+                <div class="box orange w180" style="min-height:80px;">
+                    <div class="box-title" style="font-size:9px;">② Content Script</div>
+                    <div class="box-label" style="font-size:11px;">Build payload, show widget, submitQuery()</div>
+                </div>
+                <div class="flow-arrow-label">
+                    <div class="alabel">ASK_GEMINI msg</div>
+                    <div style="font-size:18px;color:#404060;">→</div>
+                </div>
+
+                <div class="box purple w180" style="min-height:80px;">
+                    <div class="box-title" style="font-size:9px;">③ Background SW</div>
+                    <div class="box-label" style="font-size:11px;">handleQuery(), read cache/storage</div>
+                </div>
+                <div class="flow-arrow-label">
+                    <div class="alabel">if not cached</div>
+                    <div style="font-size:18px;color:#404060;">→</div>
+                </div>
+
+                <div class="box blue w200" style="min-height:80px;">
+                    <div class="box-title" style="font-size:9px;">④ Backend APIs</div>
+                    <div class="box-label" style="font-size:11px;">Fetch user-info + user-documents from
+                        rokda-exe.onrender.com</div>
+                </div>
+                <div class="flow-arrow-label">
+                    <div class="alabel">buildPrompt()</div>
+                    <div style="font-size:18px;color:#404060;">→</div>
+                </div>
+
+                <div class="box red w180" style="min-height:80px;">
+                    <div class="box-title" style="font-size:9px;">⑤ Groq LLM API</div>
+                    <div class="box-label" style="font-size:11px;">POST llama-3.3-70b → returns AI answer</div>
+                </div>
+                <div class="flow-arrow-label">
+                    <div class="alabel">matchDocs() + return</div>
+                    <div style="font-size:18px;color:#404060;">→</div>
+                </div>
+
+                <div class="box green w180" style="min-height:80px;">
+                    <div class="box-title" style="font-size:9px;">⑥ Render Response</div>
+                    <div class="box-label" style="font-size:11px;">Show AI answer + doc cards + ScholarMatch CTA link
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-dot" style="border-color:#FFE500;background:#1e1b00;"></div> User / UI Layer
+        </div>
+        <div class="legend-item">
+            <div class="legend-dot" style="border-color:#ff9a3c;background:#1a0d00;"></div> Content Script Events
+        </div>
+        <div class="legend-item">
+            <div class="legend-dot" style="border-color:#b06aff;background:#120020;"></div> Background Service Worker
+        </div>
+        <div class="legend-item">
+            <div class="legend-dot" style="border-color:#22d46a;background:#001a08;"></div> Prompt / Matching Logic
+        </div>
+        <div class="legend-item">
+            <div class="legend-dot" style="border-color:#ff4d6a;background:#1a0005;"></div> Groq AI API
+        </div>
+        <div class="legend-item">
+            <div class="legend-dot" style="border-color:#3b9eff;background:#001933;"></div> Backend REST APIs
+        </div>
+        <div class="legend-item">
+            <div class="legend-dot" style="border-color:#555570;background:#161620;"></div> Chrome Storage / Config
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -341,27 +341,28 @@
         margin: 0;
     }
 
-    /* Documents accordion */
+    /* Docs section */
+    .docs-section {
+        margin-top: 1rem;
+    }
 
     .docs-toggle {
         background: none;
-        border: none;
-        cursor: pointer;
-        font-size: 0.7rem;
+        border: 2px solid var(--sm-black);
+        padding: 0.4rem 0.8rem;
+        font-family: inherit;
+        font-size: 0.78rem;
         font-weight: 900;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: var(--sm-gray);
-        padding: 0;
+        cursor: pointer;
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        margin-bottom: 0.6rem;
+        width: 100%;
     }
 
     .docs-toggle .arrow {
         transition: transform 0.2s;
-        display: inline-block;
     }
 
     .docs-toggle.open .arrow {
@@ -369,34 +370,24 @@
     }
 
     .docs-list {
-        display: none;
         list-style: none;
-        margin: 0;
         padding: 0;
-        gap: 0.4rem;
+        margin: 0.5rem 0 0 0;
         display: none;
-        flex-direction: column;
     }
 
     .docs-list.visible {
-        display: flex;
+        display: block;
     }
 
     .docs-list li {
-        font-size: 0.75rem;
-        font-weight: 700;
-        color: var(--sm-black);
-        padding: 0.4rem 0.75rem;
-        border: 2px solid var(--sm-black);
-        background: var(--sm-light-gray);
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
+        padding: 0.3rem 0;
+        font-size: 0.82rem;
+        border-bottom: 1px solid #eee;
     }
 
-    .docs-list li::before {
-        content: '📄';
-        font-size: 0.7rem;
+    .docs-list li:last-child {
+        border-bottom: none;
     }
 
     /* === CARD FOOTER === */
@@ -556,6 +547,445 @@
             padding: 1.5rem 0 4rem;
         }
     }
+
+    /* === GUIDE BUTTON === */
+    .guide-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--sm-black);
+        color: var(--sm-yellow);
+        border: 3px solid var(--sm-black);
+        padding: 0.85rem 1.75rem;
+        font-size: 0.8rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all 0.2s;
+        box-shadow: 3px 3px 0 #444;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .guide-btn:hover {
+        background: var(--sm-yellow);
+        color: var(--sm-black);
+        box-shadow: 5px 5px 0 var(--sm-black);
+        transform: translate(-1px, -1px);
+    }
+
+    /* === GUIDE MODAL === */
+    .guide-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.72);
+        z-index: 9998;
+        backdrop-filter: blur(3px);
+        padding: 1.5rem;
+        overflow-y: auto;
+    }
+
+    .guide-overlay.open {
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+    }
+
+    .guide-modal {
+        background: var(--sm-white);
+        border: 3px solid var(--sm-black);
+        box-shadow: 8px 8px 0 var(--sm-black);
+        width: 100%;
+        max-width: 720px;
+        margin: auto;
+        position: relative;
+        animation: slideUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .guide-modal-header {
+        background: var(--sm-black);
+        color: var(--sm-white);
+        padding: 1.5rem 2rem;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .guide-modal-header h2 {
+        font-size: 1.1rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin: 0;
+        flex: 1;
+        line-height: 1.3;
+    }
+
+    .guide-close-btn {
+        background: none;
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        color: var(--sm-white);
+        font-size: 1.2rem;
+        cursor: pointer;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: background 0.15s;
+        font-family: inherit;
+    }
+
+    .guide-close-btn:hover {
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    .guide-modal-body {
+        padding: 2rem;
+    }
+
+    .guide-section {
+        margin-bottom: 1.75rem;
+        padding-bottom: 1.75rem;
+        border-bottom: 2px solid #eee;
+    }
+
+    .guide-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .guide-section-title {
+        font-size: 0.7rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--sm-gray);
+        margin: 0 0 0.75rem 0;
+    }
+
+    /* Eligibility badge */
+    .elig-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.75rem 1.5rem;
+        border: 3px solid var(--sm-black);
+        font-size: 1rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.6rem;
+    }
+
+    .elig-badge.yes {
+        background: var(--sm-green);
+        color: #000;
+    }
+
+    .elig-badge.no {
+        background: var(--sm-red);
+        color: #fff;
+    }
+
+    .elig-badge.maybe {
+        background: var(--sm-yellow);
+        color: #000;
+    }
+
+    .elig-reason {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #333;
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    /* Steps */
+    .guide-steps {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
+    .guide-steps li {
+        display: flex;
+        gap: 0.75rem;
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #222;
+        line-height: 1.5;
+        padding: 0.7rem 1rem;
+        border: 2px solid var(--sm-black);
+        background: var(--sm-light-gray);
+    }
+
+    .step-num {
+        flex-shrink: 0;
+        width: 24px;
+        height: 24px;
+        background: var(--sm-black);
+        color: var(--sm-yellow);
+        font-size: 0.72rem;
+        font-weight: 900;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Pros / Cons grid */
+    .pros-cons-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    @media(max-width: 560px) {
+        .pros-cons-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .pc-box {
+        border: 3px solid var(--sm-black);
+        padding: 1rem;
+    }
+
+    .pc-box-label {
+        font-size: 0.65rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.6rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .pc-box.pros {
+        background: #f0fff4;
+    }
+
+    .pc-box.cons {
+        background: #fff5f5;
+    }
+
+    .pc-box ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+
+    .pc-box ul li {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #333;
+        line-height: 1.45;
+        padding: 0.3rem 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .pc-box ul li:last-child {
+        border-bottom: none;
+    }
+
+    /* Modal footer */
+    .guide-modal-footer {
+        border-top: 3px solid var(--sm-black);
+        padding: 1.5rem 2rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+        background: var(--sm-light-gray);
+    }
+
+    .guide-apply-btn {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        background: var(--sm-yellow);
+        color: var(--sm-black);
+        border: 3px solid var(--sm-black);
+        padding: 1rem 2rem;
+        font-size: 0.9rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        text-decoration: none;
+        transition: all 0.2s;
+        box-shadow: 4px 4px 0 var(--sm-black);
+        white-space: nowrap;
+    }
+
+    .guide-apply-btn:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 var(--sm-black);
+    }
+
+    .guide-yt-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #ff0000;
+        color: #fff;
+        border: 3px solid var(--sm-black);
+        padding: 1rem 1.5rem;
+        font-size: 0.8rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        text-decoration: none;
+        transition: all 0.2s;
+        box-shadow: 4px 4px 0 var(--sm-black);
+        white-space: nowrap;
+    }
+
+    .guide-yt-btn:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 var(--sm-black);
+    }
+
+    /* Loading spinner */
+    .guide-loading {
+        text-align: center;
+        padding: 3rem 2rem;
+    }
+
+    .spinner {
+        width: 48px;
+        height: 48px;
+        border: 5px solid #eee;
+        border-top-color: var(--sm-black);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto 1.5rem auto;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .guide-loading p {
+        font-size: 0.85rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--sm-gray);
+        margin: 0;
+    }
+
+    /* Error state */
+    .guide-error {
+        border: 3px solid var(--sm-red);
+        background: #fff5f5;
+        padding: 1.5rem;
+        margin: 1.5rem 2rem;
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: var(--sm-red);
+    }
+
+    /* YouTube embed */
+    .yt-embed-wrap {
+        position: relative;
+        padding-bottom: 56.25%;
+        /* 16:9 */
+        height: 0;
+        overflow: hidden;
+        border: 3px solid var(--sm-black);
+        box-shadow: 4px 4px 0 var(--sm-black);
+    }
+
+    .yt-embed-wrap iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    /* Thumbnail click-to-play */
+    .yt-thumb-wrap {
+        position: relative;
+        overflow: hidden;
+        border: 3px solid var(--sm-black);
+        box-shadow: 4px 4px 0 var(--sm-black);
+        cursor: pointer;
+        background: #000;
+        aspect-ratio: 16/9;
+    }
+
+    .yt-thumb-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        opacity: 0.85;
+        transition: opacity 0.2s;
+    }
+
+    .yt-thumb-wrap:hover img {
+        opacity: 1;
+    }
+
+    .yt-play-btn {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 68px;
+        height: 68px;
+        background: rgba(255, 0, 0, 0.92);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s, background 0.2s;
+        pointer-events: none;
+    }
+
+    .yt-thumb-wrap:hover .yt-play-btn {
+        transform: translate(-50%, -50%) scale(1.1);
+        background: #ff0000;
+    }
+
+    .yt-play-btn::after {
+        content: '';
+        border-left: 26px solid #fff;
+        border-top: 16px solid transparent;
+        border-bottom: 16px solid transparent;
+        margin-left: 6px;
+    }
 </style>
 
 <div class="ext-page">
@@ -577,15 +1007,17 @@
                 {% if not api_error %}
                 <span class="ext-badge count">{{ total_found }} Found</span>
                 {% endif %}
-                <span class="ext-badge domain-active">{{ domain|upper }}</span>
+                <span class="ext-badge domain-active" id="activeBadge">
+                    {{ domain_str|upper }}
+                </span>
             </div>
         </div>
 
         <!-- AUTO-DETECT NOTICE -->
         {% if not manual_domain %}
         <div class="auto-notice">
-            🎓 Auto-detected your domain as <strong>&nbsp;{{ auto_domain|upper }}&nbsp;</strong> from your academic
-            profile. Switch below to explore others.
+            🎓 Auto-detected your domains as <strong>&nbsp;{{ auto_domain_str|upper }}&nbsp;</strong> from your academic
+            profile. Toggle pills below to add/remove categories.
         </div>
         {% endif %}
 
@@ -598,13 +1030,23 @@
 
         <!-- DOMAIN SWITCHER -->
         <div class="domain-switcher">
-            <div class="domain-switcher-label">Browse by Domain</div>
-            <div class="domain-pills">
+            <div class="domain-switcher-label">Browse by Domain — <span style="font-weight:600;color:#555;">click to
+                    toggle multiple</span></div>
+            <div class="domain-pills" id="domainPills">
                 {% for slug, label in domain_options %}
-                <a href="?category={{ slug }}" class="domain-pill {% if domain == slug %}active{% endif %}">
+                <button type="button" class="domain-pill {% if slug in selected_domains %}active{% endif %}"
+                    data-slug="{{ slug }}" onclick="togglePill(this)">
                     {{ label }}
-                </a>
+                </button>
                 {% endfor %}
+            </div>
+            <div style="margin-top:0.75rem;display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center;">
+                <button onclick="applyPills()"
+                    style="background:var(--sm-black);color:var(--sm-white);border:3px solid var(--sm-black);padding:0.5rem 1.25rem;font-size:0.75rem;font-weight:900;text-transform:uppercase;letter-spacing:0.5px;cursor:pointer;transition:all 0.15s;">Apply
+                    Filter →</button>
+                <a href="{% url 'scholarships:external_scholarships' %}"
+                    style="font-size:0.72rem;font-weight:900;text-transform:uppercase;letter-spacing:0.5px;color:var(--sm-gray);text-decoration:none;">Reset
+                    to Auto</a>
             </div>
         </div>
 
@@ -675,16 +1117,19 @@
                     </p>
                     {% endif %}
 
-                    <!-- Required Documents (collapsible) -->
+                    <!-- Required Documents with student match status -->
                     {% if s.documents_required %}
                     <div class="docs-section">
                         <button class="docs-toggle" onclick="toggleDocs(this)">
                             <span class="arrow">▶</span>
                             Documents Required ({{ s.documents_required|length }})
                         </button>
-                        <ul class="docs-list">
+                        <ul class="docs-list" data-docs="{{ s.documents_required|join:'|||'|escapejs }}">
                             {% for doc in s.documents_required %}
-                            <li>{{ doc }}</li>
+                            <li class="doc-status-row" data-doc-name="{{ doc|escapejs }}">
+                                <span class="doc-name">{{ doc }}</span>
+                                <span class="doc-badge missing" id="dstat-_">🔴 Missing</span>
+                            </li>
                             {% endfor %}
                         </ul>
                     </div>
@@ -694,11 +1139,12 @@
 
                 <!-- CARD FOOTER -->
                 <div class="ext-card-footer">
-                    {% if s.url %}
-                    <a href="{{ s.url }}" target="_blank" rel="noopener noreferrer" class="apply-btn">
-                        Apply Now →
-                    </a>
-                    {% endif %}
+                    <button class="guide-btn" data-title="{{ s.title|escapejs }}"
+                        data-url="{{ s.url|default:''|escapejs }}"
+                        data-info="{{ s.info_paragraph|default:''|truncatechars:500|escapejs }}"
+                        data-docs="{{ s.documents_required|join:'|||'|escapejs }}" onclick="openGuide(this)">
+                        🤖 Get Guidance + Apply →
+                    </button>
                 </div>
 
             </div>
@@ -715,7 +1161,7 @@
                 {% if api_error %}
                 The external API is currently unavailable. Please try again later.
                 {% else %}
-                No scholarships were found for <strong>{{ domain|upper }}</strong>.
+                No scholarships were found for <strong>{{ domain_str|upper }}</strong>.
                 Try switching to a different domain using the pills above.
                 {% endif %}
             </p>
@@ -725,19 +1171,331 @@
     </div>
 </div>
 
+<!-- ═══════════════════════ GUIDE MODAL ═══════════════════════ -->
+<div class="guide-overlay" id="guideOverlay" onclick="handleOverlayClick(event)">
+    <div class="guide-modal" id="guideModal">
+
+        <!-- MODAL HEADER -->
+        <div class="guide-modal-header">
+            <h2 id="guideModalTitle">Scholarship Guide</h2>
+            <button class="guide-close-btn" onclick="closeGuide()" title="Close">✕</button>
+        </div>
+
+        <!-- LOADING STATE -->
+        <div class="guide-loading" id="guideLoading">
+            <div class="spinner"></div>
+            <p>Analyzing scholarship &amp; your profile…</p>
+            <p style="font-size:0.72rem;margin-top:0.5rem;opacity:0.6;">FETCHING PAGE CONTENT + AI PROCESSING</p>
+        </div>
+
+        <!-- RESULT CONTENT -->
+        <div id="guideContent" style="display:none;">
+
+            <!-- ERROR BANNER (shown only on AI error) -->
+            <div class="guide-error" id="guideErrorBanner" style="display:none;"></div>
+
+            <div class="guide-modal-body">
+
+                <!-- ELIGIBILITY -->
+                <div class="guide-section">
+                    <p class="guide-section-title">✅ Eligibility Verdict</p>
+                    <div class="elig-badge" id="eligBadge">—</div>
+                    <p class="elig-reason" id="eligReason"></p>
+                </div>
+
+                <!-- HOW TO APPLY -->
+                <div class="guide-section" id="stepsSection">
+                    <p class="guide-section-title">📋 How to Apply</p>
+                    <ol class="guide-steps" id="stepsList"></ol>
+                </div>
+
+                <!-- PROS / CONS -->
+                <div class="guide-section" id="prosConsSection">
+                    <p class="guide-section-title">👍 Pros &amp; 👎 Cons</p>
+                    <div class="pros-cons-grid">
+                        <div class="pc-box pros">
+                            <div class="pc-box-label">✅ Advantages</div>
+                            <ul id="prosList"></ul>
+                        </div>
+                        <div class="pc-box cons">
+                            <div class="pc-box-label">⚠️ Watch-outs</div>
+                            <ul id="consList"></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- YOUTUBE VIDEO -->
+                <div class="guide-section guide-yt-section" id="ytSection" style="display:none;">
+                    <p class="guide-section-title">▶ Related Video</p>
+                    <!-- Thumbnail click-to-play -->
+                    <div id="ytThumbWrap" class="yt-thumb-wrap" onclick="loadYtEmbed(event)" title="Click to play">
+                        <img id="ytThumb" src="" alt="Video thumbnail" />
+                        <div class="yt-play-btn"></div>
+                    </div>
+                    <!-- Iframe container (hidden until clicked) -->
+                    <div class="yt-embed-wrap" id="ytEmbedWrap" style="display:none;">
+                        <iframe id="ytIframe" src="" frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen></iframe>
+                    </div>
+                    <!-- Always-visible watch link -->
+                    <a href="#" id="ytWatchLink" target="_blank" rel="noopener noreferrer"
+                        style="display:none;margin-top:0.75rem;font-size:0.8rem;font-weight:900;text-transform:uppercase;letter-spacing:0.5px;color:#ff0000;text-decoration:none;align-items:center;gap:0.4rem;border:2px solid #ff0000;padding:0.5rem 1rem;">
+                        ▶ Watch on YouTube →
+                    </a>
+                </div>
+
+            </div><!-- /guide-modal-body -->
+
+            <!-- MODAL FOOTER: Apply Now CTA -->
+            <div class="guide-modal-footer">
+                <a href="#" id="guideApplyBtn" target="_blank" rel="noopener noreferrer" class="guide-apply-btn">
+                    🚀 Apply Now →
+                </a>
+            </div>
+
+        </div><!-- /guideContent -->
+
+    </div><!-- /guide-modal -->
+</div><!-- /guide-overlay -->
+
 <script>
-    function toggleDocs(btn) {
-        btn.classList.toggle('open');
-        const list = btn.nextElementSibling;
-        list.classList.toggle('visible');
+    // ── CSRF helper ───────────────────────────────────────────────────────────
+    function getCsrf() {
+        return document.cookie.split(';')
+            .map(c => c.trim()).find(c => c.startsWith('csrftoken='))
+            ?.split('=')[1] || '';
     }
 
+    // ── Feature 3: Student document map (from Django context) ────────────────
+    const studentDocMap = {{ student_doc_map_json| safe }};
+    // studentDocMap: { "aadhaar": {label, url, verified}, "income": {...}, ... }
+
+    function initDocStatuses() {
+        // For every doc status row, fuzzy-match the doc name → student upload
+        document.querySelectorAll('.doc-status-row').forEach(row => {
+            const docName = (row.dataset.docName || '').toLowerCase();
+            const badge = row.querySelector('.doc-badge');
+            if (!badge) return;
+
+            // Try each keyword from the map
+            let matched = null;
+            for (const [keyword, info] of Object.entries(studentDocMap)) {
+                if (docName.includes(keyword)) {
+                    matched = info;
+                    break;
+                }
+            }
+
+            if (matched && matched.url) {
+                badge.className = 'doc-badge have';
+                badge.innerHTML = '✅ Have it';
+                // Add download link
+                const link = document.createElement('a');
+                link.href = matched.url;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                link.className = 'doc-download-link';
+                link.textContent = '⬇ Download';
+                link.title = matched.label;
+                row.appendChild(link);
+            } else {
+                badge.className = 'doc-badge missing';
+                badge.innerHTML = '🔴 Missing';
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', initDocStatuses);
+
+    // ── Modal state ───────────────────────────────────────────────────────────
+    let currentApplyUrl = '#';
+
+
+    function openGuide(btn) {
+        const title = btn.dataset.title || 'Scholarship';
+        const url = btn.dataset.url || '';
+        const info = btn.dataset.info || '';
+        const docs = btn.dataset.docs ? btn.dataset.docs.split('|||').filter(Boolean) : [];
+
+        // Reset modal
+        currentApplyUrl = url || '#';
+        document.getElementById('guideModalTitle').textContent = title;
+        document.getElementById('guideLoading').style.display = 'block';
+        document.getElementById('guideContent').style.display = 'none';
+        document.getElementById('guideOverlay').classList.add('open');
+        document.body.style.overflow = 'hidden';
+
+        // AJAX call
+        fetch('{% url "scholarships:external_scholarship_guide" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrf(),
+            },
+            body: JSON.stringify({
+                scholarship_url: url,
+                scholarship_title: title,
+                scholarship_info: info,
+                documents_required: docs,
+            }),
+        })
+            .then(r => r.json())
+            .then(data => renderGuide(data, url))
+            .catch(err => renderGuide({ error: 'Network error: ' + err.message }, url));
+    }
+
+    function renderGuide(data, applyUrl) {
+        document.getElementById('guideLoading').style.display = 'none';
+        document.getElementById('guideContent').style.display = 'block';
+
+        // Error banner
+        const errBanner = document.getElementById('guideErrorBanner');
+        if (data.error) {
+            errBanner.textContent = '⚠️ ' + data.error;
+            errBanner.style.display = 'block';
+        } else {
+            errBanner.style.display = 'none';
+        }
+
+        // Eligibility badge
+        const badge = document.getElementById('eligBadge');
+        const reason = document.getElementById('eligReason');
+        badge.className = 'elig-badge ' + (data.eligible || 'maybe');
+        const labels = { yes: '✅ Eligible', no: '❌ Not Eligible', maybe: '⚠️ Unclear' };
+        badge.textContent = labels[data.eligible] || '⚠️ Unclear';
+        reason.textContent = data.eligible_reason || '';
+
+        // Steps
+        const stepsList = document.getElementById('stepsList');
+        stepsList.innerHTML = '';
+        (data.steps || []).forEach((s, i) => {
+            const li = document.createElement('li');
+            li.innerHTML = `<span class="step-num">${i + 1}</span><span>${escHtml(s)}</span>`;
+            stepsList.appendChild(li);
+        });
+        document.getElementById('stepsSection').style.display =
+            (data.steps && data.steps.length) ? '' : 'none';
+
+        // Pros
+        const prosList = document.getElementById('prosList');
+        prosList.innerHTML = (data.pros || []).map(p => `<li>✅ ${escHtml(p)}</li>`).join('');
+
+        // Cons
+        const consList = document.getElementById('consList');
+        consList.innerHTML = (data.cons || []).map(c => `<li>⚠️ ${escHtml(c)}</li>`).join('');
+
+        document.getElementById('prosConsSection').style.display =
+            ((data.pros && data.pros.length) || (data.cons && data.cons.length)) ? '' : 'none';
+
+        // YouTube thumbnail + click-to-play
+        const ytSection = document.getElementById('ytSection');
+        const ytThumbWrap = document.getElementById('ytThumbWrap');
+        const ytThumb = document.getElementById('ytThumb');
+        const ytEmbedWrap = document.getElementById('ytEmbedWrap');
+        const ytWatchLink = document.getElementById('ytWatchLink');
+        const ytIframe = document.getElementById('ytIframe'); // Get iframe reference
+
+        // Reset iframe src to prevent autoplay on subsequent opens
+        ytIframe.src = '';
+
+        if (data.youtube_thumbnail) {
+            // Store embed URL for click handler
+            ytThumbWrap.dataset.embedUrl = data.youtube_embed_url || '';
+            ytThumb.src = data.youtube_thumbnail;
+            ytThumbWrap.style.display = 'block';
+            ytEmbedWrap.style.display = 'none'; // Ensure iframe is hidden initially
+            ytWatchLink.href = data.youtube_url || '#';
+            ytWatchLink.style.display = 'inline-flex';
+            ytSection.style.display = '';
+        } else if (data.youtube_url) {
+            // No video ID — just show the watch link
+            ytThumbWrap.style.display = 'none';
+            ytEmbedWrap.style.display = 'none';
+            ytWatchLink.href = data.youtube_url;
+            ytWatchLink.style.display = 'inline-flex';
+            ytSection.style.display = '';
+        } else {
+            ytSection.style.display = 'none';
+        }
+
+        // Apply Now button
+        const applyBtn = document.getElementById('guideApplyBtn');
+        const finalUrl = data.real_url || applyUrl || '#';
+        applyBtn.href = finalUrl;
+        applyBtn.style.display = finalUrl && finalUrl !== '#' ? '' : 'none';
+    }
+
+    function closeGuide() {
+        document.getElementById('guideOverlay').classList.remove('open');
+        document.body.style.overflow = '';
+        // Stop video playback and restore thumbnail for next open
+        const iframe = document.getElementById('ytIframe');
+        if (iframe) iframe.src = '';
+        const ytEmbedWrap = document.getElementById('ytEmbedWrap');
+        const ytThumbWrap = document.getElementById('ytThumbWrap');
+        if (ytEmbedWrap) ytEmbedWrap.style.display = 'none';
+        if (ytThumbWrap) ytThumbWrap.style.display = 'block';
+    }
+
+    // ── YouTube: swap thumbnail for iframe on click ───────────────────────────
+    function loadYtEmbed(e) {
+        const wrap = document.getElementById('ytThumbWrap');
+        const embed = wrap ? wrap.dataset.embedUrl : '';
+        if (!embed) {
+            // No embeddable URL — open YouTube watch page instead
+            const watchLink = document.getElementById('ytWatchLink');
+            if (watchLink && watchLink.href && watchLink.href !== '#') {
+                window.open(watchLink.href, '_blank', 'noopener,noreferrer');
+            }
+            return;
+        }
+        document.getElementById('ytThumbWrap').style.display = 'none';
+        const ytEmbedWrap = document.getElementById('ytEmbedWrap');
+        const ytIframe = document.getElementById('ytIframe');
+        ytIframe.src = embed;
+        ytEmbedWrap.style.display = '';
+    }
+
+    function handleOverlayClick(e) {
+        if (e.target === document.getElementById('guideOverlay')) closeGuide();
+    }
+
+    // ESC key to close
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeGuide(); });
+
+    // ── HTML escape helper ────────────────────────────────────────────────────
+    function escHtml(str) {
+        return String(str)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // ── Multi-select pill toggle ──────────────────────────────────────────────
+    function togglePill(btn) { btn.classList.toggle('active'); }
+
+    function applyPills() {
+        const active = [...document.querySelectorAll('#domainPills .domain-pill.active')]
+            .map(b => b.dataset.slug).filter(Boolean);
+        window.location.href = active.length
+            ? '?category=' + active.join(',')
+            : '{% url "scholarships:external_scholarships" %}';
+    }
+
+    // ── External site search ──────────────────────────────────────────────────
     function doExternalSearch(e) {
         e.preventDefault();
         const q = document.getElementById('extSearchInput').value.trim();
-        const base = 'https://scholarship-4pxs.onrender.com';
-        const url = q ? base + '/?search=' + encodeURIComponent(q) : base;
+        const url = q
+            ? 'https://scholarship-4pxs.onrender.com/?search=' + encodeURIComponent(q)
+            : 'https://scholarship-4pxs.onrender.com';
         window.open(url, '_blank', 'noopener,noreferrer');
+    }
+
+    // ── Docs accordion ────────────────────────────────────────────────────────
+    function toggleDocs(btn) {
+        btn.classList.toggle('open');
+        btn.nextElementSibling.classList.toggle('visible');
     }
 </script>
 {% endblock %}
