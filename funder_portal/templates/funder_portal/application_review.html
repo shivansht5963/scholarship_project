@@ -3,288 +3,577 @@
 {% block title %}Review Application - {{ student.full_name }}{% endblock %}
 
 {% block content %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+
 <style>
-    .review-header {
-        background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
-        padding: 2rem;
-        border-radius: 16px;
-        margin-bottom: 2rem;
-        color: white;
-    }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    .review-header h1 {
-        margin: 0 0 0.5rem 0;
-    }
+  .rv-page {
+    font-family: 'DM Sans', sans-serif;
+    background-color: #F5F4F0;
+    background-image: radial-gradient(circle, #c4c0b8 1px, transparent 1px);
+    background-size: 22px 22px;
+    min-height: 100vh;
+    padding: 40px 24px 60px;
+  }
 
-    .review-container {
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 2rem;
-    }
+  /* ── Hero Banner ── */
+  .rv-hero {
+    background: linear-gradient(135deg, #0D7E6A 0%, #14A688 55%, #1EC8A3 100%);
+    border-radius: 20px;
+    padding: 32px 40px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .rv-hero::before {
+    content: '';
+    position: absolute;
+    width: 340px; height: 340px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+    right: -70px; top: -90px;
+    pointer-events: none;
+  }
+  .rv-hero::after {
+    content: '';
+    position: absolute;
+    width: 160px; height: 160px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+    right: 200px; bottom: -55px;
+    pointer-events: none;
+  }
+  .rv-hero-left { position: relative; z-index: 1; }
+  .rv-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.28);
+    border-radius: 50px;
+    padding: 6px 16px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .rv-hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+  .rv-hero p {
+    color: rgba(255,255,255,0.78);
+    font-size: 14px;
+  }
+  .rv-hero-right { position: relative; z-index: 1; flex-shrink: 0; }
+  .rv-hero-student {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 14px;
+    padding: 14px 22px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    backdrop-filter: blur(6px);
+  }
+  .rv-hero-avatar {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    border: 2px solid rgba(255,255,255,0.5);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .rv-hero-sname {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .rv-hero-semail {
+    font-size: 12px;
+    color: rgba(255,255,255,0.72);
+    margin-top: 2px;
+  }
 
-    .main-content {
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-    }
+  /* ── Layout ── */
+  .rv-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 24px;
+    align-items: start;
+  }
+  .rv-main { display: flex; flex-direction: column; gap: 20px; }
 
-    .info-card {
-        background: white;
-        padding: 2rem;
-        border-radius: 16px;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-    }
+  /* ── Cards ── */
+  .rv-card {
+    background: #fff;
+    border-radius: 16px;
+    border: 2px solid #E8E8E8;
+    overflow: hidden;
+  }
+  .rv-card-head {
+    padding: 18px 24px;
+    border-bottom: 2px solid #F2F2F2;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .rv-card-head h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1A1A1A;
+  }
+  .rv-card-icon {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .rv-card-icon.teal  { background: #E6F7F4; color: #0D7E6A; }
+  .rv-card-icon.amber { background: #FFF5E0; color: #D4760A; }
+  .rv-card-icon.blue  { background: #EEF4FF; color: #3B5BDB; }
+  .rv-card-body { padding: 24px; }
 
-    .info-card h2 {
-        color: var(--dark-green);
-        margin: 0 0 1.5rem 0;
-        font-size: 1.3rem;
-    }
+  /* ── Detail Grid ── */
+  .rv-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .rv-detail-item {
+    background: #F8F8F6;
+    border: 1px solid #EBEBEB;
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .rv-detail-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #9A9A9A;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .rv-detail-label i { font-size: 10px; color: #0D7E6A; }
+  .rv-detail-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1A1A1A;
+  }
 
-    .detail-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1.5rem;
-    }
+  /* ── Academic Records ── */
+  .rv-academic-item {
+    background: #F8F8F6;
+    border: 1px solid #EBEBEB;
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .rv-academic-item:last-child { margin-bottom: 0; }
+  .rv-academic-left { display: flex; align-items: center; gap: 12px; }
+  .rv-academic-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #0D7E6A;
+    flex-shrink: 0;
+  }
+  .rv-academic-degree {
+    font-weight: 600;
+    font-size: 14px;
+    color: #1A1A1A;
+  }
+  .rv-academic-inst {
+    font-size: 12px;
+    color: #7A7A7A;
+    margin-top: 2px;
+  }
+  .rv-score-pill {
+    background: #E6F7F4;
+    color: #0D7E6A;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 50px;
+    white-space: nowrap;
+  }
 
-    .detail-item {
-        padding: 1rem;
-        background: var(--very-light-green);
-        border-radius: 8px;
-    }
+  /* ── Documents ── */
+  .rv-doc-item {
+    background: #F8F8F6;
+    border: 1px solid #EBEBEB;
+    border-left: 3px solid #0D7E6A;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    transition: background .15s;
+  }
+  .rv-doc-item:last-child { margin-bottom: 0; }
+  .rv-doc-item:hover { background: #F0FAF7; }
+  .rv-doc-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: #1A1A1A;
+  }
+  .rv-doc-meta {
+    font-size: 12px;
+    color: #0D7E6A;
+    margin-top: 3px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .rv-view-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #1A1A1A;
+    color: #FFD700;
+    text-decoration: none;
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background .2s, transform .15s;
+    flex-shrink: 0;
+  }
+  .rv-view-btn:hover { background: #0D7E6A; color: #fff; transform: translateY(-1px); }
 
-    .detail-label {
-        font-size: 0.85rem;
-        color: var(--gray);
-        margin-bottom: 0.25rem;
-    }
+  /* ── Sidebar ── */
+  .rv-sidebar { display: flex; flex-direction: column; gap: 20px; position: sticky; top: 90px; }
 
-    .detail-value {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: var(--dark-green);
-    }
+  .rv-status-card {
+    background: #fff;
+    border-radius: 16px;
+    border: 2px solid #E8E8E8;
+    overflow: hidden;
+  }
+  .rv-status-head {
+    background: #1A1A1A;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .rv-status-head span {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #FFD700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .rv-status-head i { color: #FFD700; font-size: 13px; }
+  .rv-status-body { padding: 20px; }
 
-    .documents-list {
-        display: grid;
-        gap: 1rem;
-    }
+  .rv-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 16px;
+    width: 100%;
+    justify-content: center;
+  }
+  .rv-status-badge::before {
+    content: '';
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  .rv-status-badge.PENDING       { background: #FFF8E7; color: #D4900A; }
+  .rv-status-badge.APPROVED      { background: #E6F7F4; color: #0D7E6A; }
+  .rv-status-badge.REJECTED      { background: #FFF0F0; color: #D9534F; }
+  .rv-status-badge.UNDER_REVIEW  { background: #EEF4FF; color: #3B5BDB; }
+  .rv-status-badge.SUBMITTED     { background: #F0F9FF; color: #0284C7; }
 
-    .document-item {
-        padding: 1.25rem;
-        background: var(--very-light-green);
-        border-radius: 8px;
-        border-left: 4px solid var(--primary-green);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
+  .rv-meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #F2F2F2;
+    font-size: 13px;
+  }
+  .rv-meta-row:last-of-type { border-bottom: none; }
+  .rv-meta-label { color: #9A9A9A; font-weight: 500; }
+  .rv-meta-val { font-weight: 600; color: #1A1A1A; }
 
-    .doc-name {
-        font-weight: 600;
-        color: var(--dark-green);
-    }
+  /* ── Action Card ── */
+  .rv-action-card {
+    background: #fff;
+    border-radius: 16px;
+    border: 2px solid #E8E8E8;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .rv-action-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #9A9A9A;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .rv-btn-decide {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 13px;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    text-align: center;
+    transition: all .2s;
+    cursor: pointer;
+    border: none;
+  }
+  .rv-btn-primary {
+    background: #0D7E6A;
+    color: #fff;
+  }
+  .rv-btn-primary:hover { background: #0A6356; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(13,126,106,0.3); }
+  .rv-btn-outline {
+    background: #fff;
+    color: #1A1A1A;
+    border: 2px solid #E8E8E8;
+  }
+  .rv-btn-outline:hover { background: #F5F4F0; border-color: #1A1A1A; }
 
-    .doc-status {
-        color: var(--primary-green);
-        font-size: 0.9rem;
-    }
+  /* ── Empty ── */
+  .rv-empty {
+    text-align: center;
+    padding: 30px 20px;
+    color: #9A9A9A;
+    font-size: 14px;
+  }
+  .rv-empty i { font-size: 28px; margin-bottom: 10px; display: block; color: #D0D0D0; }
 
-    .sidebar {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 16px;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-        height: fit-content;
-        position: sticky;
-        top: 100px;
-    }
-
-    .sidebar h3 {
-        color: var(--dark-green);
-        margin: 0 0 1.5rem 0;
-    }
-
-    .status-badge-large {
-        display: inline-block;
-        padding: 0.75rem 1.5rem;
-        border-radius: 10px;
-        font-weight: 700;
-        font-size: 1.1rem;
-        margin-bottom: 2rem;
-    }
-
-    .status-badge-large.PENDING {
-        background: rgba(33, 150, 243, 0.15);
-        color: #1976d2;
-    }
-
-    .status-badge-large.APPROVED {
-        background: rgba(76, 175, 80, 0.15);
-        color: var(--primary-green);
-    }
-
-    .status-badge-large.REJECTED {
-        background: rgba(244, 67, 54, 0.15);
-        color: #d32f2f;
-    }
-
-    .action-buttons {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .btn-decision {
-        width: 100%;
-        padding: 1rem;
-        border-radius: 8px;
-        font-weight: 600;
-        text-decoration: none;
-        text-align: center;
-        transition: all 0.3s;
-    }
-
-    .btn-approve {
-        background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
-        color: white;
-    }
-
-    .btn-approve:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
-    }
-
-    .btn-back {
-        background: white;
-        color: var(--dark-green);
-        border: 2px solid var(--border-green);
-    }
-
-    .btn-back:hover {
-        background: var(--very-light-green);
-    }
-
-    @media (max-width: 1024px) {
-        .review-container {
-            grid-template-columns: 1fr;
-        }
-
-        .sidebar {
-            position: static;
-        }
-
-        .detail-grid {
-            grid-template-columns: 1fr;
-        }
-    }
+  @media (max-width: 1024px) {
+    .rv-layout { grid-template-columns: 1fr; }
+    .rv-sidebar { position: static; }
+    .rv-detail-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .rv-hero { flex-direction: column; align-items: flex-start; }
+    .rv-detail-grid { grid-template-columns: 1fr; }
+    .rv-hero-right { width: 100%; }
+    .rv-hero-student { width: 100%; }
+  }
 </style>
 
-<div class="review-header">
-    <h1>📋 Application Review</h1>
-    <p>{{ application.scholarship.name }}</p>
-</div>
+<div class="rv-page">
 
-<div class="review-container">
-    <div class="main-content">
-        <div class="info-card">
-            <h2>👤 Student Information</h2>
-            <div class="detail-grid">
-                <div class="detail-item">
-                    <div class="detail-label">Full Name</div>
-                    <div class="detail-value">{{ student.full_name }}</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Email</div>
-                    <div class="detail-value">{{ student.user.email }}</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Phone</div>
-                    <div class="detail-value">{{ student.phone_number|default:"Not provided" }}</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Date of Birth</div>
-                    <div class="detail-value">{{ student.date_of_birth|date:"M d, Y"|default:"Not provided" }}</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Gender</div>
-                    <div class="detail-value">{{ student.get_gender_display|default:"Not provided" }}</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Category</div>
-                    <div class="detail-value">{{ student.get_category_display|default:"Not provided" }}</div>
-                </div>
-            </div>
+  <!-- Hero -->
+  <div class="rv-hero">
+    <div class="rv-hero-left">
+      <div class="rv-hero-badge">
+        <i class="fa-solid fa-file-circle-check"></i>
+        Application Review
+      </div>
+      <h1>{{ application.scholarship.name }}</h1>
+      <p>Review this student's application and supporting documents</p>
+    </div>
+    <div class="rv-hero-right">
+      <div class="rv-hero-student">
+        <div class="rv-hero-avatar">{{ student.full_name|slice:":1"|upper }}</div>
+        <div>
+          <div class="rv-hero-sname">{{ student.full_name }}</div>
+          <div class="rv-hero-semail">{{ student.user.email }}</div>
         </div>
+      </div>
+    </div>
+  </div>
 
-        {% if academic_records %}
-        <div class="info-card">
-            <h2>🎓 Academic Records</h2>
-            {% for record in academic_records %}
-            <div style="padding: 1rem; background: var(--very-light-green); border-radius: 8px; margin-bottom: 1rem;">
-                <div style="font-weight: 600; color: var(--dark-green); margin-bottom: 0.5rem;">
-                    {{ record.get_degree_level_display }} - {{ record.institution_name }}
-                </div>
-                <div style="color: var(--gray);">
-                    Score: {{ record.last_exam_score|default:"N/A" }}
-                    {% if record.current_year %}| Year: {{ record.current_year }}{% endif %}
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
+  <div class="rv-layout">
 
-        <div class="info-card">
-            <h2>📄 Uploaded Documents ({{ documents.count }})</h2>
-            <div class="documents-list">
-                {% for doc in documents %}
-                <div class="document-item">
-                    <div>
-                        <div class="doc-name">{{ doc.document_type.document_name }}</div>
-                        <div class="doc-status">✓ Verified - Uploaded {{ doc.uploaded_at|date:"M d, Y" }}</div>
-                    </div>
-                    <a href="{{ doc.file.url }}" target="_blank" style="padding: 0.5rem 1rem; background: var(--primary-green); color: white; 
-                              border-radius: 6px; text-decoration: none; font-weight: 600; 
-                              transition: all 0.3s; display: inline-block;"
-                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(76,175,80,0.3)'"
-                        onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
-                        👁️ View Document
-                    </a>
-                </div>
-                {% empty %}
-                <p style="color: var(--gray); text-align: center;">No documents uploaded.</p>
-                {% endfor %}
-            </div>
+    <!-- ── Main Content ── -->
+    <div class="rv-main">
+
+      <!-- Student Info -->
+      <div class="rv-card">
+        <div class="rv-card-head">
+          <div class="rv-card-icon teal"><i class="fa-solid fa-user"></i></div>
+          <h2>Student Information</h2>
         </div>
+        <div class="rv-card-body">
+          <div class="rv-detail-grid">
+            <div class="rv-detail-item">
+              <div class="rv-detail-label"><i class="fa-solid fa-id-card"></i> Full Name</div>
+              <div class="rv-detail-value">{{ student.full_name }}</div>
+            </div>
+            <div class="rv-detail-item">
+              <div class="rv-detail-label"><i class="fa-solid fa-envelope"></i> Email</div>
+              <div class="rv-detail-value" style="font-size:13px;">{{ student.user.email }}</div>
+            </div>
+            <div class="rv-detail-item">
+              <div class="rv-detail-label"><i class="fa-solid fa-phone"></i> Phone</div>
+              <div class="rv-detail-value">{{ student.phone_number|default:"Not provided" }}</div>
+            </div>
+            <div class="rv-detail-item">
+              <div class="rv-detail-label"><i class="fa-solid fa-cake-candles"></i> Date of Birth</div>
+              <div class="rv-detail-value">{{ student.date_of_birth|date:"M d, Y"|default:"Not provided" }}</div>
+            </div>
+            <div class="rv-detail-item">
+              <div class="rv-detail-label"><i class="fa-solid fa-venus-mars"></i> Gender</div>
+              <div class="rv-detail-value">{{ student.get_gender_display|default:"Not provided" }}</div>
+            </div>
+            <div class="rv-detail-item">
+              <div class="rv-detail-label"><i class="fa-solid fa-layer-group"></i> Category</div>
+              <div class="rv-detail-value">{{ student.get_category_display|default:"Not provided" }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Academic Records -->
+      {% if academic_records %}
+      <div class="rv-card">
+        <div class="rv-card-head">
+          <div class="rv-card-icon amber"><i class="fa-solid fa-graduation-cap"></i></div>
+          <h2>Academic Records</h2>
+        </div>
+        <div class="rv-card-body">
+          {% for record in academic_records %}
+          <div class="rv-academic-item">
+            <div class="rv-academic-left">
+              <div class="rv-academic-dot"></div>
+              <div>
+                <div class="rv-academic-degree">{{ record.get_degree_level_display }}</div>
+                <div class="rv-academic-inst">
+                  <i class="fa-solid fa-building-columns" style="margin-right:4px;color:#0D7E6A;font-size:10px;"></i>
+                  {{ record.institution_name }}
+                  {% if record.current_year %}
+                    &nbsp;·&nbsp; Year {{ record.current_year }}
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            <div class="rv-score-pill">
+              <i class="fa-solid fa-chart-line" style="margin-right:4px;"></i>
+              Score: {{ record.last_exam_score|default:"N/A" }}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Documents -->
+      <div class="rv-card">
+        <div class="rv-card-head">
+          <div class="rv-card-icon blue"><i class="fa-solid fa-folder-open"></i></div>
+          <h2>Uploaded Documents
+            <span style="background:#EEF4FF;color:#3B5BDB;font-size:12px;font-weight:700;padding:3px 10px;border-radius:50px;margin-left:8px;">
+              {{ documents.count }}
+            </span>
+          </h2>
+        </div>
+        <div class="rv-card-body">
+          {% for doc in documents %}
+          <div class="rv-doc-item">
+            <div>
+              <div class="rv-doc-name">{{ doc.document_type.document_name }}</div>
+              <div class="rv-doc-meta">
+                <i class="fa-solid fa-circle-check"></i>
+                Verified · Uploaded {{ doc.uploaded_at|date:"M d, Y" }}
+              </div>
+            </div>
+            <a href="{{ doc.file.url }}" target="_blank" class="rv-view-btn">
+              <i class="fa-solid fa-eye"></i> View
+            </a>
+          </div>
+          {% empty %}
+          <div class="rv-empty">
+            <i class="fa-regular fa-folder-open"></i>
+            No documents uploaded yet.
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
     </div>
 
-    <aside class="sidebar">
-        <h3>📊 Application Status</h3>
-        <div>
-            <span class="status-badge-large {{ application.status }}">
-                {{ application.get_status_display }}
-            </span>
-        </div>
+    <!-- ── Sidebar ── -->
+    <aside class="rv-sidebar">
 
-        <div style="margin-bottom: 1.5rem;">
-            <div class="detail-item">
-                <div class="detail-label">Applied On</div>
-                <div class="detail-value">{{ application.last_action_date|date:"M d, Y" }}</div>
-            </div>
+      <!-- Status Card -->
+      <div class="rv-status-card">
+        <div class="rv-status-head">
+          <i class="fa-solid fa-chart-pie"></i>
+          <span>Application Status</span>
         </div>
-
-        <div class="action-buttons">
-            {% if application.status == 'PENDING' %}
-            <a href="{% url 'funder_portal:make_decision' pk=application.pk %}" class="btn-decision btn-approve">
-                Make Decision
-            </a>
-            {% endif %}
-
-            <a href="{% url 'funder_portal:view_applications' %}" class="btn-decision btn-back">
-                ← Back to Applications
-            </a>
+        <div class="rv-status-body">
+          <div class="rv-status-badge {{ application.status }}">
+            {{ application.get_status_display }}
+          </div>
+          <div class="rv-meta-row">
+            <span class="rv-meta-label"><i class="fa-regular fa-calendar" style="margin-right:5px;"></i>Applied On</span>
+            <span class="rv-meta-val">{{ application.last_action_date|date:"M d, Y" }}</span>
+          </div>
+          <div class="rv-meta-row">
+            <span class="rv-meta-label"><i class="fa-solid fa-medal" style="margin-right:5px;"></i>Scholarship</span>
+            <span class="rv-meta-val" style="font-size:12px;max-width:140px;text-align:right;line-height:1.3;">{{ application.scholarship.name }}</span>
+          </div>
         </div>
+      </div>
+
+      <!-- Actions Card -->
+      <div class="rv-action-card">
+        <div class="rv-action-title"><i class="fa-solid fa-bolt" style="margin-right:5px;color:#D4900A;"></i>Actions</div>
+        {% if application.status == 'PENDING' %}
+        <a href="{% url 'funder_portal:make_decision' pk=application.pk %}" class="rv-btn-decide rv-btn-primary">
+          <i class="fa-solid fa-scale-balanced"></i> Make Decision
+        </a>
+        {% endif %}
+        <a href="{% url 'funder_portal:view_applications' %}" class="rv-btn-decide rv-btn-outline">
+          <i class="fa-solid fa-arrow-left"></i> Back to Applications
+        </a>
+      </div>
+
     </aside>
+  </div>
 </div>
 
 {% endblock %}

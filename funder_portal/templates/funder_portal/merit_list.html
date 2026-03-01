@@ -3,522 +3,654 @@
 {% block title %}Merit List — {{ scholarship.title }}{% endblock %}
 
 {% block content %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+
 <style>
-    :root {
-        --yellow: #FFD700;
-        --black: #000000;
-        --green: #00C853;
-        --red: #FF3B30;
-        --blue: #0066FF;
-        --bg: #FFFFFF;
-    }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
-        background: #fff;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
+  .ml-page {
+    font-family: 'DM Sans', sans-serif;
+    background-color: #F5F4F0;
+    background-image: radial-gradient(circle, #c4c0b8 1px, transparent 1px);
+    background-size: 22px 22px;
+    min-height: 100vh;
+    padding: 40px 24px 60px;
+  }
 
-    body::before {
-        content: '';
-        position: fixed;
-        inset: 0;
-        background-image: radial-gradient(circle, #e0e0e0 1px, transparent 1px);
-        background-size: 20px 20px;
-        pointer-events: none;
-        z-index: 0;
-    }
+  /* ── Hero ── */
+  .ml-hero {
+    background: linear-gradient(135deg, #B45309 0%, #D97706 55%, #F59E0B 100%);
+    border-radius: 20px;
+    padding: 32px 40px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .ml-hero::before {
+    content: '';
+    position: absolute;
+    width: 340px; height: 340px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 50%;
+    right: -70px; top: -90px;
+    pointer-events: none;
+  }
+  .ml-hero::after {
+    content: '';
+    position: absolute;
+    width: 160px; height: 160px;
+    background: rgba(0,0,0,0.07);
+    border-radius: 50%;
+    right: 210px; bottom: -55px;
+    pointer-events: none;
+  }
+  .ml-hero-left { position: relative; z-index: 1; flex: 1; min-width: 0; }
+  .ml-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,0,0,0.18);
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 50px;
+    padding: 6px 16px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .ml-hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 6px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ml-hero p { color: rgba(255,255,255,0.78); font-size: 13px; }
+  .ml-hero-right {
+    position: relative; z-index: 1;
+    display: flex; gap: 10px; flex-shrink: 0;
+  }
+  .ml-hero-stat {
+    background: rgba(0,0,0,0.18);
+    border: 1px solid rgba(0,0,0,0.15);
+    border-radius: 12px;
+    padding: 14px 20px;
+    text-align: center;
+    min-width: 80px;
+  }
+  .ml-hero-stat .n {
+    font-family: 'Syne', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    color: #fff;
+    display: block;
+  }
+  .ml-hero-stat .l {
+    font-size: 10px;
+    color: rgba(255,255,255,0.78);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+  }
 
-    .container {
-        max-width: 1200px;
-        margin: 2.5rem auto;
-        padding: 0 2rem;
-        position: relative;
-        z-index: 1;
-    }
+  /* ── Back link ── */
+  .ml-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: #fff;
+    border: 2px solid #E8E8E8;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1A1A1A;
+    text-decoration: none;
+    margin-bottom: 20px;
+    transition: all .2s;
+  }
+  .ml-back:hover { background: #1A1A1A; color: #FFD700; border-color: #1A1A1A; }
 
-    /* Header */
-    .page-badge {
-        display: inline-block;
-        background: var(--black);
-        color: var(--yellow);
-        padding: 0.4rem 1.25rem;
-        font-size: 0.8rem;
-        font-weight: 900;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-        border: 2px solid var(--black);
-        margin-bottom: 0.75rem;
-    }
+  /* ── Stats row ── */
+  .ml-stats {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .ml-stat-card {
+    background: #fff;
+    border: 2px solid #E8E8E8;
+    border-radius: 14px;
+    padding: 18px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .ml-stat-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .ic-amber  { background: #FFF5E0; color: #D97706; }
+  .ic-teal   { background: #E6F7F4; color: #0D7E6A; }
+  .ic-blue   { background: #EEF4FF; color: #3B5BDB; }
+  .ic-rose   { background: #FFF0F4; color: #E11D48; }
+  .ic-slate  { background: #F1F5F9; color: #475569; }
+  .ml-stat-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: #1A1A1A;
+    line-height: 1;
+  }
+  .ml-stat-lbl {
+    font-size: 11px;
+    color: #9A9A9A;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 3px;
+  }
 
-    .page-title {
-        font-size: 2.5rem;
-        font-weight: 900;
-        font-style: italic;
-        line-height: 1.1;
-        letter-spacing: -1px;
-    }
+  /* ── Not-closed banner ── */
+  .ml-banner {
+    background: #fff;
+    border: 2px solid #E8E8E8;
+    border-radius: 16px;
+    padding: 48px 32px;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .ml-banner-icon {
+    width: 64px; height: 64px;
+    background: #FFF5E0;
+    border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 18px;
+    font-size: 26px;
+    color: #D97706;
+  }
+  .ml-banner h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: #1A1A1A;
+    margin-bottom: 8px;
+  }
+  .ml-banner p {
+    color: #7A7A7A;
+    font-size: 14px;
+    max-width: 500px;
+    margin: 0 auto 24px;
+    line-height: 1.7;
+  }
+  .ml-banner strong { color: #1A1A1A; }
 
-    .page-sub {
-        color: #666;
-        font-size: 1rem;
-        margin-top: 0.35rem;
-    }
+  /* ── Action bar ── */
+  .ml-action-bar {
+    background: #1A1A1A;
+    border-radius: 14px;
+    padding: 18px 24px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .ml-action-text {
+    font-size: 14px;
+    color: rgba(255,255,255,0.75);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .ml-action-text i { color: #FFD700; }
 
-    /* Stats row */
-    .stats-row {
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-        margin: 1.5rem 0;
-    }
+  /* ── Buttons ── */
+  .ml-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 9px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all .2s;
+    white-space: nowrap;
+  }
+  .ml-btn-gold    { background: #FFD700; color: #1A1A1A; }
+  .ml-btn-gold:hover { background: #F0CA00; transform: translateY(-1px); }
+  .ml-btn-red     { background: #E11D48; color: #fff; }
+  .ml-btn-red:hover { background: #C01440; transform: translateY(-1px); }
+  .ml-btn-outline { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,0.25); }
+  .ml-btn-outline:hover { border-color: #FFD700; color: #FFD700; }
 
-    .stat-box {
-        background: var(--bg);
-        border: 3px solid var(--black);
-        padding: 1rem 1.5rem;
-        flex: 1;
-        min-width: 140px;
-    }
+  /* ── Table Card ── */
+  .ml-table-card {
+    background: #fff;
+    border-radius: 16px;
+    border: 2px solid #E8E8E8;
+    overflow: hidden;
+  }
+  .ml-table-head {
+    padding: 18px 24px;
+    border-bottom: 2px solid #F2F2F2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .ml-table-head h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1A1A1A;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .ml-table-head h2 i { color: #D97706; }
+  .ml-count-pill {
+    background: #FFF5E0;
+    color: #D97706;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 50px;
+  }
 
-    .stat-label {
-        font-size: 0.72rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        color: #888;
-    }
+  /* Table */
+  .ml-table { width: 100%; border-collapse: collapse; }
+  .ml-table thead tr { background: #1A1A1A; }
+  .ml-table thead th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #FFD700;
+    white-space: nowrap;
+  }
+  .ml-table tbody tr { border-bottom: 1px solid #F5F5F5; transition: background .15s; }
+  .ml-table tbody tr:last-child { border-bottom: none; }
+  .ml-table tbody tr:hover { background: #FAFAF6; }
+  .ml-table tbody tr.winner-row { background: #F0FAF7; }
+  .ml-table tbody tr.winner-row:hover { background: #E6F7F4; }
+  .ml-table td { padding: 14px 16px; font-size: 13px; color: #1A1A1A; vertical-align: middle; }
 
-    .stat-value {
-        font-size: 1.8rem;
-        font-weight: 900;
-        color: var(--black);
-    }
+  /* Cutoff row */
+  .cutoff-row td {
+    background: #1A1A1A !important;
+    color: #FFD700 !important;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+    padding: 8px !important;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border: none !important;
+  }
 
-    /* Action bar */
-    .action-bar {
-        background: var(--yellow);
-        border: 4px solid var(--black);
-        padding: 1.25rem 1.5rem;
-        margin-bottom: 2rem;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-        flex-wrap: wrap;
-    }
+  /* Rank badge */
+  .ml-rank {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    border: 2px solid transparent;
+  }
+  .ml-rank-1 { background: #FFD700; color: #1A1A1A; border-color: #D4B000; }
+  .ml-rank-2 { background: #E8E8E8; color: #555; border-color: #CACACA; }
+  .ml-rank-3 { background: #CD7F32; color: #fff; border-color: #A0622A; }
+  .ml-rank-n { background: #F5F5F5; color: #7A7A7A; border-color: #E0E0E0; }
 
-    .action-bar-text {
-        font-weight: 700;
-        font-size: 0.95rem;
-    }
+  /* Score bar */
+  .ml-score-wrap { display: flex; align-items: center; gap: 8px; }
+  .ml-bar-bg {
+    width: 70px; height: 7px;
+    background: #EBEBEB;
+    border-radius: 10px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .ml-bar-fill { height: 100%; background: linear-gradient(90deg, #0D7E6A, #1EC8A3); border-radius: 10px; }
+  .ml-score-num { font-weight: 700; font-size: 13px; color: #1A1A1A; white-space: nowrap; }
 
-    /* Not-closed banner */
-    .not-closed-banner {
-        background: #fff;
-        border: 4px solid var(--black);
-        padding: 2.5rem;
-        text-align: center;
-        margin: 2rem 0;
-    }
+  /* Student cell */
+  .ml-student-name { font-weight: 600; font-size: 13px; color: #1A1A1A; }
+  .ml-student-sub  { font-size: 11px; color: #9A9A9A; margin-top: 2px; }
 
-    .not-closed-banner h2 {
-        font-size: 1.5rem;
-        font-weight: 900;
-        margin-bottom: 0.5rem;
-    }
+  /* Pills */
+  .ml-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .ml-pill-green  { background: #E6F7F4; color: #0D7E6A; }
+  .ml-pill-orange { background: #FFF5E0; color: #D97706; }
+  .ml-pill-grey   { background: #F5F5F5; color: #9A9A9A; }
+  .ml-pill-blue   { background: #EEF4FF; color: #3B5BDB; }
+  .ml-pill-red    { background: #FFF0F4; color: #E11D48; }
 
-    .not-closed-banner p {
-        color: #666;
-        margin-bottom: 1.5rem;
-    }
+  /* Empty state */
+  .ml-empty {
+    padding: 60px 32px;
+    text-align: center;
+  }
+  .ml-empty-icon {
+    width: 64px; height: 64px;
+    background: #FFF5E0;
+    border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 26px;
+    color: #D97706;
+  }
+  .ml-empty h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1A1A1A;
+    margin-bottom: 8px;
+  }
+  .ml-empty p { font-size: 13px; color: #9A9A9A; max-width: 400px; margin: 0 auto; line-height: 1.6; }
 
-    /* Merit table */
-    .merit-table-wrap {
-        overflow-x: auto;
-        border: 4px solid var(--black);
+  @media (max-width: 1100px) {
+    .ml-stats { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 768px) {
+    .ml-hero { flex-direction: column; align-items: flex-start; }
+    .ml-stats { grid-template-columns: repeat(2, 1fr); }
+    .ml-hero-right { width: 100%; overflow-x: auto; }
+    .ml-table thead { display: none; }
+    .ml-table, .ml-table tbody, .ml-table tr, .ml-table td { display: block; width: 100%; }
+    .ml-table tr { padding: 14px 16px; border-bottom: 1px solid #F0F0F0; }
+    .ml-table td { padding: 4px 0; border: none; }
+    .ml-table td::before {
+      content: attr(data-label);
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #9A9A9A;
+      display: block;
+      margin-bottom: 3px;
     }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        background: #fff;
-    }
-
-    thead {
-        background: var(--black);
-        color: var(--yellow);
-    }
-
-    thead th {
-        padding: 0.85rem 1rem;
-        text-align: left;
-        font-size: 0.8rem;
-        font-weight: 900;
-        text-transform: uppercase;
-        white-space: nowrap;
-    }
-
-    tbody tr {
-        border-bottom: 2px solid #e0e0e0;
-    }
-
-    tbody tr:hover {
-        background: #FFFDE7;
-    }
-
-    tbody tr.winner-row {
-        background: #E8F5E9;
-    }
-
-    tbody td {
-        padding: 0.85rem 1rem;
-        font-size: 0.88rem;
-        vertical-align: middle;
-    }
-
-    /* Rank badge */
-    .rank-badge {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 32px;
-        height: 32px;
-        border: 2px solid var(--black);
-        font-weight: 900;
-        font-size: 0.85rem;
-    }
-
-    .rank-1 {
-        background: #FFD700;
-    }
-
-    .rank-2 {
-        background: #e0e0e0;
-    }
-
-    .rank-3 {
-        background: #CD7F32;
-        color: #fff;
-    }
-
-    .rank-other {
-        background: #f5f5f5;
-    }
-
-    /* Score bar */
-    .score-wrap {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .score-bar-bg {
-        width: 80px;
-        height: 8px;
-        background: #e0e0e0;
-        border: 1px solid #ccc;
-        flex-shrink: 0;
-    }
-
-    .score-bar-fill {
-        height: 100%;
-        background: var(--green);
-    }
-
-    .score-num {
-        font-weight: 700;
-        font-size: 0.88rem;
-        white-space: nowrap;
-    }
-
-    /* Pill */
-    .pill {
-        display: inline-block;
-        padding: 0.2rem 0.6rem;
-        font-size: 0.72rem;
-        font-weight: 700;
-        border: 2px solid;
-        text-transform: uppercase;
-        white-space: nowrap;
-    }
-
-    .pill-green {
-        border-color: var(--green);
-        background: #E8F5E9;
-        color: #1B5E20;
-    }
-
-    .pill-orange {
-        border-color: #FF9800;
-        background: #FFF3E0;
-        color: #E65100;
-    }
-
-    .pill-grey {
-        border-color: #ccc;
-        background: #f5f5f5;
-        color: #888;
-    }
-
-    .pill-awarded {
-        border-color: var(--blue);
-        background: #E3F2FD;
-        color: #0D47A1;
-    }
-
-    /* Buttons */
-    .btn {
-        padding: 0.75rem 1.75rem;
-        border: 3px solid var(--black);
-        cursor: pointer;
-        font-weight: 900;
-        font-size: 0.9rem;
-        text-transform: uppercase;
-        letter-spacing: 0.3px;
-        text-decoration: none;
-        display: inline-block;
-        transition: all 0.2s;
-    }
-
-    .btn-approve {
-        background: var(--green);
-        color: #fff;
-    }
-
-    .btn-approve:hover {
-        filter: brightness(0.9);
-        transform: translateY(-1px);
-    }
-
-    .btn-close-apps {
-        background: var(--red);
-        color: #fff;
-    }
-
-    .btn-close-apps:hover {
-        filter: brightness(0.9);
-        transform: translateY(-1px);
-    }
-
-    .btn-back {
-        background: #fff;
-        color: var(--black);
-    }
-
-    .btn-back:hover {
-        background: #f0f0f0;
-    }
-
-    /* Winner cutoff line */
-    .cutoff-row td {
-        background: #000;
-        color: var(--yellow);
-        font-size: 0.75rem;
-        font-weight: 900;
-        text-align: center;
-        padding: 0.4rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    /* Empty state */
-    .empty-state {
-        text-align: center;
-        padding: 3rem;
-        color: #888;
-    }
-
-    .empty-state strong {
-        display: block;
-        font-size: 1.1rem;
-        color: #000;
-        margin-bottom: 0.5rem;
-    }
+  }
 </style>
 
-<div class="container">
-    <!-- Header -->
-    <div style="margin-bottom: 2rem;">
-        <a href="{% url 'funder_portal:funder_dashboard' %}" class="btn btn-back"
-            style="margin-bottom: 1rem; padding: 0.5rem 1rem;">&larr; Dashboard</a>
-        <div class="page-badge">[M] MERIT LIST</div>
-        <h1 class="page-title">{{ scholarship.title|upper }}</h1>
-        <p class="page-sub">
-            Ranked applicants by academic score (35) + financial need (40) + income (25)
-        </p>
-    </div>
+<div class="ml-page">
 
-    <!-- Stats -->
-    <div class="stats-row">
-        <div class="stat-box">
-            <div class="stat-label">Winners to Select</div>
-            <div class="stat-value">{{ num_winners }}</div>
+  <!-- Back -->
+  <a href="{% url 'funder_portal:funder_dashboard' %}" class="ml-back">
+    <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+  </a>
+
+  <!-- Hero -->
+  <div class="ml-hero">
+    <div class="ml-hero-left">
+      <div class="ml-hero-badge">
+        <i class="fa-solid fa-trophy"></i>
+        Merit List
+      </div>
+      <h1>{{ scholarship.title }}</h1>
+      <p>Ranked by academic score (35%) + financial need (40%) + income (25%)</p>
+    </div>
+    <div class="ml-hero-right">
+      <div class="ml-hero-stat">
+        <span class="n">{{ num_winners }}</span>
+        <span class="l">Winners</span>
+      </div>
+      <div class="ml-hero-stat">
+        <span class="n">{{ merit_list|length }}</span>
+        <span class="l">Eligible</span>
+      </div>
+      <div class="ml-hero-stat">
+        <span class="n">{{ already_awarded }}</span>
+        <span class="l">Awarded</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Row -->
+  <div class="ml-stats">
+    <div class="ml-stat-card">
+      <div class="ml-stat-icon ic-amber"><i class="fa-solid fa-trophy"></i></div>
+      <div>
+        <div class="ml-stat-val">{{ num_winners }}</div>
+        <div class="ml-stat-lbl">Winners to Select</div>
+      </div>
+    </div>
+    <div class="ml-stat-card">
+      <div class="ml-stat-icon ic-teal"><i class="fa-solid fa-users"></i></div>
+      <div>
+        <div class="ml-stat-val">{{ merit_list|length }}</div>
+        <div class="ml-stat-lbl">Eligible Applicants</div>
+      </div>
+    </div>
+    <div class="ml-stat-card">
+      <div class="ml-stat-icon ic-blue"><i class="fa-solid fa-award"></i></div>
+      <div>
+        <div class="ml-stat-val">{{ already_awarded }}</div>
+        <div class="ml-stat-lbl">Already Awarded</div>
+      </div>
+    </div>
+    <div class="ml-stat-card">
+      <div class="ml-stat-icon ic-rose"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+      <div>
+        <div class="ml-stat-val" style="font-size:16px;padding-top:3px;">
+          {% if scholarship.distribution_type == 'FIXED' %}
+            ₹{{ scholarship.fixed_amount|default:"?" }}
+          {% else %}
+            Dynamic
+          {% endif %}
         </div>
-        <div class="stat-box">
-            <div class="stat-label">Eligible Applicants</div>
-            <div class="stat-value">{{ merit_list|length }}</div>
-        </div>
-        <div class="stat-box">
-            <div class="stat-label">Already Awarded</div>
-            <div class="stat-value">{{ already_awarded }}</div>
-        </div>
-        <div class="stat-box">
-            <div class="stat-label">Per Winner Amount</div>
-            <div class="stat-value">
-                {% if scholarship.distribution_type == 'FIXED' %}
-                Rs.{{ scholarship.fixed_amount|default:"?" }}
+        <div class="ml-stat-lbl">Per Winner</div>
+      </div>
+    </div>
+    <div class="ml-stat-card">
+      <div class="ml-stat-icon ic-slate"><i class="fa-regular fa-calendar"></i></div>
+      <div>
+        <div class="ml-stat-val" style="font-size:15px;padding-top:3px;">{{ scholarship.deadline|date:"d M Y" }}</div>
+        <div class="ml-stat-lbl">Deadline</div>
+      </div>
+    </div>
+  </div>
+
+  {% if not is_closed %}
+  <!-- Not yet closed -->
+  <div class="ml-banner">
+    <div class="ml-banner-icon"><i class="fa-solid fa-clock"></i></div>
+    <h2>Applications Still Open</h2>
+    <p>
+      The merit list will appear automatically after the deadline
+      <strong>{{ scholarship.deadline|date:"d M Y, H:i" }}</strong>,
+      or you can close applications manually right now.
+    </p>
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="close">
+      <button type="submit" class="ml-btn ml-btn-red"
+        onclick="return confirm('Close applications now? Students will no longer be able to apply.');">
+        <i class="fa-solid fa-lock"></i> Close Applications Now
+      </button>
+    </form>
+  </div>
+
+  {% else %}
+  <!-- Action Bar -->
+  <div class="ml-action-bar">
+    <div class="ml-action-text">
+      <i class="fa-solid fa-circle-info"></i>
+      {% if already_awarded %}
+        {{ already_awarded }} winner(s) already approved.
+      {% else %}
+        Applications closed — ready to approve top {{ num_winners }} winner(s).
+      {% endif %}
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      {% if merit_list and already_awarded < num_winners %}
+      <form method="post" action="{% url 'funder_portal:approve_winners' pk=scholarship.pk %}" style="margin:0;">
+        {% csrf_token %}
+        <button type="submit" class="ml-btn ml-btn-gold"
+          onclick="return confirm('Approve top {{ num_winners }} winner(s) and initiate transfers?');">
+          <i class="fa-solid fa-check-double"></i> Approve Top {{ num_winners }} &amp; Transfer
+        </button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if merit_list %}
+  <!-- Table -->
+  <div class="ml-table-card">
+    <div class="ml-table-head">
+      <h2><i class="fa-solid fa-ranking-star"></i> Ranked Applicants</h2>
+      <span class="ml-count-pill">{{ merit_list|length }} entries</span>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="ml-table">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Student</th>
+            <th>Merit Score</th>
+            <th>Last Sem Marks</th>
+            <th>Annual Fees</th>
+            <th>Income</th>
+            <th>Prior Received</th>
+            <th>Docs Status</th>
+            <th>Award</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entry in merit_list %}
+
+          {% if forloop.counter == num_winners|add:1 %}
+          <tr class="cutoff-row">
+            <td colspan="9">
+              <i class="fa-solid fa-scissors" style="margin-right:8px;"></i>
+              Winners Cutoff — Top {{ num_winners }} selected above this line
+            </td>
+          </tr>
+          {% endif %}
+
+          <tr class="{% if forloop.counter <= num_winners %}winner-row{% endif %}">
+            <td data-label="Rank">
+              <span class="ml-rank ml-rank-{% if forloop.counter <= 3 %}{{ forloop.counter }}{% else %}n{% endif %}">
+                {{ entry.rank }}
+              </span>
+            </td>
+            <td data-label="Student">
+              <div class="ml-student-name">{{ entry.student.full_name|default:"—" }}</div>
+              <div class="ml-student-sub">
+                {{ entry.student.get_category_display|default:"" }}
+                {% if entry.student.state %} &bull; {{ entry.student.state }}{% endif %}
+              </div>
+            </td>
+            <td data-label="Merit Score">
+              <div class="ml-score-wrap">
+                <div class="ml-bar-bg">
+                  <div class="ml-bar-fill" style="width:{{ entry.merit_score }}%;"></div>
+                </div>
+                <span class="ml-score-num">{{ entry.merit_score }}%</span>
+              </div>
+            </td>
+            <td data-label="Last Sem Marks">
+              {% if entry.marks %}
+                <strong>{{ entry.marks }}%</strong>&nbsp;
+                {% if entry.marksheet_verified %}
+                  <span class="ml-pill ml-pill-green"><i class="fa-solid fa-check"></i> OK</span>
                 {% else %}
-                Dynamic
+                  <span class="ml-pill ml-pill-orange"><i class="fa-solid fa-triangle-exclamation"></i> Unverified</span>
                 {% endif %}
-            </div>
-        </div>
-        <div class="stat-box">
-            <div class="stat-label">Deadline</div>
-            <div class="stat-value" style="font-size: 1rem; padding-top: 0.35rem;">
-                {{ scholarship.deadline|date:"d M Y" }}
-            </div>
-        </div>
-    </div>
-
-    {% if not is_closed %}
-    <!-- Not yet closed -->
-    <div class="not-closed-banner">
-        <h2>[L] Applications Still Open</h2>
-        <p>
-            The merit list will appear automatically after the deadline
-            <strong>({{ scholarship.deadline|date:"d M Y, H:i" }})</strong>,
-            or you can close applications manually now.
-        </p>
-        <form method="post">
-            {% csrf_token %}
-            <input type="hidden" name="action" value="close">
-            <button type="submit" class="btn btn-close-apps"
-                onclick="return confirm('Close applications now? Students will no longer be able to apply.');">
-                Close Applications Now
-            </button>
-        </form>
-    </div>
-
-    {% else %}
-    <!-- Closed — show action bar -->
-    <div class="action-bar">
-        <div class="action-bar-text">
-            {% if already_awarded %}
-            [+] {{ already_awarded }} winner(s) already approved.
-            {% else %}
-            Applications closed. Ready to approve top {{ num_winners }} winner(s).
-            {% endif %}
-        </div>
-        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-            {% if merit_list and already_awarded < num_winners %} <form method="post"
-                action="{% url 'funder_portal:approve_winners' pk=scholarship.pk %}">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-approve"
-                    onclick="return confirm('Approve top {{ num_winners }} winner(s) and initiate transfers?');">
-                    Approve Top {{ num_winners }} &amp; Transfer
-                </button>
-                </form>
+              {% else %}—{% endif %}
+            </td>
+            <td data-label="Annual Fees">
+              {% if entry.fees %}
+                ₹{{ entry.fees|floatformat:0 }}&nbsp;
+                {% if entry.college_match %}
+                  <span class="ml-pill ml-pill-green"><i class="fa-solid fa-check"></i></span>
+                {% else %}
+                  <span class="ml-pill ml-pill-orange"><i class="fa-solid fa-triangle-exclamation"></i></span>
                 {% endif %}
-        </div>
+              {% else %}—{% endif %}
+            </td>
+            <td data-label="Income">₹{{ entry.income|floatformat:0 }}</td>
+            <td data-label="Prior Received">
+              {% if entry.prior_received %}
+                ₹{{ entry.prior_received|floatformat:0 }}
+              {% else %}
+                <span style="color:#C0C0C0;">None</span>
+              {% endif %}
+            </td>
+            <td data-label="Docs Status">
+              {% if entry.marksheet_verified and entry.fees_verified %}
+                <span class="ml-pill ml-pill-green"><i class="fa-solid fa-circle-check"></i> All OK</span>
+              {% elif entry.marksheet_verified or entry.fees_verified %}
+                <span class="ml-pill ml-pill-orange"><i class="fa-solid fa-circle-half-stroke"></i> Partial</span>
+              {% else %}
+                <span class="ml-pill ml-pill-grey"><i class="fa-solid fa-circle-xmark"></i> Missing</span>
+              {% endif %}
+            </td>
+            <td data-label="Award">
+              {% if entry.application.award %}
+                <span class="ml-pill ml-pill-blue"><i class="fa-solid fa-star"></i> Awarded</span>
+              {% elif forloop.counter <= num_winners %}
+                <span class="ml-pill ml-pill-green"><i class="fa-solid fa-check"></i> Will Award</span>
+              {% else %}
+                <span class="ml-pill ml-pill-grey">Not Selected</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
+  </div>
 
-    {% if merit_list %}
-    <div class="merit-table-wrap">
-        <table>
-            <thead>
-                <tr>
-                    <th>Rank</th>
-                    <th>Student</th>
-                    <th>Merit Score</th>
-                    <th>Last Sem Marks</th>
-                    <th>Annual Fees</th>
-                    <th>Income</th>
-                    <th>Prior Received</th>
-                    <th>Docs Status</th>
-                    <th>Award</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for entry in merit_list %}
-                {% if forloop.counter == num_winners|add:1 %}
-                <tr class="cutoff-row">
-                    <td colspan="9">--- Winners cutoff: top {{ num_winners }} selected above this line ---</td>
-                </tr>
-                {% endif %}
-                <tr class="{% if forloop.counter <= num_winners %}winner-row{% endif %}">
-                    <td>
-                        <span
-                            class="rank-badge rank-{% if forloop.counter <= 3 %}{{ forloop.counter }}{% else %}other{% endif %}">
-                            {{ entry.rank }}
-                        </span>
-                    </td>
-                    <td>
-                        <strong>{{ entry.student.full_name|default:"—" }}</strong><br>
-                        <span style="color: #888; font-size: 0.78rem;">
-                            {{ entry.student.get_category_display|default:"" }}
-                            {% if entry.student.state %}&bull; {{ entry.student.state }}{% endif %}
-                        </span>
-                    </td>
-                    <td>
-                        <div class="score-wrap">
-                            <div class="score-bar-bg">
-                                <div class="score-bar-fill" style="width: {{ entry.merit_score }}%;"></div>
-                            </div>
-                            <span class="score-num">{{ entry.merit_score }}%</span>
-                        </div>
-                    </td>
-                    <td>
-                        {% if entry.marks %}
-                        <strong>{{ entry.marks }}%</strong>
-                        {% if entry.marksheet_verified %}<span class="pill pill-green">[+]</span>{% else %}<span
-                            class="pill pill-orange">[!]</span>{% endif %}
-                        {% else %}—{% endif %}
-                    </td>
-                    <td>
-                        {% if entry.fees %}
-                        Rs.{{ entry.fees|floatformat:0 }}
-                        {% if entry.college_match %}<span class="pill pill-green">[+]</span>{% else %}<span
-                            class="pill pill-orange">[!]</span>{% endif %}
-                        {% else %}—{% endif %}
-                    </td>
-                    <td>Rs.{{ entry.income|floatformat:0 }}</td>
-                    <td>
-                        {% if entry.prior_received %}
-                        Rs.{{ entry.prior_received|floatformat:0 }}
-                        {% else %}
-                        <span style="color: #bbb;">None</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if entry.marksheet_verified and entry.fees_verified %}
-                        <span class="pill pill-green">All OK</span>
-                        {% elif entry.marksheet_verified or entry.fees_verified %}
-                        <span class="pill pill-orange">Partial</span>
-                        {% else %}
-                        <span class="pill pill-grey">Missing</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if entry.application.award %}
-                        <span class="pill pill-awarded">[+] Awarded</span>
-                        {% elif forloop.counter <= num_winners %} <span class="pill pill-green">Will Award</span>
-                            {% else %}
-                            <span class="pill pill-grey">Not Selected</span>
-                            {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+  {% else %}
+  <div class="ml-table-card">
+    <div class="ml-empty">
+      <div class="ml-empty-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+      <h3>No Eligible Applicants Found</h3>
+      <p>Applicants must have their marksheet and fees receipt verified by Gemini AI to appear here. Students who haven't completed OTR Step 7 will not show.</p>
     </div>
+  </div>
+  {% endif %}
 
-    {% else %}
-    <div class="empty-state">
-        <strong>No eligible applicants found</strong>
-        Applicants must have their marksheet and fees receipt verified by Gemini AI to appear here.
-        Students who haven't completed OTR Step 7 will not show.
-    </div>
-    {% endif %}
-    {% endif %}
-
+  {% endif %}
 </div>
+
 {% endblock %}

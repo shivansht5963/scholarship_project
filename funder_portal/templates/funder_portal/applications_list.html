@@ -3,78 +3,476 @@
 {% block title %}Applications - {{ request.user.organizationprofile.organization_name }}{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="header">
-        <h1>📋 Scholarship Applications</h1>
-        <p>Review and manage applications for your scholarships</p>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .sm-page {
+    font-family: 'DM Sans', sans-serif;
+    background-color: #F5F4F0;
+    background-image: radial-gradient(circle, #c4c0b8 1px, transparent 1px);
+    background-size: 22px 22px;
+    min-height: 100vh;
+    padding: 40px 24px 60px;
+  }
+
+  /* ── Hero Banner ── */
+  .sm-hero {
+    background: linear-gradient(135deg, #5B2EFF 0%, #8B5CF6 60%, #A78BFA 100%);
+    border-radius: 20px;
+    padding: 36px 40px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .sm-hero::before {
+    content: '';
+    position: absolute;
+    width: 320px; height: 320px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+    right: -60px; top: -80px;
+  }
+  .sm-hero::after {
+    content: '';
+    position: absolute;
+    width: 180px; height: 180px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+    right: 180px; bottom: -60px;
+  }
+  .sm-hero-left { position: relative; z-index: 1; }
+  .sm-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 50px;
+    padding: 6px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .sm-hero-badge i { font-size: 11px; }
+  .sm-hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.15;
+    margin-bottom: 8px;
+  }
+  .sm-hero p {
+    color: rgba(255,255,255,0.78);
+    font-size: 15px;
+    font-weight: 400;
+  }
+  .sm-hero-right { position: relative; z-index: 1; flex-shrink: 0; }
+  .sm-stat-pill {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 14px;
+    padding: 16px 28px;
+    text-align: center;
+    backdrop-filter: blur(6px);
+  }
+  .sm-stat-pill .num {
+    font-family: 'Syne', sans-serif;
+    font-size: 30px;
+    font-weight: 800;
+    color: #FFD700;
+    display: block;
+  }
+  .sm-stat-pill .lbl {
+    font-size: 12px;
+    color: rgba(255,255,255,0.8);
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  /* ── Filter Card ── */
+  .sm-filter-card {
+    background: #fff;
+    border-radius: 16px;
+    border: 2px solid #E8E8E8;
+    padding: 24px 28px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .sm-filter-card .fg { flex: 1; min-width: 200px; }
+  .sm-filter-card label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #6B6B6B;
+    margin-bottom: 8px;
+  }
+  .sm-filter-card select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 2px solid #E8E8E8;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: #1A1A1A;
+    background: #FAFAFA;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B6B6B' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    cursor: pointer;
+    transition: border-color .2s;
+  }
+  .sm-filter-card select:focus {
+    outline: none;
+    border-color: #5B2EFF;
+  }
+  .sm-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #1A1A1A;
+    color: #FFD700;
+    border: none;
+    border-radius: 10px;
+    padding: 11px 22px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .2s, transform .15s;
+  }
+  .sm-filter-btn:hover { background: #5B2EFF; color: #fff; transform: translateY(-1px); }
+
+  /* ── Table Card ── */
+  .sm-table-card {
+    background: #fff;
+    border-radius: 16px;
+    border: 2px solid #E8E8E8;
+    overflow: hidden;
+  }
+  .sm-table-header {
+    padding: 20px 28px;
+    border-bottom: 2px solid #F0F0F0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .sm-table-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: #1A1A1A;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .sm-table-header h2 i { color: #5B2EFF; }
+  .sm-count-badge {
+    background: #F0ECFF;
+    color: #5B2EFF;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 50px;
+  }
+
+  .sm-table { width: 100%; border-collapse: collapse; }
+  .sm-table thead tr {
+    background: #FAFAFA;
+    border-bottom: 2px solid #F0F0F0;
+  }
+  .sm-table thead th {
+    padding: 13px 20px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #9A9A9A;
+    white-space: nowrap;
+  }
+  .sm-table tbody tr {
+    border-bottom: 1px solid #F5F5F5;
+    transition: background .15s;
+  }
+  .sm-table tbody tr:last-child { border-bottom: none; }
+  .sm-table tbody tr:hover { background: #FAFAFE; }
+  .sm-table td {
+    padding: 16px 20px;
+    font-size: 14px;
+    color: #1A1A1A;
+    vertical-align: middle;
+  }
+
+  /* Student info cell */
+  .sm-student {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .sm-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #5B2EFF, #A78BFA);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .sm-student-name { font-weight: 600; color: #1A1A1A; font-size: 14px; }
+  .sm-student-email { font-size: 12px; color: #9A9A9A; margin-top: 2px; }
+
+  /* Scholarship cell */
+  .sm-scholarship-name {
+    font-weight: 500;
+    color: #3A3A3A;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Status badges */
+  .sm-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 13px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .sm-badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.7;
+  }
+  .sm-badge-pending    { background: #FFF8E7; color: #D4900A; }
+  .sm-badge-approved   { background: #EAFAF1; color: #1A9E5A; }
+  .sm-badge-rejected   { background: #FFF0F0; color: #D9534F; }
+  .sm-badge-under_review { background: #EEF2FF; color: #4F46E5; }
+  .sm-badge-submitted  { background: #F0F9FF; color: #0284C7; }
+  .sm-badge-default    { background: #F5F5F5; color: #6B6B6B; }
+
+  /* Date cell */
+  .sm-date { font-size: 13px; color: #7A7A7A; }
+
+  /* Review button */
+  .sm-review-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #1A1A1A;
+    color: #FFD700;
+    text-decoration: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background .2s, transform .15s;
+    white-space: nowrap;
+  }
+  .sm-review-btn:hover {
+    background: #5B2EFF;
+    color: #fff;
+    transform: translateY(-1px);
+  }
+  .sm-review-btn i { font-size: 11px; }
+
+  /* ── Empty State ── */
+  .sm-empty {
+    padding: 72px 40px;
+    text-align: center;
+  }
+  .sm-empty-icon {
+    width: 72px; height: 72px;
+    background: #F0ECFF;
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 28px;
+    color: #5B2EFF;
+  }
+  .sm-empty h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1A1A1A;
+    margin-bottom: 8px;
+  }
+  .sm-empty p { font-size: 14px; color: #9A9A9A; }
+
+  @media (max-width: 768px) {
+    .sm-hero { flex-direction: column; align-items: flex-start; }
+    .sm-table thead { display: none; }
+    .sm-table, .sm-table tbody, .sm-table tr, .sm-table td { display: block; width: 100%; }
+    .sm-table tr { padding: 16px 20px; border-bottom: 1px solid #F0F0F0; }
+    .sm-table td { padding: 4px 0; border: none; }
+    .sm-table td::before {
+      content: attr(data-label);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #9A9A9A;
+      display: block;
+      margin-bottom: 3px;
+    }
+  }
+</style>
+
+<div class="sm-page">
+
+  <!-- Hero -->
+  <div class="sm-hero">
+    <div class="sm-hero-left">
+      <div class="sm-hero-badge">
+        <i class="fa-solid fa-layer-group"></i>
+        Applications Portal
+      </div>
+      <h1>Scholarship Applications</h1>
+      <p>Review and manage applications for your scholarships</p>
     </div>
-
-    <div class="filters">
-        <div class="filter-group">
-            <label for="status-filter">Filter by Status</label>
-            <select id="status-filter" name="status">
-                <option value="">All Statuses</option>
-                {% for value, label in status_choices %}
-                    <option value="{{ value }}">{{ label }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="filter-group">
-            <label for="scholarship-filter">Filter by Scholarship</label>
-            <select id="scholarship-filter" name="scholarship">
-                <option value="">All Scholarships</option>
-                {% for scholarship in scholarships %}
-                    <option value="{{ scholarship.id }}">{{ scholarship.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
+    <div class="sm-hero-right">
+      <div class="sm-stat-pill">
+        <span class="num">{{ applications|length }}</span>
+        <span class="lbl">Total Applications</span>
+      </div>
     </div>
+  </div>
 
-    {% if applications %}
-        <div class="table-responsive">
-            <table class="applications-table">
-                <thead>
-                    <tr>
-                        <th>Student</th>
-                        <th>Scholarship</th>
-                        <th>Status</th>
-                        <th>Applied</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for application in applications %}
-                        <tr>
-                            <td>
-                                <div class="student-info">
-                                    <strong>{{ application.student.full_name }}</strong>
-                                    <small>{{ application.student.user.email }}</small>
-                                </div>
-                            </td>
-                            <td>{{ application.scholarship.name }}</td>
-                            <td>
-                                <span class="badge badge-{{ application.status|lower }}">
-                                    {{ application.get_status_display }}
-                                </span>
-                            </td>
-                            <td>{{ application.last_action_date|date:"M d, Y" }}</td>
-                            <td>
-                                <a href="{% url 'funder_portal:application_detail' application.id %}" class="btn btn-sm btn-primary">
-                                    Review →
-                                </a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    {% else %}
-        <div class="empty-state">
-            <div class="empty-icon">📭</div>
-            <h3>No Applications Found</h3>
-            <p>No applications match your filters.</p>
-        </div>
-    {% endif %}
+  <!-- Filters -->
+  <div class="sm-filter-card">
+    <div class="fg">
+      <label for="status-filter"><i class="fa-solid fa-circle-half-stroke" style="margin-right:5px;color:#5B2EFF;"></i>Filter by Status</label>
+      <select id="status-filter" name="status">
+        <option value="">All Statuses</option>
+        {% for value, label in status_choices %}
+          <option value="{{ value }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="fg">
+      <label for="scholarship-filter"><i class="fa-solid fa-graduation-cap" style="margin-right:5px;color:#5B2EFF;"></i>Filter by Scholarship</label>
+      <select id="scholarship-filter" name="scholarship">
+        <option value="">All Scholarships</option>
+        {% for scholarship in scholarships %}
+          <option value="{{ scholarship.id }}">{{ scholarship.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button class="sm-filter-btn" type="button" onclick="applyFilters()">
+      <i class="fa-solid fa-sliders"></i> Apply Filters
+    </button>
+  </div>
+
+  <!-- Table -->
+  {% if applications %}
+  <div class="sm-table-card">
+    <div class="sm-table-header">
+      <h2><i class="fa-solid fa-table-list"></i> Applications List</h2>
+      <span class="sm-count-badge">{{ applications|length }} records</span>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="sm-table">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Scholarship</th>
+            <th>Status</th>
+            <th>Applied On</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for application in applications %}
+          <tr>
+            <td data-label="Student">
+              <div class="sm-student">
+                <div class="sm-avatar">
+                  {{ application.student.full_name|slice:":1"|upper }}
+                </div>
+                <div>
+                  <div class="sm-student-name">{{ application.student.full_name }}</div>
+                  <div class="sm-student-email">{{ application.student.user.email }}</div>
+                </div>
+              </div>
+            </td>
+            <td data-label="Scholarship">
+              <div class="sm-scholarship-name">{{ application.scholarship.name }}</div>
+            </td>
+            <td data-label="Status">
+              <span class="sm-badge sm-badge-{{ application.status|lower }}">
+                {{ application.get_status_display }}
+              </span>
+            </td>
+            <td data-label="Applied On">
+              <span class="sm-date">
+                <i class="fa-regular fa-calendar" style="margin-right:5px;color:#A78BFA;"></i>
+                {{ application.last_action_date|date:"M d, Y" }}
+              </span>
+            </td>
+            <td data-label="Action">
+              <a href="{% url 'funder_portal:application_detail' application.id %}" class="sm-review-btn">
+                <i class="fa-solid fa-arrow-right"></i> Review
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {% else %}
+  <div class="sm-table-card">
+    <div class="sm-empty">
+      <div class="sm-empty-icon">
+        <i class="fa-solid fa-inbox"></i>
+      </div>
+      <h3>No Applications Found</h3>
+      <p>No applications match your current filters. Try adjusting the criteria above.</p>
+    </div>
+  </div>
+  {% endif %}
+
 </div>
+
+<script>
+  function applyFilters() {
+    const status = document.getElementById('status-filter').value;
+    const scholarship = document.getElementById('scholarship-filter').value;
+    const params = new URLSearchParams(window.location.search);
+    if (status) params.set('status', status); else params.delete('status');
+    if (scholarship) params.set('scholarship', scholarship); else params.delete('scholarship');
+    window.location.search = params.toString();
+  }
+</script>
+
 {% endblock %}

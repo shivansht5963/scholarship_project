@@ -188,8 +188,17 @@
     }
 
     @keyframes heroPulse {
-        0%, 100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.4; transform: scale(1.5); }
+
+        0%,
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        50% {
+            opacity: 0.4;
+            transform: scale(1.5);
+        }
     }
 
     .milestone-btn {
@@ -873,8 +882,7 @@
         <div class="progress-section">
             <!-- Attractive Hero Search Button -->
             <a href="https://scholarship-4pxs.onrender.com" target="_blank" rel="noopener noreferrer"
-                class="hero-search-btn"
-                title="Search External Scholarships">
+                class="hero-search-btn" title="Search External Scholarships">
                 <span class="btn-pulse"></span>
                 <span class="btn-icon">🔍</span>
                 <span class="btn-label">Search Scholarships</span>
@@ -936,7 +944,8 @@
                                     Rank #{{ award.merit_rank }} &bull; Merit Score: {{ award.merit_score }}
                                 </div>
                             </div>
-                            <div style="display: flex; align-items: center; gap: 1rem; flex-shrink: 0; flex-wrap: wrap;">
+                            <div
+                                style="display: flex; align-items: center; gap: 1rem; flex-shrink: 0; flex-wrap: wrap;">
                                 <span style="font-size: 1.4rem; font-weight: 900; color: var(--sm-black);">
                                     ₹{{ award.amount_awarded|default:"—" }}
                                 </span>
@@ -955,6 +964,17 @@
                                 {% else %}
                                 <span
                                     style="background: var(--sm-yellow); color: var(--sm-black); border: 3px solid var(--sm-black); padding: 0.3rem 0.75rem; font-size: 0.72rem; font-weight: 900; text-transform: uppercase;">APPROVED</span>
+                                {% endif %}
+                                {% if award.transfer_status == 'APPROVED' or award.transfer_status == 'DONE' %}
+                                {% with cert=award.certificate %}
+                                {% if cert and cert.is_valid %}
+                                <a href="{% url 'scholarships:verify_certificate' cert_uuid=cert.certificate_id %}"
+                                    target="_blank" title="View & Download Certificate"
+                                    style="background: #c49b38; color: #0f1c38; border: 3px solid var(--sm-black); padding: 0.3rem 0.9rem; font-size: 0.72rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; text-decoration: none; display: inline-flex; align-items: center; gap: 0.3rem; transition: opacity .2s;">
+                                    🎓 CERTIFICATE
+                                </a>
+                                {% endif %}
+                                {% endwith %}
                                 {% endif %}
                             </div>
                         </div>
@@ -1122,9 +1142,9 @@
                 </div>
 
                 <!-- BOTTOM CARD -->
-                <div class="bottom-card">
+                <!-- <div class="bottom-card">
                     <a href="{% url 'scholarships:scholarship_list' %}" class="connect-btn">CONNECT NOW</a>
-                </div>
+                </div> -->
 
             </div>
 

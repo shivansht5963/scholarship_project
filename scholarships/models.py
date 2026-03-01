@@ -1,5 +1,6 @@
 from django.db import models
 import json
+import uuid
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -547,3 +548,60 @@ class ScholarshipAward(models.Model):
         if self.fees_at_award:
             return round((self.prior_received / self.fees_at_award) * 100, 1)
         return 0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SCHOLARSHIP CERTIFICATE  (Phase 8 — Certificate Engine)
+# ─────────────────────────────────────────────────────────────────────────────
+
+class ScholarshipCertificate(models.Model):
+    """
+    Auto-generated digital certificate issued to a scholarship winner.
+    Created automatically (via signals.py) the moment a ScholarshipAward
+    reaches transfer_status = 'APPROVED'.
+
+    The certificate_id UUID is embedded in the QR code URL so that anyone
+    can visit /scholarships/certificates/verify/<uuid>/ to confirm authenticity.
+    """
+
+    certificate_id = models.UUIDField(
+        default=uuid.uuid4,
+        unique=True,
+        editable=False,
+        help_text="Unique ID embedded in QR code for public verification"
+    )
+    award = models.OneToOneField(
+        ScholarshipAward,
+        on_delete=models.CASCADE,
+        related_name='certificate'
+    )
+    issued_at = models.DateTimeField(auto_now_add=True)
+    is_valid = models.BooleanField(
+        default=True,
+        help_text="Set to False to revoke this certificate (e.g. fraud detected)"
+    )
+    # PNG of the full certificate canvas (1200×850 px)
+    certificate_image = models.ImageField(
+        upload_to='certificates/',
+        blank=True,
+        verbose_name="Certificate Image (PNG)"
+    )
+    # Small QR code PNG embedded inside the certificate
+    qr_code = models.ImageField(
+        upload_to='certificates/qr/',
+        blank=True,
+        verbose_name="QR Code Image"
+    )
+
+    class Meta:
+        verbose_name = "Scholarship Certificate"
+        verbose_name_plural = "Scholarship Certificates"
+        ordering = ['-issued_at']
+
+    def __str__(self):
+        return f"Cert {self.certificate_id} — {self.award.student}"
+
+    def get_verify_url(self):
+        from django.urls import reverse
+        return reverse('scholarships:verify_certificate',
+                       kwargs={'cert_uuid': str(self.certificate_id)})

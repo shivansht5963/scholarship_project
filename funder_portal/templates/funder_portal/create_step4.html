@@ -2,468 +2,1092 @@
 {% block title %}Create Scholarship — Step 4: Platform Filters{% endblock %}
 
 {% block content %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
 <style>
-    .wizard-container {
-        max-width: 780px;
-        margin: 2.5rem auto;
-        padding: 0 1.5rem;
-    }
+/* ── ROOT ─────────────────────────────────────────────────── */
+.wiz-root {
+    font-family: 'DM Sans', sans-serif;
+    background: #F0F0EE;
+    background-image: radial-gradient(circle, #C8C8C8 1px, transparent 1px);
+    background-size: 20px 20px;
+    min-height: 100vh;
+    padding: 2.5rem 2rem;
+}
 
-    .wizard-progress {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0;
-        margin-bottom: 2.5rem;
-    }
+.wiz-wrap { max-width: 1300px; margin: 0 auto; }
 
-    .wp-step {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
+/* ── BREADCRUMB ───────────────────────────────────────────── */
+.page-header { margin-bottom: 1.75rem; }
 
-    .wp-circle {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 1.1rem;
-        border: 3px solid #e0e0e0;
-        background: white;
-        color: #aaa;
-        transition: all .3s;
-    }
+.page-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: #999;
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+}
 
-    .wp-step.active .wp-circle {
-        background: linear-gradient(135deg, #E65100, #FF9800);
-        border-color: #E65100;
-        color: white;
-        box-shadow: 0 4px 16px rgba(230, 81, 0, .4);
-    }
+.page-breadcrumb a { color: #999; text-decoration: none; transition: color 0.15s; }
+.page-breadcrumb a:hover { color: #6D28D9; }
+.page-breadcrumb i { font-size: 0.6rem; }
 
-    .wp-step.done .wp-circle {
-        background: #4CAF50;
-        border-color: #4CAF50;
-        color: white;
-    }
+.page-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: #111;
+    letter-spacing: -0.5px;
+}
 
-    .wp-label {
-        font-size: .78rem;
-        margin-top: .4rem;
-        font-weight: 600;
-        color: #999;
-    }
+.page-subtitle { font-size: 0.88rem; color: #888; margin-top: 0.15rem; }
 
-    .wp-step.active .wp-label {
-        color: #E65100;
-    }
+/* ── STEPPER ─────────────────────────────────────────────── */
+.stepper {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 2px solid #E8E8E8;
+    border-radius: 16px;
+    padding: 1.25rem 2rem;
+    margin-bottom: 2rem;
+}
 
-    .wp-step.done .wp-label {
-        color: #2E7D32;
-    }
+.step-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+}
 
-    .wp-line {
-        flex: 1;
-        height: 3px;
-        background: #e0e0e0;
-        margin-bottom: 1.4rem;
-    }
+.step-connector {
+    flex: 1;
+    height: 2px;
+    background: #E8E8E8;
+    margin: 0 0.5rem;
+    margin-bottom: 0.5rem;
+    align-self: flex-start;
+    margin-top: 1.3rem;
+}
 
-    .wp-line.done {
-        background: #4CAF50;
-    }
+.step-connector.done { background: #6D28D9; }
 
-    .wizard-card {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 8px 40px rgba(0, 0, 0, .1);
-        overflow: hidden;
-    }
+.step-circle {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 800;
+    flex-shrink: 0;
+    border: 2px solid #E8E8E8;
+    background: #FAFAFA;
+    color: #CCC;
+}
 
-    .wizard-header {
-        background: linear-gradient(135deg, #BF360C 0%, #E64A19 60%, #FFAB91 100%);
-        padding: 2rem 2.5rem;
-        color: white;
-    }
+.step-item.active .step-circle {
+    background: #6D28D9;
+    border-color: #6D28D9;
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(109, 40, 217, 0.35);
+}
 
-    .wizard-header h1 {
-        margin: 0;
-        font-size: 1.8rem;
-        font-weight: 700;
-    }
+.step-item.done .step-circle {
+    background: #10B981;
+    border-color: #10B981;
+    color: #fff;
+}
 
-    .wizard-header p {
-        margin: .4rem 0 0;
-        opacity: .9;
-    }
+.step-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #BBB;
+    display: block;
+    line-height: 1;
+    margin-bottom: 0.2rem;
+}
 
-    .wizard-step-tag {
-        display: inline-block;
-        background: rgba(255, 255, 255, .2);
-        padding: .25rem .8rem;
-        border-radius: 20px;
-        font-size: .8rem;
-        font-weight: 600;
-        margin-bottom: .75rem;
-        letter-spacing: .5px;
-    }
+.step-item.active .step-label { color: #6D28D9; }
+.step-item.done .step-label   { color: #10B981; }
 
-    .wizard-body {
-        padding: 2.5rem;
-    }
+.step-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #CCC;
+}
 
-    .field-group {
-        margin-bottom: 2rem;
-    }
+.step-item.active .step-name { color: #111; }
+.step-item.done .step-name   { color: #555; }
 
-    .field-label {
-        display: block;
-        font-weight: 600;
-        color: #BF360C;
-        margin-bottom: .5rem;
-        font-size: .95rem;
-    }
+/* ── LAYOUT ───────────────────────────────────────────────── */
+.wiz-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 1.75rem;
+    align-items: start;
+}
 
-    .field-help {
-        font-size: .82rem;
-        color: #888;
-        margin-top: .3rem;
-    }
+/* ── FORM CARD ────────────────────────────────────────────── */
+.form-card {
+    background: #fff;
+    border: 2px solid #E8E8E8;
+    border-radius: 16px;
+    overflow: hidden;
+}
 
-    .form-control {
-        width: 100%;
-        padding: .8rem 1rem;
-        border: 2px solid #FBE9E7;
-        border-radius: 10px;
-        font-size: .97rem;
-        background: #fffaf8;
-        transition: .2s;
-        box-sizing: border-box;
-    }
+.form-card-header {
+    background: linear-gradient(130deg, #3B0FBF 0%, #6D28D9 45%, #8B5CF6 100%);
+    padding: 2rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+}
 
-    .form-control:focus {
-        outline: none;
-        border-color: #E64A19;
-        box-shadow: 0 0 0 3px rgba(230, 74, 25, .12);
-    }
+.form-card-header::before {
+    content: '';
+    position: absolute;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    top: -100px; right: -40px;
+}
 
-    textarea.form-control {
-        resize: vertical;
-        min-height: 100px;
-    }
+.form-card-header::after {
+    content: '';
+    position: absolute;
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+    bottom: -50px; right: 120px;
+}
 
-    .errorlist {
-        list-style: none;
-        padding: 0;
-        margin: .4rem 0 0;
-    }
+.fch-inner { position: relative; z-index: 2; }
 
-    .errorlist li {
-        color: #e53935;
-        font-size: .85rem;
-    }
+.fch-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 999px;
+    padding: 0.3rem 0.9rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #fff;
+    margin-bottom: 0.85rem;
+}
 
-    .wizard-footer {
-        display: flex;
-        justify-content: space-between;
-        gap: 1rem;
-        padding: 1.5rem 2.5rem;
-        background: #f9f9f9;
-        border-top: 1px solid #f0f0f0;
-    }
+.form-card-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0 0 0.4rem;
+    letter-spacing: -0.5px;
+}
 
-    .btn-wizard-next {
-        background: linear-gradient(135deg, #E65100, #FF9800);
-        color: white;
-        border: none;
-        padding: .85rem 2.5rem;
-        border-radius: 10px;
-        font-weight: 700;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: .2s;
-    }
+.form-card-header p {
+    color: rgba(255,255,255,0.75);
+    font-size: 0.9rem;
+    margin: 0;
+}
 
-    .btn-wizard-next:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(230, 81, 0, .4);
-    }
+.form-card-body {
+    padding: 2.25rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
 
-    .btn-wizard-back {
-        background: white;
-        border: 2px solid #e0e0e0;
-        color: #666;
-        padding: .85rem 2rem;
-        border-radius: 10px;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 1rem;
-        display: flex;
-        align-items: center;
-        gap: .5rem;
-        transition: .2s;
-    }
+/* ── FIELD LABEL ──────────────────────────────────────────── */
+.field-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: #111;
+    margin-bottom: 0.55rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
 
-    .btn-wizard-back:hover {
-        border-color: #E64A19;
-        color: #BF360C;
-    }
+.field-label i {
+    color: #6D28D9;
+    font-size: 0.8rem;
+    width: 16px;
+    text-align: center;
+}
 
-    .karma-row {
-        display: flex;
-        align-items: center;
-        gap: 1.5rem;
-    }
+.field-label .opt-tag {
+    background: #F3F4F6;
+    color: #888;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
 
-    .karma-slider {
-        flex: 1;
-        -webkit-appearance: none;
-        height: 6px;
-        border-radius: 4px;
-        background: #FBE9E7;
-        outline: none;
-    }
+.field-help {
+    font-size: 0.78rem;
+    color: #AAA;
+    margin-top: 0.45rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
 
-    .karma-slider::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        width: 22px;
-        height: 22px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #E65100, #FF9800);
-        cursor: pointer;
-        box-shadow: 0 2px 8px rgba(230, 81, 0, .4);
-    }
+.field-help i { font-size: 0.72rem; color: #6D28D9; opacity: 0.6; }
 
-    .karma-display {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #E65100;
-        min-width: 60px;
-        text-align: center;
-    }
+/* ── INPUTS ───────────────────────────────────────────────── */
+.wiz-textarea {
+    width: 100%;
+    padding: 0.85rem 1.1rem;
+    border: 2px solid #E8E8E8;
+    border-radius: 10px;
+    font-size: 0.92rem;
+    font-family: 'DM Sans', sans-serif;
+    background: #FAFAFA;
+    color: #111;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    box-sizing: border-box;
+    outline: none;
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.6;
+}
 
-    .karma-note {
-        font-size: .82rem;
-        color: #888;
-        margin-top: .5rem;
-    }
+.wiz-textarea:focus {
+    border-color: #6D28D9;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(109, 40, 217, 0.1);
+}
 
-    .doc-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: .6rem;
-        margin-top: .6rem;
-    }
+.wiz-textarea::placeholder { color: #C0C0C0; }
 
-    .doc-item {
-        border: 2px solid #FBE9E7;
-        border-radius: 8px;
-        padding: .75rem 1rem;
-        cursor: pointer;
-        transition: .2s;
-        background: #fffaf8;
-        display: flex;
-        align-items: center;
-        gap: .6rem;
-    }
+/* ── KARMA SLIDER ─────────────────────────────────────────── */
+.karma-block {
+    background: #FAFAFF;
+    border: 2px solid #E8E8E8;
+    border-radius: 14px;
+    padding: 1.5rem;
+}
 
-    .doc-item:hover {
-        border-color: #E64A19;
-        background: #FBE9E7;
-    }
+.karma-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+}
 
-    .doc-item.selected {
-        border-color: #E65100;
-        background: #FBE9E7;
-    }
+.karma-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
 
-    .doc-item input[type=checkbox] {
-        width: 18px;
-        height: 18px;
-        accent-color: #E65100;
-        flex-shrink: 0;
-    }
+.karma-badge-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: #EDE9FE;
+    color: #6D28D9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
 
-    .doc-item label {
-        font-size: .88rem;
-        cursor: pointer;
-        font-weight: 500;
-    }
+.karma-badge-text {
+    font-size: 0.78rem;
+    color: #888;
+    font-weight: 500;
+}
 
-    .verif-cards {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-        margin-top: .5rem;
-    }
+.karma-badge-text strong {
+    display: block;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #111;
+}
 
-    .verif-card {
-        border: 2px solid #FBE9E7;
-        border-radius: 12px;
-        padding: 1.2rem;
-        cursor: pointer;
-        transition: .2s;
-        position: relative;
-    }
+.karma-value-pill {
+    background: #6D28D9;
+    color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    padding: 0.4rem 1.2rem;
+    border-radius: 999px;
+    min-width: 90px;
+    text-align: center;
+    line-height: 1;
+}
 
-    .verif-card:hover {
-        border-color: #E64A19;
-    }
+.karma-slider {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 4px;
+    background: linear-gradient(to right, #6D28D9 0%, #6D28D9 var(--pct, 0%), #E8E8E8 var(--pct, 0%), #E8E8E8 100%);
+    outline: none;
+    cursor: pointer;
+}
 
-    .verif-card input[type=radio] {
-        position: absolute;
-        opacity: 0;
-    }
+.karma-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #6D28D9;
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 8px rgba(109, 40, 217, 0.4);
+}
 
-    .verif-card.selected {
-        border-color: #E65100;
-        background: #FEF3EE;
-    }
+.karma-slider::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #6D28D9;
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 8px rgba(109, 40, 217, 0.4);
+}
 
-    .verif-card-icon {
-        font-size: 2rem;
-        margin-bottom: .5rem;
-        display: block;
-    }
+.karma-range-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    font-size: 0.72rem;
+    color: #BBB;
+    font-weight: 600;
+}
 
-    .verif-card-title {
-        font-weight: 700;
-        color: #BF360C;
-        margin-bottom: .25rem;
-    }
+/* ── CHECKBOX DOCS GRID ───────────────────────────────────── */
+.doc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.6rem;
+    margin-top: 0.25rem;
+}
 
-    .verif-card-desc {
-        font-size: .82rem;
-        color: #777;
-    }
+.doc-item {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.75rem 1rem;
+    border: 2px solid #E8E8E8;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.18s;
+    background: #FAFAFA;
+    user-select: none;
+}
+
+.doc-item:hover {
+    border-color: #6D28D9;
+    background: #F5F0FF;
+}
+
+.doc-item.selected {
+    border-color: #6D28D9;
+    background: #EDE9FE;
+}
+
+.doc-item input[type="checkbox"] {
+    width: 17px;
+    height: 17px;
+    accent-color: #6D28D9;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.doc-item label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #333;
+    cursor: pointer;
+    line-height: 1.3;
+}
+
+.doc-item.selected label { color: #4C1D95; }
+
+/* ── RADIO CARDS ──────────────────────────────────────────── */
+.radio-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 0.25rem;
+}
+
+.radio-card {
+    border: 2px solid #E8E8E8;
+    border-radius: 12px;
+    padding: 1.4rem 1.25rem;
+    cursor: pointer;
+    transition: all 0.18s;
+    position: relative;
+    background: #FAFAFA;
+}
+
+.radio-card:hover {
+    border-color: #6D28D9;
+    background: #F5F0FF;
+}
+
+.radio-card.selected {
+    border-color: #6D28D9;
+    background: #EDE9FE;
+}
+
+.radio-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.rc-check {
+    position: absolute;
+    top: 0.9rem;
+    right: 0.9rem;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #DDD;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    color: transparent;
+    transition: all 0.18s;
+}
+
+.radio-card.selected .rc-check {
+    background: #6D28D9;
+    border-color: #6D28D9;
+    color: #fff;
+}
+
+.rc-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    margin-bottom: 0.9rem;
+    background: #F0EDFF;
+    color: #6D28D9;
+    transition: background 0.18s;
+}
+
+.radio-card.selected .rc-icon { background: #DDD6FE; }
+
+.rc-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.92rem;
+    color: #111;
+    margin-bottom: 0.25rem;
+}
+
+.rc-desc {
+    font-size: 0.78rem;
+    color: #888;
+    line-height: 1.45;
+}
+
+/* ── ERROR LIST ───────────────────────────────────────────── */
+.errorlist { list-style: none; padding: 0; margin: 0.4rem 0 0; }
+
+.errorlist li {
+    color: #E11D48;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.errorlist li::before {
+    content: '\f06a';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 0.72rem;
+}
+
+/* ── FORM FOOTER ──────────────────────────────────────────── */
+.form-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.4rem 2.5rem;
+    border-top: 2px solid #F0F0F0;
+    background: #FAFAFA;
+}
+
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: #fff;
+    border: 2px solid #E8E8E8;
+    color: #666;
+    padding: 0.7rem 1.4rem;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.15s;
+}
+
+.btn-back:hover { border-color: #CCC; color: #333; }
+
+.btn-finish {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #111;
+    color: #FFD700;
+    padding: 0.8rem 2rem;
+    border-radius: 10px;
+    border: none;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.18s;
+}
+
+.btn-finish:hover {
+    background: #FFD700;
+    color: #111;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+/* ── SIDEBAR ──────────────────────────────────────────────── */
+.side-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    position: sticky;
+    top: 1.5rem;
+}
+
+.info-card {
+    background: #fff;
+    border: 2px solid #E8E8E8;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.info-card-header {
+    padding: 1rem 1.4rem;
+    border-bottom: 2px solid #F0F0F0;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.info-card-header i { color: #6D28D9; font-size: 0.88rem; }
+
+.info-card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #111;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.info-card-body { padding: 1.25rem 1.4rem; }
+
+/* almost-done card */
+.done-card-inner {
+    background: linear-gradient(130deg, #3B0FBF 0%, #6D28D9 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.done-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 1.3rem;
+    color: #FFD700;
+}
+
+.done-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 0.4rem;
+}
+
+.done-sub {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.72);
+    line-height: 1.5;
+}
+
+/* what happens next */
+.next-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.ns-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid #F5F5F5;
+}
+
+.ns-item:last-child { border-bottom: none; }
+
+.ns-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: #EDE9FE;
+    color: #6D28D9;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 0.05rem;
+}
+
+.ns-text {
+    font-size: 0.82rem;
+    color: #555;
+    line-height: 1.45;
+}
+
+.ns-text strong {
+    display: block;
+    font-weight: 700;
+    color: #111;
+    font-size: 0.84rem;
+    margin-bottom: 0.1rem;
+}
+
+/* tips */
+.tips-list { display: flex; flex-direction: column; gap: 0.85rem; }
+
+.tip-item { display: flex; align-items: flex-start; gap: 0.75rem; }
+
+.tip-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: #EDE9FE;
+    color: #6D28D9;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.tip-text { font-size: 0.81rem; color: #555; line-height: 1.5; }
+.tip-text strong { color: #111; font-weight: 700; display: block; margin-bottom: 0.1rem; }
+
+/* ── RESPONSIVE ───────────────────────────────────────────── */
+@media (max-width: 1100px) {
+    .wiz-layout { grid-template-columns: 1fr; }
+    .side-panel { position: static; }
+}
+
+@media (max-width: 768px) {
+    .wiz-root { padding: 1rem; }
+    .form-card-body { padding: 1.5rem 1.25rem; }
+    .form-card-footer { padding: 1.25rem; flex-direction: column-reverse; gap: 0.75rem; }
+    .btn-back, .btn-finish { width: 100%; justify-content: center; }
+    .radio-grid { grid-template-columns: 1fr; }
+    .doc-grid { grid-template-columns: 1fr 1fr; }
+}
 </style>
 
-<div class="wizard-container">
-    <div class="wizard-progress">
-        <div class="wp-step done">
-            <div class="wp-circle">✓</div>
-            <div class="wp-label">Basics</div>
+<div class="wiz-root">
+<div class="wiz-wrap">
+
+    <!-- HEADER -->
+    <div class="page-header">
+        <div class="page-breadcrumb">
+            <a href="{% url 'funder_portal:funder_dashboard' %}">Dashboard</a>
+            <i class="fa-solid fa-chevron-right"></i>
+            <span>Create Scholarship</span>
+            <i class="fa-solid fa-chevron-right"></i>
+            <span style="color:#6D28D9;font-weight:700;">Step 4 — Platform Filters</span>
         </div>
-        <div class="wp-line done"></div>
-        <div class="wp-step done">
-            <div class="wp-circle">✓</div>
-            <div class="wp-label">Eligibility</div>
+        <div class="page-title">Create New Scholarship</div>
+        <div class="page-subtitle">Last step — set quality gates powered by the Scholar Match engine.</div>
+    </div>
+
+    <!-- STEPPER — all 3 done, step 4 active -->
+    <div class="stepper">
+        <div class="step-item done">
+            <div class="step-circle"><i class="fa-solid fa-check" style="font-size:0.85rem;"></i></div>
+            <div class="step-text">
+                <span class="step-label">Step 1</span>
+                <span class="step-name">Basics</span>
+            </div>
         </div>
-        <div class="wp-line done"></div>
-        <div class="wp-step done">
-            <div class="wp-circle">✓</div>
-            <div class="wp-label">Financials</div>
+
+        <div class="step-connector done"></div>
+
+        <div class="step-item done">
+            <div class="step-circle"><i class="fa-solid fa-check" style="font-size:0.85rem;"></i></div>
+            <div class="step-text">
+                <span class="step-label">Step 2</span>
+                <span class="step-name">Eligibility</span>
+            </div>
         </div>
-        <div class="wp-line done"></div>
-        <div class="wp-step active">
-            <div class="wp-circle">4</div>
-            <div class="wp-label">Filters</div>
+
+        <div class="step-connector done"></div>
+
+        <div class="step-item done">
+            <div class="step-circle"><i class="fa-solid fa-check" style="font-size:0.85rem;"></i></div>
+            <div class="step-text">
+                <span class="step-label">Step 3</span>
+                <span class="step-name">Financials</span>
+            </div>
+        </div>
+
+        <div class="step-connector done"></div>
+
+        <div class="step-item active">
+            <div class="step-circle">4</div>
+            <div class="step-text">
+                <span class="step-label">Step 4</span>
+                <span class="step-name">Filters</span>
+            </div>
         </div>
     </div>
 
-    <div class="wizard-card">
-        <div class="wizard-header">
-            <div class="wizard-step-tag">STEP 4 OF 4</div>
-            <h1>🔍 Platform Filters</h1>
-            <p>Set quality gates unique to Scholar Match — powered by our karma engine</p>
+    <!-- MAIN LAYOUT -->
+    <div class="wiz-layout">
+
+        <!-- FORM CARD -->
+        <div class="form-card">
+            <div class="form-card-header">
+                <div class="fch-inner">
+                    <div class="fch-pill">
+                        <i class="fa-solid fa-sliders"></i>
+                        Step 4 of 4 — Final Step
+                    </div>
+                    <h2>Platform Filters</h2>
+                    <p>Set quality gates unique to Scholar Match — powered by our karma engine.</p>
+                </div>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="form-card-body">
+
+                    <!-- Karma Slider -->
+                    <div>
+                        <label class="field-label">
+                            <i class="fa-solid fa-star"></i>
+                            Minimum Karma Points Required
+                        </label>
+
+                        <div class="karma-block">
+                            <div class="karma-top">
+                                <div class="karma-badge">
+                                    <div class="karma-badge-icon">
+                                        <i class="fa-solid fa-star"></i>
+                                    </div>
+                                    <div class="karma-badge-text">
+                                        <strong>Karma Gate</strong>
+                                        Minimum points to apply
+                                    </div>
+                                </div>
+                                <div class="karma-value-pill" id="karma-display">{{ form.min_karma.value|default:0 }}</div>
+                            </div>
+
+                            <input
+                                type="range"
+                                class="karma-slider"
+                                name="{{ form.min_karma.html_name }}"
+                                id="karma-slider"
+                                min="0" max="500" step="10"
+                                value="{{ form.min_karma.value|default:0 }}"
+                                oninput="updateKarma(this.value)"
+                            >
+
+                            <div class="karma-range-labels">
+                                <span>0 — No gate</span>
+                                <span>250 — Medium</span>
+                                <span>500 — High</span>
+                            </div>
+                        </div>
+
+                        {{ form.min_karma.errors }}
+                        <div class="field-help" style="margin-top:0.6rem;">
+                            <i class="fa-solid fa-circle-info"></i>
+                            Only students with at least this many karma points can apply. Set to 0 for no restriction.
+                        </div>
+                    </div>
+
+                    <!-- Required Documents -->
+                    <div>
+                        <label class="field-label">
+                            <i class="fa-solid fa-folder-open"></i>
+                            Mandatory Documents to Verify
+                        </label>
+                        <div class="doc-grid">
+                            {% for val, label in form.fields.required_documents.choices %}
+                            <div class="doc-item {% if val in form.required_documents.value %}selected{% endif %}" id="doc-{{ val }}">
+                                <input
+                                    type="checkbox"
+                                    name="{{ form.required_documents.html_name }}"
+                                    id="doc_cb_{{ val }}"
+                                    value="{{ val }}"
+                                    {% if val in form.required_documents.value %}checked{% endif %}
+                                    onchange="toggleDoc('doc-{{ val }}', this)"
+                                >
+                                <label for="doc_cb_{{ val }}">{{ label }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {{ form.required_documents.errors }}
+                        <div class="field-help" style="margin-top:0.6rem;">
+                            <i class="fa-solid fa-circle-info"></i>
+                            Students must upload all selected documents when applying.
+                        </div>
+                    </div>
+
+                    <!-- Verification Strictness -->
+                    <div>
+                        <label class="field-label">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            Verification Strictness
+                        </label>
+
+                        <div class="radio-grid">
+                            <div class="radio-card {% if form.verification_strictness.value == 'STANDARD' or not form.verification_strictness.value %}selected{% endif %}"
+                                 id="verif-STANDARD" onclick="selectVerif('STANDARD')">
+                                <input type="radio" name="{{ form.verification_strictness.html_name }}"
+                                    value="STANDARD" id="verif_STANDARD"
+                                    {% if form.verification_strictness.value == 'STANDARD' or not form.verification_strictness.value %}checked{% endif %}>
+                                <div class="rc-check"><i class="fa-solid fa-check"></i></div>
+                                <div class="rc-icon"><i class="fa-solid fa-file-shield"></i></div>
+                                <div class="rc-title">Standard</div>
+                                <div class="rc-desc">Manual upload. Our AI checks for document tampering automatically.</div>
+                            </div>
+
+                            <div class="radio-card {% if form.verification_strictness.value == 'STRICT' %}selected{% endif %}"
+                                 id="verif-STRICT" onclick="selectVerif('STRICT')">
+                                <input type="radio" name="{{ form.verification_strictness.html_name }}"
+                                    value="STRICT" id="verif_STRICT"
+                                    {% if form.verification_strictness.value == 'STRICT' %}checked{% endif %}>
+                                <div class="rc-check"><i class="fa-solid fa-check"></i></div>
+                                <div class="rc-icon"><i class="fa-solid fa-lock"></i></div>
+                                <div class="rc-title">Strict</div>
+                                <div class="rc-desc">Requires DigiLocker / Government API verification. Zero fraud risk.</div>
+                            </div>
+                        </div>
+
+                        {{ form.verification_strictness.errors }}
+                    </div>
+
+                    <!-- Essay Question -->
+                    <div>
+                        <label class="field-label">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            Custom Essay / Question
+                            <span class="opt-tag">Optional</span>
+                        </label>
+                        <textarea
+                            name="{{ form.essay_question.html_name }}"
+                            class="wiz-textarea"
+                            placeholder="e.g. Why do you need this scholarship? What impact will it have on your career?"
+                        >{{ form.essay_question.value|default:'' }}</textarea>
+                        {{ form.essay_question.errors }}
+                        <div class="field-help">
+                            <i class="fa-solid fa-circle-info"></i>
+                            Students will see this prompt on their application form. Leave blank to skip.
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- FOOTER -->
+                <div class="form-card-footer">
+                    <a href="{% url 'funder_portal:create_step3' draft_id=scholarship.pk %}" class="btn-back">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        Back
+                    </a>
+                    <button type="submit" class="btn-finish">
+                        Review &amp; Pay
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </form>
         </div>
 
-        <form method="post">
-            {% csrf_token %}
-            <div class="wizard-body">
+        <!-- SIDEBAR -->
+        <div class="side-panel">
 
-                <!-- Karma Slider -->
-                <div class="field-group">
-                    <label class="field-label">Minimum Karma Points Required</label>
-                    <div class="karma-row">
-                        <input type="range" class="karma-slider" name="{{ form.min_karma.html_name }}" id="karma_slider"
-                            min="0" max="500" step="10" value="{{ form.min_karma.value|default:0 }}"
-                            oninput="document.getElementById('karma_display').textContent = this.value">
-                        <div class="karma-display" id="karma_display">{{ form.min_karma.value|default:0 }}</div>
-                    </div>
-                    <div class="karma-note">⭐ Only students with ≥ this many karma points can apply. Set to 0 for no restriction.</div>
-                    {{ form.min_karma.errors }}
-                </div>
-
-                <!-- Required Documents -->
-                <div class="field-group">
-                    <label class="field-label">Mandatory Documents to Verify</label>
-                    <div class="doc-grid">
-                        {% for val, label in form.fields.required_documents.choices %}
-                        <div class="doc-item {% if val in form.required_documents.value %}selected{% endif %}" id="doc-{{ val }}">
-                            <input type="checkbox" name="{{ form.required_documents.html_name }}" id="doc_cb_{{ val }}"
-                                value="{{ val }}" {% if val in form.required_documents.value %}checked{% endif %}
-                                onchange="toggleDoc('doc-{{ val }}', this)">
-                            <label for="doc_cb_{{ val }}">{{ label }}</label>
+            <!-- Almost Done card -->
+            <div class="info-card">
+                <div class="info-card-body" style="padding:1.25rem;">
+                    <div class="done-card-inner">
+                        <div class="done-icon">
+                            <i class="fa-solid fa-flag-checkered"></i>
                         </div>
-                        {% endfor %}
+                        <div class="done-title">Almost Done!</div>
+                        <div class="done-sub">This is the last step. After submitting you'll review everything and complete your escrow payment.</div>
                     </div>
-                    <div class="field-help">Students must upload all checked documents when applying.</div>
-                    {{ form.required_documents.errors }}
                 </div>
-
-                <!-- Verification Strictness -->
-                <div class="field-group">
-                    <label class="field-label">Verification Strictness</label>
-                    <div class="verif-cards">
-
-                        <div class="verif-card {% if form.verification_strictness.value == 'STANDARD' or not form.verification_strictness.value %}selected{% endif %}" id="verif-STANDARD" onclick="selectVerif('STANDARD')">
-                            <span class="verif-card-icon">📄</span>
-                            <div class="verif-card-title">Standard</div>
-                            <div class="verif-card-desc">Manual upload. Our AI checks for tampering automatically.</div>
-                            <input type="radio" name="{{ form.verification_strictness.html_name }}" value="STANDARD" id="verif_STANDARD" {% if form.verification_strictness.value == 'STANDARD' or not form.verification_strictness.value %}checked{% endif %}>
-                        </div>
-
-                        <div class="verif-card {% if form.verification_strictness.value == 'STRICT' %}selected{% endif %}" id="verif-STRICT" onclick="selectVerif('STRICT')">
-                            <span class="verif-card-icon">🔐</span>
-                            <div class="verif-card-title">Strict</div>
-                            <div class="verif-card-desc">Requires DigiLocker / Government API. Zero fraud risk.</div>
-                            <input type="radio" name="{{ form.verification_strictness.html_name }}" value="STRICT" id="verif_STRICT" {% if form.verification_strictness.value == 'STRICT' %}checked{% endif %}>
-                        </div>
-
-                    </div>
-                    {{ form.verification_strictness.errors }}
-                </div>
-
-                <!-- Essay Question -->
-                <div class="field-group">
-                    <label class="field-label">
-                        Custom Essay / Question
-                        <span style="font-weight:400;color:#999;">(Optional)</span>
-                    </label>
-                    <textarea name="{{ form.essay_question.html_name }}" class="form-control"
-                        placeholder="e.g. Why do you need this scholarship? What impact will it have on your career?">{{ form.essay_question.value|default:'' }}</textarea>
-                    <div class="field-help">Students will see this question on the application form. Leave blank to skip.</div>
-                    {{ form.essay_question.errors }}
-                </div>
-
             </div>
 
-            <div class="wizard-footer">
-                <a href="{% url 'funder_portal:create_step3' draft_id=scholarship.pk %}" class="btn-wizard-back">← Back</a>
-                <button type="submit" class="btn-wizard-next">Review & Pay →</button>
+            <!-- What happens next -->
+            <div class="info-card">
+                <div class="info-card-header">
+                    <i class="fa-solid fa-forward"></i>
+                    <span class="info-card-title">What Happens Next</span>
+                </div>
+                <div class="info-card-body">
+                    <div class="next-steps">
+                        <div class="ns-item">
+                            <div class="ns-num">1</div>
+                            <div class="ns-text">
+                                <strong>Review page</strong>
+                                Preview all scholarship details before publishing.
+                            </div>
+                        </div>
+                        <div class="ns-item">
+                            <div class="ns-num">2</div>
+                            <div class="ns-text">
+                                <strong>Escrow payment</strong>
+                                Deposit the budget via Razorpay — funds are held securely.
+                            </div>
+                        </div>
+                        <div class="ns-item">
+                            <div class="ns-num">3</div>
+                            <div class="ns-text">
+                                <strong>Scholarship goes live</strong>
+                                Students start applying once payment is confirmed.
+                            </div>
+                        </div>
+                        <div class="ns-item">
+                            <div class="ns-num">4</div>
+                            <div class="ns-text">
+                                <strong>Approve merit list</strong>
+                                Review applicants and approve winners to release funds.
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </form>
+
+            <!-- Tips -->
+            <div class="info-card">
+                <div class="info-card-header">
+                    <i class="fa-solid fa-lightbulb"></i>
+                    <span class="info-card-title">Tips</span>
+                </div>
+                <div class="info-card-body">
+                    <div class="tips-list">
+                        <div class="tip-item">
+                            <div class="tip-num">1</div>
+                            <div class="tip-text">
+                                <strong>Karma gate = quality filter</strong>
+                                Higher karma means more engaged, active students on the platform.
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-num">2</div>
+                            <div class="tip-text">
+                                <strong>Strict verification</strong>
+                                Use DigiLocker mode for high-value scholarships to eliminate fraud risk entirely.
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-num">3</div>
+                            <div class="tip-text">
+                                <strong>Essay adds depth</strong>
+                                A short prompt reveals motivation and helps you select the most deserving student.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
+
+</div>
 </div>
 
 <script>
-    function toggleDoc(wrapId, cb) {
-        document.getElementById(wrapId).classList.toggle('selected', cb.checked);
-    }
+function updateKarma(val) {
+    document.getElementById('karma-display').textContent = val;
+    const slider = document.getElementById('karma-slider');
+    const pct = (val / 500) * 100;
+    slider.style.setProperty('--pct', pct + '%');
+    slider.style.background = `linear-gradient(to right, #6D28D9 0%, #6D28D9 ${pct}%, #E8E8E8 ${pct}%, #E8E8E8 100%)`;
+}
 
-    function selectVerif(val) {
-        document.querySelectorAll('.verif-card').forEach(c => c.classList.remove('selected'));
-        document.getElementById('verif-' + val).classList.add('selected');
-        document.getElementById('verif_' + val).checked = true;
-    }
+function toggleDoc(wrapId, cb) {
+    document.getElementById(wrapId).classList.toggle('selected', cb.checked);
+}
 
-    document.querySelectorAll('.doc-item input:checked').forEach(cb => {
-        cb.closest('.doc-item').classList.add('selected');
+function selectVerif(val) {
+    ['STANDARD','STRICT'].forEach(v => {
+        document.getElementById('verif-' + v).classList.toggle('selected', v === val);
     });
+    document.getElementById('verif_' + val).checked = true;
+}
+
+// Init
+updateKarma(document.getElementById('karma-slider').value);
+document.querySelectorAll('.doc-item input:checked').forEach(cb => {
+    cb.closest('.doc-item').classList.add('selected');
+});
 </script>
+
 {% endblock %}

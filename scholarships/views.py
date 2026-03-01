@@ -8,7 +8,7 @@ import json
 import logging
 
 logger = logging.getLogger(__name__)
-from .models import Scholarship, RequiredDocument
+from .models import Scholarship, RequiredDocument, ScholarshipCertificate
 from .recommendation import (
     passes_hard_filter,
     compute_match_score,
@@ -298,3 +298,27 @@ def external_scholarships(request):
         'is_student':      bool(student),
     }
     return render(request, 'scholarships/external_scholarships.html', context)
+
+
+# ── Certificate Verification (PUBLIC — no login required) ─────────────────────────────────
+
+def verify_certificate(request, cert_uuid):
+    """
+    Public verification endpoint.
+    Anyone can visit /scholarships/certificates/verify/<uuid>/ to check
+    whether a certificate is genuine and view all real details.
+    No authentication required.
+    """
+    cert = get_object_or_404(ScholarshipCertificate, certificate_id=cert_uuid)
+    context = {
+        'cert':        cert,
+        'award':       cert.award,
+        'student':     cert.award.student,
+        'scholarship': cert.award.scholarship,
+        'org_name':    (
+            cert.award.scholarship.org_profile.organization_name
+            if cert.award.scholarship.org_profile
+            else cert.award.scholarship.organization or 'Scholar Match'
+        ),
+    }
+    return render(request, 'scholarships/certificate_verify.html', context)

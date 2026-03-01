@@ -1,0 +1,678 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Certificate — Scholar Match</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: #F0F0EE;
+            background-image: radial-gradient(circle, #C8C8C8 1px, transparent 1px);
+            background-size: 20px 20px;
+            min-height: 100vh;
+            color: #1A1A1A;
+        }
+
+        /* ── Top Nav ── */
+        .top-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2.5rem;
+            background: #fff;
+            border-bottom: 2px solid #E8E8E8;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .nav-brand-icon {
+            width: 38px;
+            height: 38px;
+            background: #111;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: #FFD700;
+        }
+
+        .nav-brand-name {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.05rem;
+            color: #111;
+        }
+
+        .nav-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #999;
+        }
+
+        .nav-right-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #EDE9FE;
+            color: #6D28D9;
+            border: 1.5px solid #DDD6FE;
+            border-radius: 999px;
+            padding: 0.35rem 1rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        /* ── Status Hero ── */
+        .status-hero {
+            padding: 2.5rem 1.5rem 2rem;
+            text-align: center;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.5rem 1.4rem;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            margin-bottom: 1.2rem;
+        }
+
+        .status-badge.valid {
+            background: #DCFCE7;
+            color: #16A34A;
+            border: 1.5px solid #BBF7D0;
+        }
+
+        .status-badge.revoked {
+            background: #FEF2F2;
+            color: #DC2626;
+            border: 1.5px solid #FECACA;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: pulse-dot 1.5s infinite;
+        }
+
+        @keyframes pulse-dot {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(1.35);
+            }
+        }
+
+        .status-hero h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+            font-weight: 800;
+            color: #111;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.45rem;
+        }
+
+        .status-hero p {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        /* ── Main Grid ── */
+        .main-grid {
+            max-width: 1100px;
+            margin: 0 auto 4rem;
+            padding: 0 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 1.75rem;
+        }
+
+        /* ── Cards ── */
+        .card {
+            background: #fff;
+            border: 2px solid #E8E8E8;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 2px solid #F0F0F0;
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+        }
+
+        .card-header-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: #EDE9FE;
+            color: #6D28D9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .card-header h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.88rem;
+            font-weight: 800;
+            color: #111;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* ── Certificate image ── */
+        .cert-image-wrap {
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #E8E8E8;
+            background: #FAFAFA;
+        }
+
+        .cert-image-wrap img {
+            width: 100%;
+            display: block;
+        }
+
+        .cert-placeholder {
+            background: #F5F0FF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            border-radius: 10px;
+            border: 2px dashed #DDD6FE;
+            color: #6D28D9;
+            font-size: 3rem;
+        }
+
+        .download-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.55rem;
+            width: 100%;
+            margin-top: 1.1rem;
+            padding: 0.85rem;
+            background: #111;
+            color: #FFD700;
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 0.88rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 10px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.18s;
+        }
+
+        .download-btn:hover {
+            background: #FFD700;
+            color: #111;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        /* ── Detail rows ── */
+        .detail-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+            padding: 0.9rem 0;
+            border-bottom: 1px solid #F5F5F5;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: #6D28D9;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .detail-label i {
+            font-size: 0.65rem;
+            opacity: 0.8;
+        }
+
+        .detail-value {
+            font-size: 0.95rem;
+            color: #111;
+            font-weight: 600;
+        }
+
+        .detail-value.mono {
+            font-family: 'Courier New', monospace;
+            font-size: 0.78rem;
+            color: #888;
+            word-break: break-all;
+            font-weight: 400;
+        }
+
+        /* Amount chip */
+        .amount-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.3rem 0.9rem;
+            background: #EDE9FE;
+            border: 1.5px solid #DDD6FE;
+            border-radius: 8px;
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.05rem;
+            color: #6D28D9;
+        }
+
+        /* Status pill */
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .status-pill.valid {
+            background: #DCFCE7;
+            color: #16A34A;
+        }
+
+        .status-pill.revoked {
+            background: #FEF2F2;
+            color: #DC2626;
+        }
+
+        /* Revoked notice */
+        .revoked-notice {
+            background: #FEF2F2;
+            border: 2px solid #FECACA;
+            border-radius: 10px;
+            padding: 1rem 1.2rem;
+            margin-bottom: 1.1rem;
+            color: #DC2626;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            line-height: 1.5;
+        }
+
+        .revoked-notice i {
+            flex-shrink: 0;
+            margin-top: 0.05rem;
+        }
+
+        /* ── QR section ── */
+        .qr-wrap {
+            text-align: center;
+            padding: 1.5rem;
+        }
+
+        .qr-wrap img {
+            width: 160px;
+            height: 160px;
+            border-radius: 12px;
+            border: 3px solid #6D28D9;
+            background: white;
+            padding: 6px;
+        }
+
+        .qr-placeholder {
+            width: 160px;
+            height: 160px;
+            background: #F5F0FF;
+            border-radius: 12px;
+            border: 3px solid #DDD6FE;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            color: #6D28D9;
+            font-size: 2.2rem;
+        }
+
+        .qr-caption {
+            margin-top: 0.9rem;
+            font-size: 0.75rem;
+            color: #999;
+            line-height: 1.55;
+        }
+
+        .qr-url {
+            display: block;
+            margin-top: 0.4rem;
+            font-size: 0.68rem;
+            color: #6D28D9;
+            word-break: break-all;
+            font-weight: 500;
+        }
+
+        /* ── Trust Banner ── */
+        .trust-banner {
+            max-width: 1100px;
+            margin: 0 auto 1.5rem;
+            padding: 0 1.5rem;
+        }
+
+        .trust-inner {
+            background: #fff;
+            border: 2px solid #E8E8E8;
+            border-radius: 14px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            flex-wrap: wrap;
+        }
+
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .trust-item i {
+            color: #10B981;
+            font-size: 0.78rem;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center;
+            padding: 2rem 1.5rem;
+            color: #AAA;
+            font-size: 0.78rem;
+            border-top: 2px solid #E8E8E8;
+            background: #fff;
+        }
+
+        .footer strong {
+            color: #6D28D9;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .top-nav {
+                padding: 1rem 1.25rem;
+            }
+
+            .status-hero {
+                padding: 2rem 1rem 1.5rem;
+            }
+
+            .trust-inner {
+                gap: 0.75rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ── Top Nav ── -->
+    <nav class="top-nav">
+        <a href="/" class="nav-brand">
+            <div class="nav-brand-icon">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <div>
+                <div class="nav-brand-name">Scholar Match</div>
+                <div class="nav-label">Certificate Verification Portal</div>
+            </div>
+        </a>
+        <div class="nav-right-tag">
+            <i class="fa-solid fa-shield-halved"></i>
+            Official Verification
+        </div>
+    </nav>
+
+    <!-- ── Status Hero ── -->
+    <div class="status-hero">
+        {% if cert.is_valid %}
+        <div class="status-badge valid">
+            <span class="status-dot"></span>
+            Verified &amp; Authentic
+        </div>
+        {% else %}
+        <div class="status-badge revoked">
+            <span class="status-dot"></span>
+            Certificate Revoked
+        </div>
+        {% endif %}
+        <h1>Certificate of Scholarship</h1>
+        <p>Issued by Scholar Match &nbsp;·&nbsp; Verified on {{ cert.issued_at|date:"F d, Y" }}</p>
+    </div>
+
+    <!-- ── Trust Banner ── -->
+    <div class="trust-banner">
+        <div class="trust-inner">
+            <div class="trust-item">
+                <i class="fa-solid fa-circle-check"></i>
+                Blockchain-free tamper-proof record
+            </div>
+            <div class="trust-item">
+                <i class="fa-solid fa-circle-check"></i>
+                QR code links to this live verified page
+            </div>
+            <div class="trust-item">
+                <i class="fa-solid fa-circle-check"></i>
+                Issued by Scholar Match Platform
+            </div>
+            <div class="trust-item" style="margin-left:auto;">
+                <i class="fa-solid fa-clock" style="color:#6D28D9;"></i>
+                <span style="color:#6D28D9;font-weight:600;">Verified {{ cert.issued_at|date:"M d, Y" }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Main Content ── -->
+    <div class="main-grid">
+
+        <!-- LEFT: Certificate image -->
+        <div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-header-icon"><i class="fa-solid fa-medal"></i></div>
+                    <h2>Certificate Document</h2>
+                </div>
+                <div class="card-body">
+
+                    {% if not cert.is_valid %}
+                    <div class="revoked-notice">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        This certificate has been <strong>revoked</strong> by the platform and is no longer
+                        considered valid for any official purpose.
+                    </div>
+                    {% endif %}
+
+                    {% if cert.certificate_image %}
+                    <div class="cert-image-wrap">
+                        <img src="{{ cert.certificate_image.url }}"
+                            alt="Scholarship Certificate for {{ student.full_name }}" />
+                    </div>
+                    {% if cert.is_valid %}
+                    <a class="download-btn" href="{{ cert.certificate_image.url }}"
+                        download="ScholarshipCertificate_{{ student.full_name|slugify }}.png">
+                        <i class="fa-solid fa-download"></i>
+                        Download Certificate (PNG)
+                    </a>
+                    {% endif %}
+                    {% else %}
+                    <div class="cert-placeholder">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <p style="color:#AAA;text-align:center;margin-top:0.75rem;font-size:0.84rem;">
+                        Certificate image is being generated…
+                    </p>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Details + QR -->
+        <div style="display:flex;flex-direction:column;gap:1.5rem;">
+
+            <!-- Details Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-header-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+                    <h2>Certificate Details</h2>
+                </div>
+                <div class="card-body">
+
+                    <div class="detail-row">
+                        <span class="detail-label"><i class="fa-solid fa-user"></i> Recipient</span>
+                        <span class="detail-value">{{ student.full_name }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label"><i class="fa-solid fa-graduation-cap"></i> Scholarship</span>
+                        <span class="detail-value">{{ scholarship.title }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label"><i class="fa-solid fa-building"></i> Awarding Organisation</span>
+                        <span class="detail-value">{{ org_name }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label"><i class="fa-solid fa-indian-rupee-sign"></i> Amount Awarded</span>
+                        <span class="detail-value">
+                            <span class="amount-chip">
+                                <i class="fa-solid fa-indian-rupee-sign" style="font-size:0.85rem;"></i>
+                                {{ award.amount_awarded|floatformat:0 }}
+                            </span>
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label"><i class="fa-solid fa-trophy"></i> Merit Rank</span>
+                        <span class="detail-value"># {{ award.merit_rank }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label"><i class="fa-regular fa-calendar"></i> Date of Issue</span>
+                        <span class="detail-value">{{ cert.issued_at|date:"F d, Y" }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label"><i class="fa-solid fa-circle-dot"></i> Status</span>
+                        <span class="detail-value">
+                            {% if cert.is_valid %}
+                            <span class="status-pill valid">
+                                <i class="fa-solid fa-circle-check"></i> Valid
+                            </span>
+                            {% else %}
+                            <span class="status-pill revoked">
+                                <i class="fa-solid fa-circle-xmark"></i> Revoked
+                            </span>
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label"><i class="fa-solid fa-fingerprint"></i> Certificate ID</span>
+                        <span class="detail-value mono">{{ cert.certificate_id }}</span>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- QR Code Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-header-icon"><i class="fa-solid fa-qrcode"></i></div>
+                    <h2>QR Verification Code</h2>
+                </div>
+                <div class="qr-wrap">
+                    {% if cert.qr_code %}
+                    <img src="{{ cert.qr_code.url }}" alt="QR code for certificate {{ cert.certificate_id }}" />
+                    {% else %}
+                    <div class="qr-placeholder">
+                        <i class="fa-solid fa-qrcode"></i>
+                    </div>
+                    {% endif %}
+                    <p class="qr-caption">
+                        Scan with any smartphone to verify this certificate instantly.
+                        <span class="qr-url">{{ request.build_absolute_uri }}</span>
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ── Footer ── -->
+    <div class="footer">
+        <p>This verification page is provided by <strong>Scholar Match</strong>. The certificate details shown here are
+            the official record of scholarship award.</p>
+        <p style="margin-top:0.4rem;">Anyone who received this certificate can verify it by visiting the URL embedded in
+            the QR code or by sharing this page link.</p>
+    </div>
+
+</body>
+
+</html>

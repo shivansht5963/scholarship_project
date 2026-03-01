@@ -2,561 +2,1002 @@
 {% block title %}Review & Pay — {{ scholarship.title }}{% endblock %}
 
 {% block content %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
 <style>
-    .review-container {
-        max-width: 860px;
-        margin: 2.5rem auto;
-        padding: 0 1.5rem;
-    }
+/* ── ROOT ─────────────────────────────────────────────────── */
+.rev-root {
+    font-family: 'DM Sans', sans-serif;
+    background: #F0F0EE;
+    background-image: radial-gradient(circle, #C8C8C8 1px, transparent 1px);
+    background-size: 20px 20px;
+    min-height: 100vh;
+    padding: 2.5rem 2rem;
+}
 
-    /* Header */
-    .review-hero {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-        border-radius: 20px;
-        padding: 2.5rem;
-        color: white;
-        margin-bottom: 2rem;
-        position: relative;
-        overflow: hidden;
-    }
+.rev-wrap {
+    max-width: 1300px;
+    margin: 0 auto;
+}
 
-    .review-hero::before {
-        content: '';
-        position: absolute;
-        top: -60px;
-        right: -60px;
-        width: 200px;
-        height: 200px;
-        background: rgba(255, 255, 255, .05);
-        border-radius: 50%;
-    }
+/* ── BREADCRUMB ───────────────────────────────────────────── */
+.page-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: #999;
+    font-weight: 500;
+    margin-bottom: 1.75rem;
+}
 
-    .review-hero::after {
-        content: '';
-        position: absolute;
-        bottom: -40px;
-        left: -40px;
-        width: 150px;
-        height: 150px;
-        background: rgba(255, 215, 0, .08);
-        border-radius: 50%;
-    }
+.page-breadcrumb a { color: #999; text-decoration: none; transition: color 0.15s; }
+.page-breadcrumb a:hover { color: #6D28D9; }
+.page-breadcrumb i { font-size: 0.6rem; }
 
-    .review-hero-content {
-        position: relative;
-        z-index: 1;
-    }
+/* ── HERO ─────────────────────────────────────────────────── */
+.review-hero {
+    background: linear-gradient(130deg, #3B0FBF 0%, #6D28D9 45%, #8B5CF6 100%);
+    border-radius: 20px;
+    padding: 2.75rem 3rem;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 1.75rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+}
 
-    .review-tag {
-        display: inline-block;
-        background: rgba(255, 215, 0, .2);
-        color: #FFD700;
-        padding: .3rem 1rem;
-        border-radius: 20px;
-        font-size: .8rem;
-        font-weight: 700;
-        letter-spacing: .8px;
-        margin-bottom: 1rem;
-    }
+.review-hero::before {
+    content: '';
+    position: absolute;
+    width: 380px; height: 380px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    top: -120px; right: 80px;
+}
 
-    .review-hero h1 {
-        margin: 0 0 .5rem;
-        font-size: 2rem;
-        font-weight: 700;
-    }
+.review-hero::after {
+    content: '';
+    position: absolute;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+    bottom: -60px; right: 260px;
+}
 
-    .review-hero p {
-        margin: 0;
-        opacity: .8;
-    }
+.hero-left { position: relative; z-index: 2; }
 
-    .review-badge-row {
-        display: flex;
-        gap: .75rem;
-        flex-wrap: wrap;
-        margin-top: 1.2rem;
-    }
+.hero-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 999px;
+    padding: 0.35rem 1rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #fff;
+    margin-bottom: 1rem;
+}
 
-    .review-badge {
-        background: rgba(255, 255, 255, .12);
-        padding: .35rem .9rem;
-        border-radius: 20px;
-        font-size: .83rem;
-        font-weight: 600;
-    }
+.review-hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.6rem, 3.5vw, 2.8rem);
+    font-weight: 800;
+    color: #fff;
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+}
 
-    /* Section cards */
-    .review-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
+.hero-meta {
+    color: rgba(255,255,255,0.72);
+    font-size: 0.9rem;
+    margin-bottom: 1.25rem;
+}
 
-    .review-card {
-        background: white;
-        border-radius: 16px;
-        padding: 1.8rem;
-        box-shadow: 0 4px 24px rgba(0, 0, 0, .08);
-    }
+.hero-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
 
-    .review-card-full {
-        grid-column: 1/-1;
-    }
+.hero-badge {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    padding: 0.3rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
 
-    .review-card h3 {
-        margin: 0 0 1.2rem;
-        font-size: 1.05rem;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        gap: .5rem;
-    }
+/* Budget stat on hero right */
+.hero-budget-card {
+    position: relative;
+    z-index: 2;
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.5rem 2rem;
+    text-align: center;
+    flex-shrink: 0;
+    min-width: 200px;
+}
 
-    .review-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: baseline;
-        padding: .55rem 0;
-        border-bottom: 1px solid #f5f5f5;
-    }
+.hbc-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #999;
+    display: block;
+    margin-bottom: 0.35rem;
+}
 
-    .review-row:last-child {
-        border-bottom: none;
-    }
+.hbc-amount {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #6D28D9;
+    line-height: 1;
+    display: block;
+    margin-bottom: 0.4rem;
+}
 
-    .review-key {
-        font-size: .88rem;
-        color: #999;
-        font-weight: 500;
-    }
+.hbc-sub {
+    font-size: 0.72rem;
+    color: #AAA;
+    font-weight: 500;
+}
 
-    .review-val {
-        font-size: .93rem;
-        color: #222;
-        font-weight: 600;
-        text-align: right;
-        max-width: 60%;
-    }
+.hbc-breakdown {
+    display: flex;
+    justify-content: center;
+    gap: 1.25rem;
+    margin-top: 0.85rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid #F0F0F0;
+}
 
-    .tag-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: .4rem;
-        justify-content: flex-end;
-    }
+.hbc-bd-item .bval {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #111;
+    display: block;
+}
 
-    .tag {
-        background: #e8f5e9;
-        color: #2E7D32;
-        padding: .2rem .6rem;
-        border-radius: 6px;
-        font-size: .8rem;
-        font-weight: 600;
-    }
+.hbc-bd-item .blabel {
+    font-size: 0.68rem;
+    color: #AAA;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
 
-    /* Budget card */
-    .budget-card {
-        background: linear-gradient(135deg, #1a1a2e, #0f3460);
-        border-radius: 16px;
-        padding: 2rem;
-        color: white;
-        text-align: center;
-        margin-bottom: 1.5rem;
-    }
+/* ── MAIN LAYOUT ──────────────────────────────────────────── */
+.rev-layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 1.75rem;
+    align-items: start;
+}
 
-    .budget-amount {
-        font-size: 3.5rem;
-        font-weight: 800;
-        background: linear-gradient(135deg, #FFD700, #FFA000);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
+/* ── CARD ─────────────────────────────────────────────────── */
+.rev-card {
+    background: #fff;
+    border: 2px solid #E8E8E8;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
 
-    .budget-label {
-        opacity: .75;
-        font-size: 1rem;
-        margin-top: .25rem;
-    }
+.rev-card:last-child { margin-bottom: 0; }
 
-    .budget-breakdown {
-        display: flex;
-        justify-content: center;
-        gap: 2rem;
-        margin-top: 1.5rem;
-        flex-wrap: wrap;
-    }
+.rev-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.1rem 1.5rem;
+    border-bottom: 2px solid #F0F0F0;
+}
 
-    .budget-breakdown-item {
-        text-align: center;
-    }
+.rev-card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #111;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+}
 
-    .budget-breakdown-item .bval {
-        font-size: 1.4rem;
-        font-weight: 700;
-        color: #FFD700;
-    }
+.rev-card-title i { color: #6D28D9; font-size: 0.85rem; }
 
-    .budget-breakdown-item .blabel {
-        font-size: .8rem;
-        opacity: .7;
-        margin-top: .2rem;
-    }
+.edit-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #888;
+    text-decoration: none;
+    padding: 0.3rem 0.75rem;
+    border: 1.5px solid #E8E8E8;
+    border-radius: 7px;
+    transition: all 0.15s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
 
-    /* Docs pills */
-    .docs-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: .5rem;
-        margin-top: .75rem;
-    }
+.edit-link:hover {
+    border-color: #6D28D9;
+    color: #6D28D9;
+}
 
-    .doc-pill {
-        background: #fff3e0;
-        color: #E65100;
-        padding: .3rem .75rem;
-        border-radius: 20px;
-        font-size: .8rem;
-        font-weight: 600;
-    }
+.rev-card-body { padding: 1.25rem 1.5rem; }
 
-    /* Pay button */
-    .pay-section {
-        background: white;
-        border-radius: 20px;
-        padding: 2rem;
-        box-shadow: 0 4px 24px rgba(0, 0, 0, .08);
-        text-align: center;
-        margin-bottom: 2rem;
-    }
+/* ── REVIEW ROWS ──────────────────────────────────────────── */
+.rev-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid #F5F5F5;
+    gap: 1rem;
+}
 
-    .pay-section h3 {
-        color: #1a1a2e;
-        font-size: 1.3rem;
-        margin: 0 0 .5rem;
-    }
+.rev-row:last-child { border-bottom: none; }
 
-    .pay-section p {
-        color: #888;
-        font-size: .92rem;
-        margin: 0 0 1.8rem;
-    }
+.rev-key {
+    font-size: 0.82rem;
+    color: #999;
+    font-weight: 600;
+    flex-shrink: 0;
+}
 
-    .btn-pay {
-        background: linear-gradient(135deg, #2E7D32 0%, #43A047 50%, #66BB6A 100%);
-        color: white;
-        border: none;
-        padding: 1.1rem 3.5rem;
-        border-radius: 14px;
-        font-size: 1.2rem;
-        font-weight: 700;
-        cursor: pointer;
-        transition: .2s;
-        box-shadow: 0 6px 30px rgba(76, 175, 80, .4);
-        display: inline-flex;
-        align-items: center;
-        gap: .75rem;
-    }
+.rev-val {
+    font-size: 0.88rem;
+    color: #111;
+    font-weight: 700;
+    text-align: right;
+}
 
-    .btn-pay:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 12px 40px rgba(76, 175, 80, .5);
-    }
+.rev-val.muted { color: #AAA; font-weight: 500; }
 
-    .btn-pay:active {
-        transform: translateY(-1px);
-    }
+/* tag list */
+.tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    justify-content: flex-end;
+}
 
-    .btn-pay-icon {
-        font-size: 1.5rem;
-    }
+.tag {
+    background: #EDE9FE;
+    color: #6D28D9;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.76rem;
+    font-weight: 700;
+}
 
-    .pay-trust {
-        display: flex;
-        justify-content: center;
-        gap: 2rem;
-        margin-top: 1.2rem;
-        flex-wrap: wrap;
-    }
+/* doc pills */
+.doc-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
 
-    .trust-item {
-        display: flex;
-        align-items: center;
-        gap: .4rem;
-        color: #999;
-        font-size: .82rem;
-    }
+.doc-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: #F0FDF4;
+    color: #16A34A;
+    border: 1.5px solid #BBF7D0;
+    padding: 0.3rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
 
-    /* Back link */
-    .btn-edit-link {
-        color: #666;
-        text-decoration: none;
-        font-size: .9rem;
-        display: inline-flex;
-        align-items: center;
-        gap: .35rem;
-        padding: .5rem 1rem;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        transition: .2s;
-        margin-right: .5rem;
-    }
+.doc-pill i { font-size: 0.7rem; }
 
-    .btn-edit-link:hover {
-        border-color: #4CAF50;
-        color: #2E7D32;
-    }
+/* description */
+.desc-text {
+    color: #444;
+    line-height: 1.75;
+    font-size: 0.92rem;
+}
 
-    /* Success overlay */
-    .success-overlay {
-        display: none;
-        position: fixed;
-        inset: 0;
-        z-index: 9999;
-        background: rgba(0, 0, 0, .6);
-        align-items: center;
-        justify-content: center;
-    }
+/* 2-col grid for review cards */
+.rev-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
 
-    .success-overlay.show {
-        display: flex;
-    }
+/* ── SIDEBAR ──────────────────────────────────────────────── */
+.side-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    position: sticky;
+    top: 1.5rem;
+}
 
-    .success-box {
-        background: white;
-        border-radius: 24px;
-        padding: 3rem;
-        text-align: center;
-        max-width: 420px;
-        width: 90%;
-    }
+.info-card {
+    background: #fff;
+    border: 2px solid #E8E8E8;
+    border-radius: 16px;
+    overflow: hidden;
+}
 
-    .success-icon {
-        font-size: 5rem;
-        display: block;
-        margin-bottom: 1rem;
-    }
+.info-card-header {
+    padding: 1rem 1.4rem;
+    border-bottom: 2px solid #F0F0F0;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
 
-    .success-box h2 {
-        color: #2E7D32;
-        font-size: 1.8rem;
-        margin: 0 0 .5rem;
-    }
+.info-card-header i { color: #6D28D9; font-size: 0.88rem; }
 
-    .success-box p {
-        color: #666;
-        margin: 0 0 1.5rem;
-    }
+.info-card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #111;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
 
-    .btn-go-dashboard {
-        display: inline-block;
-        background: linear-gradient(135deg, #2E7D32, #66BB6A);
-        color: white;
-        text-decoration: none;
-        padding: .9rem 2.5rem;
-        border-radius: 12px;
-        font-weight: 700;
-    }
+.info-card-body { padding: 1.25rem 1.4rem; }
+
+/* ── PAY CARD ─────────────────────────────────────────────── */
+.pay-card {
+    background: #fff;
+    border: 2px solid #E8E8E8;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.pay-card-top {
+    background: linear-gradient(130deg, #3B0FBF 0%, #6D28D9 100%);
+    padding: 1.5rem 1.4rem;
+    text-align: center;
+}
+
+.pay-amount-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.65);
+    display: block;
+    margin-bottom: 0.3rem;
+}
+
+.pay-amount {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #FFD700;
+    line-height: 1;
+}
+
+.pay-card-body {
+    padding: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.btn-pay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    background: #111;
+    color: #FFD700;
+    border: none;
+    width: 100%;
+    padding: 1rem;
+    border-radius: 12px;
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.18s;
+}
+
+.btn-pay:hover {
+    background: #FFD700;
+    color: #111;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+.btn-pay:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.trust-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #F0F0F0;
+}
+
+.trust-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.78rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.trust-item i {
+    width: 18px;
+    text-align: center;
+    color: #10B981;
+    font-size: 0.75rem;
+}
+
+/* Already funded state */
+.funded-card {
+    background: #fff;
+    border: 2px solid #BBF7D0;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.funded-card-top {
+    background: linear-gradient(130deg, #065F46, #10B981);
+    padding: 1.5rem 1.4rem;
+    text-align: center;
+}
+
+.funded-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 0.75rem;
+    font-size: 1.3rem;
+    color: #fff;
+}
+
+.funded-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 0.35rem;
+}
+
+.funded-sub {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.5;
+}
+
+.funded-card-body {
+    padding: 1.25rem 1.4rem;
+}
+
+.btn-dashboard {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: #111;
+    color: #FFD700;
+    text-decoration: none;
+    width: 100%;
+    padding: 0.9rem;
+    border-radius: 10px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.18s;
+}
+
+.btn-dashboard:hover {
+    background: #FFD700;
+    color: #111;
+}
+
+/* Quick edit sidebar */
+.quick-edit-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.qe-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 1.4rem;
+    border-bottom: 1px solid #F0F0F0;
+    text-decoration: none;
+    transition: background 0.15s;
+}
+
+.qe-item:last-child { border-bottom: none; }
+.qe-item:hover { background: #FAFAFF; }
+
+.qe-left {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.qe-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 7px;
+    background: #EDE9FE;
+    color: #6D28D9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    flex-shrink: 0;
+}
+
+.qe-name {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #111;
+}
+
+.qe-step {
+    font-size: 0.68rem;
+    color: #BBB;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+}
+
+.qe-arrow { color: #CCC; font-size: 0.75rem; transition: all 0.15s; }
+.qe-item:hover .qe-arrow { color: #6D28D9; transform: translateX(2px); }
+
+/* ── SUCCESS OVERLAY ──────────────────────────────────────── */
+.success-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0,0,0,0.6);
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+
+.success-overlay.show { display: flex; }
+
+.success-box {
+    background: #fff;
+    border-radius: 24px;
+    padding: 3rem 2.5rem;
+    text-align: center;
+    max-width: 420px;
+    width: 90%;
+    border: 2px solid #E8E8E8;
+}
+
+.success-icon-wrap {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #DCFCE7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    font-size: 2rem;
+    color: #16A34A;
+}
+
+.success-box h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #111;
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.5px;
+}
+
+.success-box p {
+    color: #888;
+    font-size: 0.9rem;
+    margin: 0 0 1.75rem;
+    line-height: 1.6;
+}
+
+/* ── RESPONSIVE ───────────────────────────────────────────── */
+@media (max-width: 1100px) {
+    .rev-layout { grid-template-columns: 1fr; }
+    .side-panel { position: static; }
+}
+
+@media (max-width: 768px) {
+    .rev-root { padding: 1rem; }
+    .review-hero { flex-direction: column; align-items: flex-start; }
+    .hero-budget-card { width: 100%; }
+    .rev-two-col { grid-template-columns: 1fr; }
+}
 </style>
 
-<div class="review-container">
+<div class="rev-root">
+<div class="rev-wrap">
 
-    <!-- Hero -->
+    <!-- BREADCRUMB -->
+    <div class="page-breadcrumb">
+        <a href="{% url 'funder_portal:funder_dashboard' %}">Dashboard</a>
+        <i class="fa-solid fa-chevron-right"></i>
+        <span>Create Scholarship</span>
+        <i class="fa-solid fa-chevron-right"></i>
+        <span style="color:#6D28D9;font-weight:700;">Review &amp; Pay</span>
+    </div>
+
+    <!-- HERO -->
     <div class="review-hero">
-        <div class="review-hero-content">
-            <div class="review-tag">📋 REVIEW BEFORE PAYMENT</div>
+        <div class="hero-left">
+            <div class="hero-pill">
+                <i class="fa-solid fa-clipboard-check"></i>
+                Review Before Payment
+            </div>
             <h1>{{ scholarship.title }}</h1>
-            <p>{{ scholarship.org_profile.organization_name }} · Deadline: {{ scholarship.deadline|date:"M d, Y, g:i A"
-                }}</p>
-            <div class="review-badge-row">
-                <span class="review-badge">{{ scholarship.get_education_level_display }}</span>
-                <span class="review-badge">{{ scholarship.get_distribution_type_display }}</span>
-                <span class="review-badge">{{ scholarship.get_disbursement_method_display }}</span>
+            <div class="hero-meta">
+                {{ scholarship.org_profile.organization_name }}
+                &nbsp;·&nbsp;
+                Deadline: {{ scholarship.deadline|date:"M d, Y, g:i A" }}
+            </div>
+            <div class="hero-badges">
+                <span class="hero-badge">{{ scholarship.get_education_level_display }}</span>
+                <span class="hero-badge">{{ scholarship.get_distribution_type_display }}</span>
+                <span class="hero-badge">{{ scholarship.get_disbursement_method_display }}</span>
                 {% if scholarship.min_karma > 0 %}
-                <span class="review-badge">⭐ ≥ {{ scholarship.min_karma }} Karma</span>
+                <span class="hero-badge">
+                    <i class="fa-solid fa-star" style="color:#FFD700;font-size:0.7rem;"></i>
+                    &ge; {{ scholarship.min_karma }} Karma
+                </span>
                 {% endif %}
             </div>
         </div>
-    </div>
 
-    <!-- Budget highlight -->
-    <div class="budget-card">
-        <div class="budget-amount">₹{{ scholarship.total_budget|default:0 }}</div>
-        <div class="budget-label">Total Scholarship Budget (Escrow Deposit)</div>
-        {% if scholarship.distribution_type == 'FIXED' and scholarship.fixed_amount and scholarship.num_winners %}
-        <div class="budget-breakdown">
-            <div class="budget-breakdown-item">
-                <div class="bval">₹{{ scholarship.fixed_amount }}</div>
-                <div class="blabel">per winner</div>
-            </div>
-            <div class="budget-breakdown-item">
-                <div class="bval">{{ scholarship.num_winners }}</div>
-                <div class="blabel">winners</div>
-            </div>
-        </div>
-        {% endif %}
-    </div>
-
-    <!-- 2-col review grid -->
-    <div class="review-grid">
-
-        <!-- Eligibility -->
-        <div class="review-card">
-            <h3>🎓 Eligibility</h3>
-            <div class="review-row">
-                <span class="review-key">Education Level</span>
-                <span class="review-val">{{ scholarship.get_education_level_display }}</span>
-            </div>
-            <div class="review-row">
-                <span class="review-key">Min Score</span>
-                <span class="review-val">{% if scholarship.min_percentage %}{{ scholarship.min_percentage }}%{% else
-                    %}—{% endif %}</span>
-            </div>
-            <div class="review-row">
-                <span class="review-key">Max Family Income</span>
-                <span class="review-val">{% if scholarship.max_family_income %}₹{{
-                    scholarship.max_family_income|floatformat:0 }}{% else %}No limit{% endif %}</span>
-            </div>
-            {% if courses %}
-            <div class="review-row">
-                <span class="review-key">Courses</span>
-                <span class="review-val">
-                    <div class="tag-list">
-                        {% for c in courses %}<span class="tag">{{ c }}</span>{% endfor %}
-                    </div>
-                </span>
+        <div class="hero-budget-card">
+            <span class="hbc-label">Total Budget</span>
+            <span class="hbc-amount">₹{{ scholarship.total_budget|default:0 }}</span>
+            <div class="hbc-sub">Escrow Deposit via Razorpay</div>
+            {% if scholarship.distribution_type == 'FIXED' and scholarship.fixed_amount and scholarship.num_winners %}
+            <div class="hbc-breakdown">
+                <div class="hbc-bd-item">
+                    <span class="bval">₹{{ scholarship.fixed_amount }}</span>
+                    <span class="blabel">per winner</span>
+                </div>
+                <div class="hbc-bd-item">
+                    <span class="bval">{{ scholarship.num_winners }}</span>
+                    <span class="blabel">winners</span>
+                </div>
             </div>
             {% endif %}
         </div>
+    </div>
 
-        <!-- Platform Filters -->
-        <div class="review-card">
-            <h3>🔍 Platform Filters</h3>
-            <div class="review-row">
-                <span class="review-key">Min Karma</span>
-                <span class="review-val">⭐ {{ scholarship.min_karma }} points</span>
-            </div>
-            <div class="review-row">
-                <span class="review-key">Verification</span>
-                <span class="review-val">{{ scholarship.get_verification_strictness_display }}</span>
-            </div>
-            <div class="review-row">
-                <span class="review-key">Essay Question</span>
-                <span class="review-val">{% if scholarship.essay_question %}✅ Set{% else %}—{% endif %}</span>
-            </div>
-            {% if demographics %}
-            <div class="review-row">
-                <span class="review-key">Demographics</span>
-                <span class="review-val">
-                    <div class="tag-list">
-                        {% for d in demographics %}<span class="tag">{{ d }}</span>{% endfor %}
+    <!-- MAIN GRID -->
+    <div class="rev-layout">
+
+        <!-- LEFT: Review Sections -->
+        <div>
+
+            <!-- 2-col: Eligibility + Platform Filters -->
+            <div class="rev-two-col">
+
+                <!-- Eligibility -->
+                <div class="rev-card" style="margin-bottom:0;">
+                    <div class="rev-card-header">
+                        <span class="rev-card-title">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                            Eligibility
+                        </span>
+                        <a href="{% url 'funder_portal:create_step2' draft_id=scholarship.pk %}" class="edit-link">
+                            <i class="fa-solid fa-pen"></i> Edit
+                        </a>
                     </div>
-                </span>
+                    <div class="rev-card-body">
+                        <div class="rev-row">
+                            <span class="rev-key">Education Level</span>
+                            <span class="rev-val">{{ scholarship.get_education_level_display }}</span>
+                        </div>
+                        <div class="rev-row">
+                            <span class="rev-key">Min Score</span>
+                            <span class="rev-val {% if not scholarship.min_percentage %}muted{% endif %}">
+                                {% if scholarship.min_percentage %}{{ scholarship.min_percentage }}%{% else %}No minimum{% endif %}
+                            </span>
+                        </div>
+                        <div class="rev-row">
+                            <span class="rev-key">Max Income</span>
+                            <span class="rev-val {% if not scholarship.max_family_income %}muted{% endif %}">
+                                {% if scholarship.max_family_income %}₹{{ scholarship.max_family_income|floatformat:0 }}{% else %}No limit{% endif %}
+                            </span>
+                        </div>
+                        {% if courses %}
+                        <div class="rev-row">
+                            <span class="rev-key">Courses</span>
+                            <span class="rev-val">
+                                <div class="tag-list">
+                                    {% for c in courses %}<span class="tag">{{ c }}</span>{% endfor %}
+                                </div>
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Platform Filters -->
+                <div class="rev-card" style="margin-bottom:0;">
+                    <div class="rev-card-header">
+                        <span class="rev-card-title">
+                            <i class="fa-solid fa-sliders"></i>
+                            Platform Filters
+                        </span>
+                        <a href="{% url 'funder_portal:create_step4' draft_id=scholarship.pk %}" class="edit-link">
+                            <i class="fa-solid fa-pen"></i> Edit
+                        </a>
+                    </div>
+                    <div class="rev-card-body">
+                        <div class="rev-row">
+                            <span class="rev-key">Min Karma</span>
+                            <span class="rev-val">
+                                <i class="fa-solid fa-star" style="color:#F59E0B;font-size:0.75rem;"></i>
+                                {{ scholarship.min_karma }} pts
+                            </span>
+                        </div>
+                        <div class="rev-row">
+                            <span class="rev-key">Verification</span>
+                            <span class="rev-val">{{ scholarship.get_verification_strictness_display }}</span>
+                        </div>
+                        <div class="rev-row">
+                            <span class="rev-key">Essay Question</span>
+                            <span class="rev-val {% if not scholarship.essay_question %}muted{% endif %}">
+                                {% if scholarship.essay_question %}
+                                <i class="fa-solid fa-circle-check" style="color:#10B981;font-size:0.78rem;"></i> Set
+                                {% else %}Not set{% endif %}
+                            </span>
+                        </div>
+                        {% if demographics %}
+                        <div class="rev-row">
+                            <span class="rev-key">Demographics</span>
+                            <span class="rev-val">
+                                <div class="tag-list">
+                                    {% for d in demographics %}<span class="tag">{{ d }}</span>{% endfor %}
+                                </div>
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Required Documents -->
+            {% if required_docs %}
+            <div class="rev-card" style="margin-top:1.5rem;">
+                <div class="rev-card-header">
+                    <span class="rev-card-title">
+                        <i class="fa-solid fa-folder-open"></i>
+                        Required Documents
+                        <span style="background:#EDE9FE;color:#6D28D9;font-size:0.7rem;padding:0.15rem 0.5rem;border-radius:999px;font-family:'DM Sans',sans-serif;font-weight:700;letter-spacing:0;">
+                            {{ required_docs.count }}
+                        </span>
+                    </span>
+                    <a href="{% url 'funder_portal:create_step4' draft_id=scholarship.pk %}" class="edit-link">
+                        <i class="fa-solid fa-pen"></i> Edit
+                    </a>
+                </div>
+                <div class="rev-card-body">
+                    <div class="doc-pills">
+                        {% for doc in required_docs %}
+                        <div class="doc-pill">
+                            <i class="fa-solid fa-file-check"></i>
+                            {{ doc.get_document_name_display }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
             {% endif %}
-        </div>
 
-        <!-- Documents -->
-        {% if required_docs %}
-        <div class="review-card review-card-full">
-            <h3>📄 Required Documents ({{ required_docs.count }})</h3>
-            <div class="docs-list">
-                {% for doc in required_docs %}
-                <div class="doc-pill">{{ doc.get_document_name_display }}</div>
-                {% endfor %}
+            <!-- About -->
+            <div class="rev-card" style="margin-top:1.5rem;">
+                <div class="rev-card-header">
+                    <span class="rev-card-title">
+                        <i class="fa-solid fa-align-left"></i>
+                        About the Scholarship
+                    </span>
+                    <a href="{% url 'funder_portal:create_step1' %}" class="edit-link">
+                        <i class="fa-solid fa-pen"></i> Edit
+                    </a>
+                </div>
+                <div class="rev-card-body">
+                    <div class="desc-text">{{ scholarship.description|linebreaks }}</div>
+                </div>
             </div>
-        </div>
-        {% endif %}
 
-        <!-- Description -->
-        <div class="review-card review-card-full">
-            <h3>📝 About the Scholarship</h3>
-            <div style="color:#444;line-height:1.7;font-size:.95rem;">{{ scholarship.description|linebreaks }}</div>
         </div>
 
-    </div>
+        <!-- RIGHT: Sidebar -->
+        <div class="side-panel">
 
-    <!-- Edit links -->
-    <div style="margin-bottom:1.5rem;">
-        <a href="{% url 'funder_portal:create_step1' %}" class="btn-edit-link">✏️ Edit Step 1</a>
-        <a href="{% url 'funder_portal:create_step2' draft_id=scholarship.pk %}" class="btn-edit-link">✏️ Edit
-            Eligibility</a>
-        <a href="{% url 'funder_portal:create_step3' draft_id=scholarship.pk %}" class="btn-edit-link">✏️ Edit
-            Financials</a>
-        <a href="{% url 'funder_portal:create_step4' draft_id=scholarship.pk %}" class="btn-edit-link">✏️ Edit
-            Filters</a>
-    </div>
+            <!-- PAY or FUNDED -->
+            {% if is_paid %}
+            <div class="funded-card">
+                <div class="funded-card-top">
+                    <div class="funded-icon">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div class="funded-title">Scholarship Funded!</div>
+                    <div class="funded-sub">₹{{ scholarship.total_budget|default:0 }} is held securely in escrow. This scholarship is live.</div>
+                </div>
+                <div class="funded-card-body">
+                    <a href="{% url 'funder_portal:funder_dashboard' %}" class="btn-dashboard">
+                        Go to Dashboard
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
 
-    <!-- Pay Section -->
-    {% if is_paid %}
-    <!-- Already funded — show confirmation instead of pay button -->
-    <div class="pay-section" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border:2px solid #4CAF50;">
-        <div style="font-size:3rem;margin-bottom:.75rem;">✅</div>
-        <h3 style="color:#2E7D32;">Scholarship is Already Funded!</h3>
-        <p style="color:#388E3C;">Payment of ₹{{ scholarship.total_budget|default:0 }} has been received and is held in
-            escrow. This scholarship is live and visible to students.</p>
-        <a href="{% url 'funder_portal:funder_dashboard' %}"
-            style="display:inline-block;background:linear-gradient(135deg,#2E7D32,#66BB6A);color:white;text-decoration:none;padding:.9rem 2.5rem;border-radius:12px;font-weight:700;">Go
-            to Dashboard →</a>
-    </div>
-    {% else %}
-    <div class="pay-section">
-        <h3>🔐 Secure Payment &amp; Escrow</h3>
-        <p>Your ₹{{ scholarship.total_budget|default:0 }} will be held securely in our Razorpay escrow until the
-            scholarship deadline passes and winners are selected.</p>
-        <button class="btn-pay" id="pay-btn" onclick="startPayment()">
-            <span class="btn-pay-icon">💳</span>
-            Pay ₹{{ scholarship.total_budget|default:0 }} &amp; Publish Scholarship
-        </button>
-        <div class="pay-trust">
-            <div class="trust-item">🔐 256-bit SSL Encrypted</div>
-            <div class="trust-item">🏦 Razorpay Secured Escrow</div>
-            <div class="trust-item">↩️ Refundable (before deadline)</div>
+            {% else %}
+            <div class="pay-card">
+                <div class="pay-card-top">
+                    <span class="pay-amount-label">Amount to Deposit</span>
+                    <div class="pay-amount">₹{{ scholarship.total_budget|default:0 }}</div>
+                </div>
+                <div class="pay-card-body">
+                    <button class="btn-pay" id="pay-btn" onclick="startPayment()">
+                        <i class="fa-solid fa-lock"></i>
+                        Pay &amp; Publish Scholarship
+                    </button>
+                    <div class="trust-list">
+                        <div class="trust-item">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            256-bit SSL Encrypted
+                        </div>
+                        <div class="trust-item">
+                            <i class="fa-solid fa-building-columns"></i>
+                            Razorpay Secured Escrow
+                        </div>
+                        <div class="trust-item">
+                            <i class="fa-solid fa-rotate-left"></i>
+                            Refundable before deadline
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Quick Edit Links -->
+            <div class="info-card">
+                <div class="info-card-header">
+                    <i class="fa-solid fa-pen"></i>
+                    <span class="info-card-title">Quick Edit</span>
+                </div>
+                <div class="quick-edit-list">
+                    <a href="{% url 'funder_portal:create_step1' %}" class="qe-item">
+                        <div class="qe-left">
+                            <div class="qe-icon"><i class="fa-solid fa-file-pen"></i></div>
+                            <div>
+                                <span class="qe-step">Step 1</span>
+                                <span class="qe-name">Basics</span>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right qe-arrow"></i>
+                    </a>
+
+                    <a href="{% url 'funder_portal:create_step2' draft_id=scholarship.pk %}" class="qe-item">
+                        <div class="qe-left">
+                            <div class="qe-icon"><i class="fa-solid fa-user-check"></i></div>
+                            <div>
+                                <span class="qe-step">Step 2</span>
+                                <span class="qe-name">Eligibility</span>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right qe-arrow"></i>
+                    </a>
+
+                    <a href="{% url 'funder_portal:create_step3' draft_id=scholarship.pk %}" class="qe-item">
+                        <div class="qe-left">
+                            <div class="qe-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+                            <div>
+                                <span class="qe-step">Step 3</span>
+                                <span class="qe-name">Financials</span>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right qe-arrow"></i>
+                    </a>
+
+                    <a href="{% url 'funder_portal:create_step4' draft_id=scholarship.pk %}" class="qe-item">
+                        <div class="qe-left">
+                            <div class="qe-icon"><i class="fa-solid fa-sliders"></i></div>
+                            <div>
+                                <span class="qe-step">Step 4</span>
+                                <span class="qe-name">Filters</span>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right qe-arrow"></i>
+                    </a>
+                </div>
+            </div>
+
         </div>
     </div>
-    {% endif %}
+
+</div>
 </div>
 
-<!-- Success Overlay -->
+<!-- SUCCESS OVERLAY -->
 <div class="success-overlay" id="success-overlay">
     <div class="success-box">
-        <span class="success-icon">🎉</span>
+        <div class="success-icon-wrap">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
         <h2>Scholarship Live!</h2>
-        <p id="success-msg">Your scholarship is now visible to eligible students.</p>
-        <a href="{% url 'funder_portal:funder_dashboard' %}" class="btn-go-dashboard">Go to Dashboard</a>
+        <p id="success-msg">Your scholarship is now visible to eligible students and accepting applications.</p>
+        <a href="{% url 'funder_portal:funder_dashboard' %}" class="btn-dashboard" style="text-decoration:none;display:inline-flex;width:auto;padding:0.85rem 2rem;">
+            Go to Dashboard
+            <i class="fa-solid fa-arrow-right" style="margin-left:0.5rem;"></i>
+        </a>
     </div>
 </div>
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
     const SCHOLARSHIP_ID = {{ scholarship.pk }};
-    const INITIATE_URL = "{% url 'funder_portal:initiate_payment' draft_id=scholarship.pk %}";
-    const CALLBACK_URL = "{% url 'funder_portal:payment_callback' %}";
-    const CSRF_TOKEN = "{{ csrf_token }}";
+    const INITIATE_URL   = "{% url 'funder_portal:initiate_payment' draft_id=scholarship.pk %}";
+    const CALLBACK_URL   = "{% url 'funder_portal:payment_callback' %}";
+    const CSRF_TOKEN     = "{{ csrf_token }}";
 
     function startPayment() {
         const btn = document.getElementById('pay-btn');
         btn.disabled = true;
-        btn.innerHTML = '⏳ Preparing...';
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Preparing...';
 
-        fetch(INITIATE_URL, {
-            method: 'GET',
-            headers: { 'X-CSRFToken': CSRF_TOKEN }
-        })
+        fetch(INITIATE_URL, { method: 'GET', headers: { 'X-CSRFToken': CSRF_TOKEN } })
             .then(r => r.json())
             .then(data => {
                 if (data.error) {
                     alert('Error: ' + data.error);
-                    btn.disabled = false;
-                    btn.innerHTML = '<span class="btn-pay-icon">💳</span> Pay & Publish';
+                    resetBtn();
                     return;
                 }
-
-                if (data.demo_mode) {
-                    // Hackathon demo mode: skip real Razorpay modal
-                    simulateDemoPayment(data);
-                    return;
-                }
+                if (data.demo_mode) { simulateDemoPayment(data); return; }
 
                 const options = {
                     key: data.key,
@@ -566,43 +1007,40 @@
                     description: data.name,
                     order_id: data.order_id,
                     handler: function (response) {
-                        // Payment success — send to callback
                         verifyPayment({
-                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_order_id:  response.razorpay_order_id,
                             razorpay_payment_id: response.razorpay_payment_id,
-                            razorpay_signature: response.razorpay_signature,
+                            razorpay_signature:  response.razorpay_signature,
                             demo_mode: false,
                         });
                     },
                     prefill: { name: '{{ request.user.organizationprofile.organization_name }}' },
-                    theme: { color: '#2E7D32' },
-                    modal: {
-                        ondismiss: function () {
-                            btn.disabled = false;
-                            btn.innerHTML = '<span class="btn-pay-icon">💳</span> Pay & Publish';
-                        }
-                    }
+                    theme: { color: '#6D28D9' },
+                    modal: { ondismiss: function () { resetBtn(); } }
                 };
-                const rzp = new Razorpay(options);
-                rzp.open();
+                new Razorpay(options).open();
             })
             .catch(err => {
                 console.error(err);
                 alert('Something went wrong. Please try again.');
-                btn.disabled = false;
-                btn.innerHTML = '<span class="btn-pay-icon">💳</span> Pay & Publish';
+                resetBtn();
             });
     }
 
-    function simulateDemoPayment(data) {
-        // Demo/hackathon mode — show fake processing then succeed
+    function resetBtn() {
         const btn = document.getElementById('pay-btn');
-        btn.innerHTML = '⏳ Processing Demo Payment...';
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-lock"></i> Pay &amp; Publish Scholarship';
+    }
+
+    function simulateDemoPayment(data) {
+        const btn = document.getElementById('pay-btn');
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing Demo Payment...';
         setTimeout(function () {
             verifyPayment({
-                razorpay_order_id: data.order_id,
+                razorpay_order_id:  data.order_id,
                 razorpay_payment_id: 'pay_DEMO',
-                razorpay_signature: 'DEMO',
+                razorpay_signature:  'DEMO',
                 demo_mode: true,
                 scholarship_id: SCHOLARSHIP_ID,
             });
@@ -612,25 +1050,25 @@
     function verifyPayment(payload) {
         fetch(CALLBACK_URL, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': CSRF_TOKEN,
-            },
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF_TOKEN },
             body: JSON.stringify(payload),
         })
-            .then(r => r.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    document.getElementById('success-msg').textContent = data.message || 'Your scholarship is now live!';
-                    document.getElementById('success-overlay').classList.add('show');
-                } else {
-                    alert('Payment verification failed: ' + (data.error || 'Unknown error'));
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                alert('Callback error: ' + err.message);
-            });
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'success') {
+                document.getElementById('success-msg').textContent = data.message || 'Your scholarship is now live!';
+                document.getElementById('success-overlay').classList.add('show');
+            } else {
+                alert('Payment verification failed: ' + (data.error || 'Unknown error'));
+                resetBtn();
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Callback error: ' + err.message);
+            resetBtn();
+        });
     }
 </script>
+
 {% endblock %}

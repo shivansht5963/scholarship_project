@@ -1,7 +1,9 @@
 from django.contrib import admin
+from django.utils.html import format_html
 from .models import (
     Scholarship, EligibilityCriteria, RequiredDocument, ScholarshipFunding,
     MarksheetVerification, FeesVerification, ScholarshipAward,
+    ScholarshipCertificate,
 )
 
 
@@ -101,4 +103,40 @@ class ScholarshipAwardAdmin(admin.ModelAdmin):
     search_fields  = ['student__full_name', 'scholarship__title', 'razorpay_payout_id', 'transfer_ref']
     readonly_fields = ['awarded_at', 'transfer_initiated_at', 'transfer_completed_at']
     ordering       = ['scholarship', 'merit_rank']
+
+
+@admin.register(ScholarshipCertificate)
+class ScholarshipCertificateAdmin(admin.ModelAdmin):
+    list_display  = ['certificate_id', 'student_name', 'scholarship_name', 'issued_at', 'is_valid', 'cert_preview']
+    list_filter   = ['is_valid', 'issued_at']
+    search_fields = ['certificate_id', 'award__student__full_name', 'award__scholarship__title']
+    readonly_fields = ['certificate_id', 'issued_at', 'cert_preview', 'qr_preview']
+    fields = ['certificate_id', 'award', 'issued_at', 'is_valid', 'certificate_image', 'cert_preview', 'qr_code', 'qr_preview']
+
+    @admin.display(description='Student')
+    def student_name(self, obj):
+        return obj.award.student.full_name
+
+    @admin.display(description='Scholarship')
+    def scholarship_name(self, obj):
+        return obj.award.scholarship.title
+
+    @admin.display(description='Certificate Preview')
+    def cert_preview(self, obj):
+        if obj.certificate_image:
+            return format_html(
+                '<a href="{}" target="_blank">'
+                '<img src="{}" style="height:80px;border:1px solid #ccc;border-radius:4px"/>'
+                '</a>', obj.certificate_image.url, obj.certificate_image.url
+            )
+        return '—'
+
+    @admin.display(description='QR Code')
+    def qr_preview(self, obj):
+        if obj.qr_code:
+            return format_html(
+                '<img src="{}" style="height:80px"/>', obj.qr_code.url
+            )
+        return '—'
+
 

@@ -2,406 +2,913 @@
 {% block title %}Create Scholarship — Step 2: Eligibility{% endblock %}
 
 {% block content %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
 <style>
-    /* ── shared wizard styles ── */
-    .wizard-container {
-        max-width: 780px;
-        margin: 2.5rem auto;
-        padding: 0 1.5rem;
-    }
+/* ── ROOT ─────────────────────────────────────────────────── */
+.wiz-root {
+    font-family: 'DM Sans', sans-serif;
+    background: #F0F0EE;
+    background-image: radial-gradient(circle, #C8C8C8 1px, transparent 1px);
+    background-size: 20px 20px;
+    min-height: 100vh;
+    padding: 2.5rem 2rem;
+}
 
-    .wizard-progress {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0;
-        margin-bottom: 2.5rem;
-    }
+.wiz-wrap {
+    max-width: 1300px;
+    margin: 0 auto;
+}
 
-    .wp-step {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        position: relative;
-        z-index: 1;
-    }
+/* ── BREADCRUMB ───────────────────────────────────────────── */
+.page-header { margin-bottom: 1.75rem; }
 
-    .wp-circle {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 1.1rem;
-        border: 3px solid #e0e0e0;
-        background: white;
-        color: #aaa;
-        transition: all .3s;
-    }
+.page-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: #999;
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+}
 
-    .wp-step.active .wp-circle {
-        background: linear-gradient(135deg, #2E7D32, #66BB6A);
-        border-color: #2E7D32;
-        color: white;
-        box-shadow: 0 4px 16px rgba(76, 175, 80, .4);
-    }
+.page-breadcrumb a { color: #999; text-decoration: none; transition: color 0.15s; }
+.page-breadcrumb a:hover { color: #6D28D9; }
+.page-breadcrumb i { font-size: 0.6rem; }
 
-    .wp-step.done .wp-circle {
-        background: #4CAF50;
-        border-color: #4CAF50;
-        color: white;
-    }
+.page-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: #111;
+    letter-spacing: -0.5px;
+}
 
-    .wp-label {
-        font-size: .78rem;
-        margin-top: .4rem;
-        font-weight: 600;
-        color: #999;
-    }
+.page-subtitle { font-size: 0.88rem; color: #888; margin-top: 0.15rem; }
 
-    .wp-step.active .wp-label,
-    .wp-step.done .wp-label {
-        color: #2E7D32;
-    }
+/* ── STEPPER ─────────────────────────────────────────────── */
+.stepper {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 2px solid #E8E8E8;
+    border-radius: 16px;
+    padding: 1.25rem 2rem;
+    margin-bottom: 2rem;
+}
 
-    .wp-line {
-        flex: 1;
-        height: 3px;
-        background: #e0e0e0;
-        margin-bottom: 1.4rem;
-        transition: background .3s;
-    }
+.step-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+}
 
-    .wp-line.done {
-        background: #4CAF50;
-    }
+.step-connector {
+    flex: 1;
+    height: 2px;
+    background: #E8E8E8;
+    margin: 0 0.5rem;
+    margin-bottom: 0.5rem;
+    align-self: flex-start;
+    margin-top: 1.3rem;
+}
 
-    .wizard-card {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 8px 40px rgba(0, 0, 0, .1);
-        overflow: hidden;
-    }
+.step-connector.done { background: #6D28D9; }
 
-    .wizard-header {
-        background: linear-gradient(135deg, #1565C0 0%, #1976D2 60%, #42A5F5 100%);
-        padding: 2rem 2.5rem;
-        color: white;
-    }
+.step-circle {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 800;
+    flex-shrink: 0;
+    border: 2px solid #E8E8E8;
+    background: #FAFAFA;
+    color: #CCC;
+    transition: all 0.3s;
+}
 
-    .wizard-header h1 {
-        margin: 0;
-        font-size: 1.8rem;
-        font-weight: 700;
-    }
+.step-item.active .step-circle {
+    background: #6D28D9;
+    border-color: #6D28D9;
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(109, 40, 217, 0.35);
+}
 
-    .wizard-header p {
-        margin: .4rem 0 0;
-        opacity: .9;
-        font-size: 1rem;
-    }
+.step-item.done .step-circle {
+    background: #10B981;
+    border-color: #10B981;
+    color: #fff;
+}
 
-    .wizard-step-tag {
-        display: inline-block;
-        background: rgba(255, 255, 255, .2);
-        padding: .25rem .8rem;
-        border-radius: 20px;
-        font-size: .8rem;
-        font-weight: 600;
-        margin-bottom: .75rem;
-        letter-spacing: .5px;
-    }
+.step-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #BBB;
+    display: block;
+    line-height: 1;
+    margin-bottom: 0.2rem;
+}
 
-    .wizard-body {
-        padding: 2.5rem;
-    }
+.step-item.active .step-label { color: #6D28D9; }
+.step-item.done .step-label   { color: #10B981; }
 
-    .field-group {
-        margin-bottom: 1.8rem;
-    }
+.step-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #CCC;
+}
 
-    .field-label {
-        display: block;
-        font-weight: 600;
-        color: #1565C0;
-        margin-bottom: .5rem;
-        font-size: .95rem;
-    }
+.step-item.active .step-name { color: #111; }
+.step-item.done .step-name   { color: #555; }
 
-    .field-help {
-        font-size: .82rem;
-        color: #888;
-        margin-top: .3rem;
-    }
+/* ── LAYOUT ───────────────────────────────────────────────── */
+.wiz-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 1.75rem;
+    align-items: start;
+}
 
-    .form-control,
-    .form-select {
-        width: 100%;
-        padding: .8rem 1rem;
-        border: 2px solid #E3F2FD;
-        border-radius: 10px;
-        font-size: .97rem;
-        background: #fafeff;
-        transition: .2s;
-        box-sizing: border-box;
-    }
+/* ── FORM CARD ────────────────────────────────────────────── */
+.form-card {
+    background: #fff;
+    border: 2px solid #E8E8E8;
+    border-radius: 16px;
+    overflow: hidden;
+}
 
-    .form-control:focus,
-    .form-select:focus {
-        outline: none;
-        border-color: #1976D2;
-        box-shadow: 0 0 0 3px rgba(25, 118, 210, .12);
-        background: white;
-    }
+.form-card-header {
+    background: linear-gradient(130deg, #3B0FBF 0%, #6D28D9 45%, #8B5CF6 100%);
+    padding: 2rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+}
 
-    .errorlist {
-        list-style: none;
-        padding: 0;
-        margin: .4rem 0 0;
-    }
+.form-card-header::before {
+    content: '';
+    position: absolute;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    top: -100px; right: -40px;
+}
 
-    .errorlist li {
-        color: #e53935;
-        font-size: .85rem;
-    }
+.form-card-header::after {
+    content: '';
+    position: absolute;
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+    bottom: -50px; right: 120px;
+}
 
-    .wizard-footer {
-        display: flex;
-        justify-content: space-between;
-        gap: 1rem;
-        padding: 1.5rem 2.5rem;
-        background: #f9f9f9;
-        border-top: 1px solid #f0f0f0;
-    }
+.fch-inner { position: relative; z-index: 2; }
 
-    .btn-wizard-next {
-        background: linear-gradient(135deg, #1565C0, #42A5F5);
-        color: white;
-        border: none;
-        padding: .85rem 2.5rem;
-        border-radius: 10px;
-        font-weight: 700;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: .2s;
-        display: flex;
-        align-items: center;
-        gap: .5rem;
-    }
+.fch-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 999px;
+    padding: 0.3rem 0.9rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #fff;
+    margin-bottom: 0.85rem;
+}
 
-    .btn-wizard-next:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(25, 118, 210, .4);
-    }
+.form-card-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0 0 0.4rem;
+    letter-spacing: -0.5px;
+}
 
-    .btn-wizard-back {
-        background: white;
-        border: 2px solid #e0e0e0;
-        color: #666;
-        padding: .85rem 2rem;
-        border-radius: 10px;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 1rem;
-        display: flex;
-        align-items: center;
-        gap: .5rem;
-        transition: .2s;
-    }
+.form-card-header p {
+    color: rgba(255,255,255,0.75);
+    font-size: 0.9rem;
+    margin: 0;
+}
 
-    .btn-wizard-back:hover {
-        border-color: #1976D2;
-        color: #1565C0;
-    }
+.form-card-body {
+    padding: 2.25rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+}
 
-    /* ── Checkbox group ── */
-    .check-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: .6rem;
-        margin-top: .5rem;
-    }
+/* ── FIELD LABEL ──────────────────────────────────────────── */
+.field-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: #111;
+    margin-bottom: 0.55rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
 
-    .check-item {
-        display: flex;
-        align-items: center;
-        gap: .6rem;
-        padding: .7rem 1rem;
-        border: 2px solid #E3F2FD;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: .2s;
-        background: #fafeff;
-    }
+.field-label i {
+    color: #6D28D9;
+    font-size: 0.8rem;
+    width: 16px;
+    text-align: center;
+}
 
-    .check-item:hover {
-        border-color: #1976D2;
-        background: #E3F2FD;
-    }
+.field-label .opt-tag {
+    background: #F3F4F6;
+    color: #888;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
 
-    .check-item input[type=checkbox] {
-        width: 18px;
-        height: 18px;
-        accent-color: #1976D2;
-        flex-shrink: 0;
-    }
+.field-help {
+    font-size: 0.78rem;
+    color: #AAA;
+    margin-top: 0.45rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
 
-    .check-item label {
-        font-size: .9rem;
-        cursor: pointer;
-        font-weight: 500;
-        color: #333;
-    }
+.field-help i { font-size: 0.72rem; color: #6D28D9; opacity: 0.6; }
 
-    .check-item.selected {
-        border-color: #1976D2;
-        background: #E3F2FD;
-    }
+/* ── INPUTS ───────────────────────────────────────────────── */
+.wiz-input,
+.wiz-select {
+    width: 100%;
+    padding: 0.85rem 1.1rem;
+    border: 2px solid #E8E8E8;
+    border-radius: 10px;
+    font-size: 0.92rem;
+    font-family: 'DM Sans', sans-serif;
+    background: #FAFAFA;
+    color: #111;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    box-sizing: border-box;
+    outline: none;
+    appearance: none;
+}
 
-    /* ── INR input ── */
-    .inr-wrap {
-        position: relative;
-    }
+.wiz-input:focus,
+.wiz-select:focus {
+    border-color: #6D28D9;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(109, 40, 217, 0.1);
+}
 
-    .inr-prefix {
-        position: absolute;
-        left: 1rem;
-        top: 50%;
-        transform: translateY(-50%);
-        font-weight: 700;
-        color: #1565C0;
-        font-size: 1rem;
-    }
+.wiz-input::placeholder { color: #C0C0C0; }
 
-    .inr-wrap .form-control {
-        padding-left: 2.2rem;
-    }
+/* select arrow */
+.select-wrap {
+    position: relative;
+}
+
+.select-wrap::after {
+    content: '\f078';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    right: 1.1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #AAA;
+    font-size: 0.75rem;
+    pointer-events: none;
+}
+
+/* INR prefix */
+.inr-wrap { position: relative; }
+
+.inr-prefix {
+    position: absolute;
+    left: 1.1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: 700;
+    color: #6D28D9;
+    font-size: 1rem;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.inr-wrap .wiz-input { padding-left: 2.2rem; }
+
+/* 2-col grid */
+.two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+/* ── CHECKBOX GRID ────────────────────────────────────────── */
+.check-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.6rem;
+    margin-top: 0.25rem;
+}
+
+.check-item {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.75rem 1rem;
+    border: 2px solid #E8E8E8;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.18s;
+    background: #FAFAFA;
+    user-select: none;
+}
+
+.check-item:hover {
+    border-color: #6D28D9;
+    background: #F5F0FF;
+}
+
+.check-item.selected {
+    border-color: #6D28D9;
+    background: #EDE9FE;
+}
+
+.check-item input[type="checkbox"] {
+    width: 17px;
+    height: 17px;
+    accent-color: #6D28D9;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.check-item label {
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: #333;
+    cursor: pointer;
+    line-height: 1.3;
+}
+
+.check-item.selected label { color: #4C1D95; }
+
+/* ── ERROR LIST ───────────────────────────────────────────── */
+.errorlist {
+    list-style: none;
+    padding: 0;
+    margin: 0.4rem 0 0;
+}
+
+.errorlist li {
+    color: #E11D48;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.errorlist li::before {
+    content: '\f06a';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 0.72rem;
+}
+
+/* ── FORM FOOTER ──────────────────────────────────────────── */
+.form-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.4rem 2.5rem;
+    border-top: 2px solid #F0F0F0;
+    background: #FAFAFA;
+}
+
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: #fff;
+    border: 2px solid #E8E8E8;
+    color: #666;
+    padding: 0.7rem 1.4rem;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.15s;
+}
+
+.btn-back:hover { border-color: #CCC; color: #333; }
+
+.btn-next {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #111;
+    color: #FFD700;
+    padding: 0.8rem 2rem;
+    border-radius: 10px;
+    border: none;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.18s;
+}
+
+.btn-next:hover {
+    background: #FFD700;
+    color: #111;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+/* ── SIDEBAR ──────────────────────────────────────────────── */
+.side-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    position: sticky;
+    top: 1.5rem;
+}
+
+.info-card {
+    background: #fff;
+    border: 2px solid #E8E8E8;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.info-card-header {
+    padding: 1rem 1.4rem;
+    border-bottom: 2px solid #F0F0F0;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.info-card-header i { color: #6D28D9; font-size: 0.88rem; }
+
+.info-card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #111;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.info-card-body { padding: 1.25rem 1.4rem; }
+
+/* field summary */
+.field-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.fs-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    font-size: 0.83rem;
+    color: #444;
+    padding-bottom: 0.65rem;
+    border-bottom: 1px solid #F5F5F5;
+}
+
+.fs-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+.fs-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    background: #EDE9FE;
+    color: #6D28D9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    flex-shrink: 0;
+    margin-top: 0.05rem;
+}
+
+.fs-text strong {
+    display: block;
+    font-weight: 700;
+    font-size: 0.83rem;
+    color: #111;
+    margin-bottom: 0.1rem;
+}
+
+.fs-text span {
+    font-size: 0.76rem;
+    color: #999;
+    line-height: 1.4;
+}
+
+/* Tips */
+.tips-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.tip-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.tip-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: #EDE9FE;
+    color: #6D28D9;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 0.05rem;
+}
+
+.tip-text { font-size: 0.82rem; color: #555; line-height: 1.5; }
+.tip-text strong { color: #111; font-weight: 700; display: block; margin-bottom: 0.1rem; }
+
+/* ── RESPONSIVE ───────────────────────────────────────────── */
+@media (max-width: 1100px) {
+    .wiz-layout { grid-template-columns: 1fr; }
+    .side-panel { position: static; }
+}
+
+@media (max-width: 768px) {
+    .wiz-root { padding: 1rem; }
+    .form-card-body { padding: 1.5rem 1.25rem; }
+    .form-card-footer { padding: 1.25rem; flex-direction: column-reverse; gap: 0.75rem; }
+    .btn-back, .btn-next { width: 100%; justify-content: center; }
+    .two-col { grid-template-columns: 1fr; }
+    .check-grid { grid-template-columns: 1fr 1fr; }
+}
 </style>
 
-<div class="wizard-container">
-    <!-- Progress -->
-    <div class="wizard-progress">
-        <div class="wp-step done">
-            <div class="wp-circle">✓</div>
-            <div class="wp-label">Basics</div>
+<div class="wiz-root">
+<div class="wiz-wrap">
+
+    <!-- HEADER -->
+    <div class="page-header">
+        <div class="page-breadcrumb">
+            <a href="{% url 'funder_portal:funder_dashboard' %}">Dashboard</a>
+            <i class="fa-solid fa-chevron-right"></i>
+            <span>Create Scholarship</span>
+            <i class="fa-solid fa-chevron-right"></i>
+            <span style="color:#6D28D9;font-weight:700;">Step 2 — Eligibility</span>
         </div>
-        <div class="wp-line done"></div>
-        <div class="wp-step active">
-            <div class="wp-circle">2</div>
-            <div class="wp-label">Eligibility</div>
+        <div class="page-title">Create New Scholarship</div>
+        <div class="page-subtitle">Define who can apply — this powers the recommendation engine.</div>
+    </div>
+
+    <!-- STEPPER -->
+    <div class="stepper">
+        <div class="step-item done">
+            <div class="step-circle"><i class="fa-solid fa-check" style="font-size:0.85rem;"></i></div>
+            <div class="step-text">
+                <span class="step-label">Step 1</span>
+                <span class="step-name">Basics</span>
+            </div>
         </div>
-        <div class="wp-line"></div>
-        <div class="wp-step">
-            <div class="wp-circle">3</div>
-            <div class="wp-label">Financials</div>
+
+        <div class="step-connector done"></div>
+
+        <div class="step-item active">
+            <div class="step-circle">2</div>
+            <div class="step-text">
+                <span class="step-label">Step 2</span>
+                <span class="step-name">Eligibility</span>
+            </div>
         </div>
-        <div class="wp-line"></div>
-        <div class="wp-step">
-            <div class="wp-circle">4</div>
-            <div class="wp-label">Filters</div>
+
+        <div class="step-connector"></div>
+
+        <div class="step-item">
+            <div class="step-circle">3</div>
+            <div class="step-text">
+                <span class="step-label">Step 3</span>
+                <span class="step-name">Financials</span>
+            </div>
+        </div>
+
+        <div class="step-connector"></div>
+
+        <div class="step-item">
+            <div class="step-circle">4</div>
+            <div class="step-text">
+                <span class="step-label">Step 4</span>
+                <span class="step-name">Filters</span>
+            </div>
         </div>
     </div>
 
-    <div class="wizard-card">
-        <div class="wizard-header">
-            <div class="wizard-step-tag">STEP 2 OF 4</div>
-            <h1>🎓 Eligibility Criteria</h1>
-            <p>Define who can apply — this powers our recommendation engine</p>
-        </div>
+    <!-- MAIN LAYOUT -->
+    <div class="wiz-layout">
 
-        <form method="post">
-            {% csrf_token %}
-            <div class="wizard-body">
-
-                <!-- Education Level -->
-                <div class="field-group">
-                    <label class="field-label" for="{{ form.education_level.id_for_label }}">
-                        Target Education Level
-                    </label>
-                    <select name="{{ form.education_level.html_name }}" id="{{ form.education_level.id_for_label }}"
-                        class="form-select">
-                        {% for val, label in form.fields.education_level.choices %}
-                        <option value="{{ val }}" {% if form.education_level.value == val %}selected{% endif %}>
-                            {{ label }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                    {{ form.education_level.errors }}
-                </div>
-
-                <!-- Courses -->
-                <div class="field-group">
-                    <label class="field-label" for="{{ form.courses_raw.id_for_label }}">
-                        Specific Courses / Streams
-                    </label>
-                    <input type="text" name="{{ form.courses_raw.html_name }}" id="{{ form.courses_raw.id_for_label }}"
-                        value="{{ form.courses_raw.value|default:'' }}" class="form-control"
-                        placeholder="e.g. B.Tech, MBBS, BA, B.Com — comma separated">
-                    <div class="field-help">Leave blank to allow all courses. Separate multiple with commas.</div>
-                    {{ form.courses_raw.errors }}
-                </div>
-
-                <!-- Max Family Income -->
-                <div class="field-group">
-                    <label class="field-label">Max Family Annual Income</label>
-                    <div class="inr-wrap">
-                        <span class="inr-prefix">₹</span>
-                        <input type="number" name="{{ form.max_family_income.html_name }}"
-                            value="{{ form.max_family_income.value|default:'' }}" class="form-control"
-                            placeholder="e.g. 800000" min="0">
+        <!-- FORM CARD -->
+        <div class="form-card">
+            <div class="form-card-header">
+                <div class="fch-inner">
+                    <div class="fch-pill">
+                        <i class="fa-solid fa-user-check"></i>
+                        Step 2 of 4
                     </div>
-                    <div class="field-help">Leave blank for no income limit. Enter in INR (₹8,00,000 = 800000).</div>
-                    {{ form.max_family_income.errors }}
+                    <h2>Eligibility Criteria</h2>
+                    <p>Set the rules for who qualifies — leave fields blank for no restriction.</p>
                 </div>
+            </div>
 
-                <!-- Min Percentage -->
-                <div class="field-group">
-                    <label class="field-label">Minimum Academic Score</label>
-                    <input type="number" name="{{ form.min_percentage.html_name }}"
-                        value="{{ form.min_percentage.value|default:'' }}" class="form-control"
-                        placeholder="e.g. 75.00 (for 75%)" min="0" max="100" step="0.01">
-                    <div class="field-help">Enter as percentage (0–100) or CGPA equivalent. Leave blank for no
-                        requirement.</div>
-                    {{ form.min_percentage.errors }}
-                </div>
+            <form method="post">
+                {% csrf_token %}
 
-                <!-- Demographic Focus -->
-                <div class="field-group">
-                    <label class="field-label">Demographic Focus <span
-                            style="font-weight:400;color:#999;">(Optional)</span></label>
-                    <div class="check-grid">
-                        {% for val, label in form.fields.demographic_focus.choices %}
-                        <div class="check-item" id="check-{{ val }}">
-                            <input type="checkbox" name="{{ form.demographic_focus.html_name }}" id="demo_{{ val }}"
-                                value="{{ val }}" {% if val in form.demographic_focus.value %}checked{% endif %}
-                                onchange="toggleCheckItem('check-{{ val }}', this)">
-                            <label for="demo_{{ val }}">{{ label }}</label>
+                <div class="form-card-body">
+
+                    <!-- Education Level -->
+                    <div>
+                        <label class="field-label" for="{{ form.education_level.id_for_label }}">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                            Target Education Level
+                        </label>
+                        <div class="select-wrap">
+                            <select
+                                name="{{ form.education_level.html_name }}"
+                                id="{{ form.education_level.id_for_label }}"
+                                class="wiz-select"
+                            >
+                                {% for val, label in form.fields.education_level.choices %}
+                                <option value="{{ val }}" {% if form.education_level.value == val %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                                {% endfor %}
+                            </select>
                         </div>
-                        {% endfor %}
+                        {{ form.education_level.errors }}
+                        <div class="field-help">
+                            <i class="fa-solid fa-circle-info"></i>
+                            Undergraduate, Postgraduate, Diploma, etc.
+                        </div>
                     </div>
-                    <div class="field-help">Check all groups you want to prioritize. Leave blank to allow everyone.
+
+                    <!-- Courses + Max Income in 2-col -->
+                    <div class="two-col">
+
+                        <!-- Courses -->
+                        <div>
+                            <label class="field-label" for="{{ form.courses_raw.id_for_label }}">
+                                <i class="fa-solid fa-book"></i>
+                                Courses / Streams
+                                <span class="opt-tag">Optional</span>
+                            </label>
+                            <input
+                                type="text"
+                                name="{{ form.courses_raw.html_name }}"
+                                id="{{ form.courses_raw.id_for_label }}"
+                                value="{{ form.courses_raw.value|default:'' }}"
+                                class="wiz-input"
+                                placeholder="e.g. B.Tech, MBBS, BA"
+                            >
+                            {{ form.courses_raw.errors }}
+                            <div class="field-help">
+                                <i class="fa-solid fa-circle-info"></i>
+                                Comma-separated. Blank = all courses.
+                            </div>
+                        </div>
+
+                        <!-- Max Income -->
+                        <div>
+                            <label class="field-label">
+                                <i class="fa-solid fa-indian-rupee-sign"></i>
+                                Max Family Annual Income
+                                <span class="opt-tag">Optional</span>
+                            </label>
+                            <div class="inr-wrap">
+                                <span class="inr-prefix">₹</span>
+                                <input
+                                    type="number"
+                                    name="{{ form.max_family_income.html_name }}"
+                                    value="{{ form.max_family_income.value|default:'' }}"
+                                    class="wiz-input"
+                                    placeholder="e.g. 800000"
+                                    min="0"
+                                >
+                            </div>
+                            {{ form.max_family_income.errors }}
+                            <div class="field-help">
+                                <i class="fa-solid fa-circle-info"></i>
+                                In INR. Blank = no income limit.
+                            </div>
+                        </div>
+
                     </div>
+
+                    <!-- Min Percentage -->
+                    <div>
+                        <label class="field-label">
+                            <i class="fa-solid fa-chart-line"></i>
+                            Minimum Academic Score
+                            <span class="opt-tag">Optional</span>
+                        </label>
+                        <input
+                            type="number"
+                            name="{{ form.min_percentage.html_name }}"
+                            value="{{ form.min_percentage.value|default:'' }}"
+                            class="wiz-input"
+                            placeholder="e.g. 75.00  (for 75%)"
+                            min="0" max="100" step="0.01"
+                            style="max-width: 320px;"
+                        >
+                        {{ form.min_percentage.errors }}
+                        <div class="field-help">
+                            <i class="fa-solid fa-circle-info"></i>
+                            Enter as percentage 0–100. Blank = no minimum required.
+                        </div>
+                    </div>
+
+                    <!-- Demographic Focus -->
+                    <div>
+                        <label class="field-label">
+                            <i class="fa-solid fa-users"></i>
+                            Demographic Focus
+                            <span class="opt-tag">Optional</span>
+                        </label>
+                        <div class="check-grid">
+                            {% for val, label in form.fields.demographic_focus.choices %}
+                            <div class="check-item" id="check-{{ val }}">
+                                <input
+                                    type="checkbox"
+                                    name="{{ form.demographic_focus.html_name }}"
+                                    id="demo_{{ val }}"
+                                    value="{{ val }}"
+                                    {% if val in form.demographic_focus.value %}checked{% endif %}
+                                    onchange="toggleCheck('check-{{ val }}', this)"
+                                >
+                                <label for="demo_{{ val }}">{{ label }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {{ form.demographic_focus.errors }}
+                        <div class="field-help" style="margin-top:0.75rem;">
+                            <i class="fa-solid fa-circle-info"></i>
+                            Select groups to prioritize. Leave all unchecked to allow everyone.
+                        </div>
+                    </div>
+
                 </div>
 
+                <!-- FOOTER -->
+                <div class="form-card-footer">
+                    <a href="{% url 'funder_portal:create_step1' %}" class="btn-back">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        Back
+                    </a>
+                    <button type="submit" class="btn-next">
+                        Next: Financials
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- SIDEBAR -->
+        <div class="side-panel">
+
+            <!-- Fields Guide -->
+            <div class="info-card">
+                <div class="info-card-header">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span class="info-card-title">Fields Guide</span>
+                </div>
+                <div class="info-card-body">
+                    <div class="field-summary">
+
+                        <div class="fs-item">
+                            <div class="fs-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                            <div class="fs-text">
+                                <strong>Education Level</strong>
+                                <span>Filters students by their current degree type.</span>
+                            </div>
+                        </div>
+
+                        <div class="fs-item">
+                            <div class="fs-icon"><i class="fa-solid fa-book"></i></div>
+                            <div class="fs-text">
+                                <strong>Courses / Streams</strong>
+                                <span>Restrict to specific programs. Blank allows all.</span>
+                            </div>
+                        </div>
+
+                        <div class="fs-item">
+                            <div class="fs-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+                            <div class="fs-text">
+                                <strong>Family Income Cap</strong>
+                                <span>Ensures aid reaches economically weaker sections.</span>
+                            </div>
+                        </div>
+
+                        <div class="fs-item">
+                            <div class="fs-icon"><i class="fa-solid fa-chart-line"></i></div>
+                            <div class="fs-text">
+                                <strong>Min Academic Score</strong>
+                                <span>Set a minimum % or CGPA to ensure merit.</span>
+                            </div>
+                        </div>
+
+                        <div class="fs-item">
+                            <div class="fs-icon"><i class="fa-solid fa-users"></i></div>
+                            <div class="fs-text">
+                                <strong>Demographic Focus</strong>
+                                <span>Target specific groups. Blank = open to all.</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
             </div>
 
-            <div class="wizard-footer">
-                <a href="{% url 'funder_portal:create_step1' %}" class="btn-wizard-back">← Back</a>
-                <button type="submit" class="btn-wizard-next">Next: Financials →</button>
+            <!-- Tips -->
+            <div class="info-card">
+                <div class="info-card-header">
+                    <i class="fa-solid fa-lightbulb"></i>
+                    <span class="info-card-title">Tips</span>
+                </div>
+                <div class="info-card-body">
+                    <div class="tips-list">
+                        <div class="tip-item">
+                            <div class="tip-num">1</div>
+                            <div class="tip-text">
+                                <strong>Broaden reach</strong>
+                                Leaving optional fields blank casts a wider net and increases applications.
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-num">2</div>
+                            <div class="tip-text">
+                                <strong>Income vs. merit</strong>
+                                Combine both income cap and min score for a holistic need-cum-merit award.
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-num">3</div>
+                            <div class="tip-text">
+                                <strong>Be inclusive</strong>
+                                Demographic focus helps underrepresented groups — use it intentionally.
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </form>
+
+        </div>
+
     </div>
+</div>
 </div>
 
 <script>
-    function toggleCheckItem(wrapId, checkbox) {
-        document.getElementById(wrapId).classList.toggle('selected', checkbox.checked);
-    }
-    // Pre-select checked items on load
-    document.querySelectorAll('.check-item input[type=checkbox]:checked').forEach(function (cb) {
-        cb.closest('.check-item').classList.add('selected');
-    });
+function toggleCheck(wrapId, checkbox) {
+    document.getElementById(wrapId).classList.toggle('selected', checkbox.checked);
+}
+document.querySelectorAll('.check-item input[type=checkbox]:checked').forEach(cb => {
+    cb.closest('.check-item').classList.add('selected');
+});
 </script>
+
 {% endblock %}

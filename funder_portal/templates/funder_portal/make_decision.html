@@ -3,246 +3,421 @@
 {% block title %}Make Decision - {{ application.student.full_name }}{% endblock %}
 
 {% block content %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+
 <style>
-    .decision-header {
-        background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
-        padding: 2rem;
-        border-radius: 16px;
-        margin-bottom: 2rem;
-        color: white;
-    }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    .decision-header h1 {
-        margin: 0 0 0.5rem 0;
-    }
+  .dc-page {
+    font-family: 'DM Sans', sans-serif;
+    background-color: #F5F4F0;
+    background-image: radial-gradient(circle, #c4c0b8 1px, transparent 1px);
+    background-size: 22px 22px;
+    min-height: 100vh;
+    padding: 40px 24px 60px;
+  }
 
-    .decision-container {
-        max-width: 700px;
-        margin: 0 auto;
-    }
+  /* ── Hero ── */
+  .dc-hero {
+    background: linear-gradient(135deg, #1A1A2E 0%, #2D1B69 55%, #3D2B8A 100%);
+    border-radius: 20px;
+    padding: 32px 40px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .dc-hero::before {
+    content: '';
+    position: absolute;
+    width: 320px; height: 320px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+    right: -60px; top: -80px;
+    pointer-events: none;
+  }
+  .dc-hero::after {
+    content: '';
+    position: absolute;
+    width: 160px; height: 160px;
+    background: rgba(255,215,0,0.07);
+    border-radius: 50%;
+    right: 200px; bottom: -55px;
+    pointer-events: none;
+  }
+  .dc-hero-left { position: relative; z-index: 1; }
+  .dc-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,215,0,0.15);
+    border: 1px solid rgba(255,215,0,0.3);
+    border-radius: 50px;
+    padding: 6px 16px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #FFD700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .dc-hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+  .dc-hero p { color: rgba(255,255,255,0.65); font-size: 14px; }
+  .dc-hero-right { position: relative; z-index: 1; flex-shrink: 0; }
+  .dc-warning-pill {
+    background: rgba(255,215,0,0.12);
+    border: 1px solid rgba(255,215,0,0.3);
+    border-radius: 12px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .dc-warning-pill i { color: #FFD700; font-size: 22px; }
+  .dc-warning-pill span {
+    font-size: 12px;
+    color: rgba(255,255,255,0.75);
+    font-weight: 500;
+    line-height: 1.5;
+    max-width: 180px;
+  }
+  .dc-warning-pill strong { color: #FFD700; display: block; font-size: 13px; }
 
-    .application-summary {
-        background: white;
-        padding: 2rem;
-        border-radius: 16px;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-        margin-bottom: 2rem;
-    }
+  /* ── Centered layout ── */
+  .dc-wrap {
+    max-width: 700px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
 
-    .application-summary h2 {
-        color: var(--dark-green);
-        margin: 0 0 1.5rem 0;
-    }
+  /* ── Cards ── */
+  .dc-card {
+    background: #fff;
+    border-radius: 16px;
+    border: 2px solid #E8E8E8;
+    overflow: hidden;
+  }
+  .dc-card-head {
+    padding: 18px 24px;
+    border-bottom: 2px solid #F2F2F2;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .dc-card-head h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1A1A1A;
+  }
+  .dc-icon-box {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .dc-icon-box.indigo { background: #EEEEFF; color: #3D2B8A; }
+  .dc-icon-box.amber  { background: #FFF5E0; color: #D4760A; }
+  .dc-card-body { padding: 24px; }
 
-    .summary-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
-    }
+  /* ── Summary Grid ── */
+  .dc-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .dc-summary-item {
+    background: #F8F8F6;
+    border: 1px solid #EBEBEB;
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .dc-summary-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #9A9A9A;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .dc-summary-label i { color: #3D2B8A; font-size: 10px; }
+  .dc-summary-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1A1A1A;
+  }
 
-    .summary-item {
-        padding: 1rem;
-        background: var(--very-light-green);
-        border-radius: 8px;
-    }
+  /* ── Radio Options ── */
+  .dc-form-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #6B6B6B;
+    margin-bottom: 12px;
+    display: block;
+  }
+  .dc-radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .dc-radio-option {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+    border: 2px solid #E8E8E8;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    position: relative;
+  }
+  .dc-radio-option:hover { background: #FAFAF8; }
+  .dc-radio-option input[type="radio"] { display: none; }
+  .dc-radio-option input[type="radio"]:checked ~ .dc-radio-content .dc-radio-title { font-weight: 700; }
 
-    .summary-label {
-        font-size: 0.85rem;
-        color: var(--gray);
-        margin-bottom: 0.25rem;
-    }
+  /* JS-driven selected state via :has */
+  .dc-radio-option:has(input[value="APPROVED"]:checked) {
+    border-color: #0D7E6A;
+    background: #F0FAF7;
+  }
+  .dc-radio-option:has(input[value="REJECTED"]:checked) {
+    border-color: #D9534F;
+    background: #FFF5F5;
+  }
 
-    .summary-value {
-        font-weight: 600;
-        color: var(--dark-green);
-    }
+  .dc-radio-indicator {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 2px solid #D0D0D0;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color .2s, background .2s;
+    position: relative;
+  }
+  .dc-radio-option:has(input[value="APPROVED"]:checked) .dc-radio-indicator {
+    border-color: #0D7E6A;
+    background: #0D7E6A;
+  }
+  .dc-radio-option:has(input[value="REJECTED"]:checked) .dc-radio-indicator {
+    border-color: #D9534F;
+    background: #D9534F;
+  }
+  .dc-radio-indicator::after {
+    content: '';
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #fff;
+    opacity: 0;
+    transition: opacity .2s;
+  }
+  .dc-radio-option:has(input:checked) .dc-radio-indicator::after { opacity: 1; }
 
-    .decision-form {
-        background: white;
-        padding: 2rem;
-        border-radius: 16px;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-    }
+  .dc-radio-content { flex: 1; }
+  .dc-radio-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1A1A1A;
+    margin-bottom: 3px;
+  }
+  .dc-radio-sub { font-size: 12px; color: #9A9A9A; }
 
-    .decision-form h2 {
-        color: var(--dark-green);
-        margin: 0 0 1.5rem 0;
-    }
+  .dc-radio-icon {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .dc-radio-icon.approve { background: #E6F7F4; color: #0D7E6A; }
+  .dc-radio-icon.reject  { background: #FFF0F0; color: #D9534F; }
 
-    .form-group {
-        margin-bottom: 2rem;
-    }
+  /* ── Textarea ── */
+  .dc-textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #E8E8E8;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: #1A1A1A;
+    background: #FAFAFA;
+    resize: vertical;
+    min-height: 110px;
+    transition: border-color .2s;
+    line-height: 1.6;
+  }
+  .dc-textarea:focus { outline: none; border-color: #3D2B8A; background: #fff; }
+  .dc-textarea::placeholder { color: #B0B0B0; }
 
-    .form-group label {
-        display: block;
-        font-weight: 600;
-        color: var(--dark-green);
-        margin-bottom: 1rem;
-    }
+  /* ── Action Buttons ── */
+  .dc-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .dc-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .dc-btn-primary {
+    background: #1A1A1A;
+    color: #FFD700;
+  }
+  .dc-btn-primary:hover { background: #3D2B8A; color: #fff; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(61,43,138,0.3); }
+  .dc-btn-outline {
+    background: #fff;
+    color: #1A1A1A;
+    border: 2px solid #E8E8E8;
+  }
+  .dc-btn-outline:hover { background: #F5F4F0; border-color: #1A1A1A; }
 
-    .radio-group {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .radio-option {
-        padding: 1.25rem;
-        border: 2px solid var(--border-green);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-
-    .radio-option:hover {
-        background: var(--very-light-green);
-    }
-
-    .radio-option input[type="radio"] {
-        width: 20px;
-        height: 20px;
-        cursor: pointer;
-    }
-
-    .radio-option.approve {
-        border-color: var(--primary-green);
-    }
-
-    .radio-option.reject {
-        border-color: #f44336;
-    }
-
-    .radio-option input[type="radio"]:checked+.radio-label {
-        font-weight: 700;
-    }
-
-    .radio-label {
-        font-size: 1.1rem;
-        color: var(--dark-green);
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 0.8rem;
-        border: 2px solid var(--border-green);
-        border-radius: 8px;
-        font-size: 1rem;
-        font-family: inherit;
-    }
-
-    .action-buttons {
-        display: flex;
-        gap: 1rem;
-        margin-top: 2rem;
-    }
-
-    .btn-submit {
-        flex: 1;
-        padding: 1rem;
-        background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 1.1rem;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-
-    .btn-submit:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
-    }
-
-    .btn-cancel {
-        flex: 1;
-        padding: 1rem;
-        background: white;
-        color: var(--dark-green);
-        border: 2px solid var(--border-green);
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 1.1rem;
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.3s;
-    }
-
-    .btn-cancel:hover {
-        background: var(--very-light-green);
-    }
+  @media (max-width: 600px) {
+    .dc-hero { flex-direction: column; align-items: flex-start; }
+    .dc-hero-right { width: 100%; }
+    .dc-warning-pill { width: 100%; }
+    .dc-summary-grid { grid-template-columns: 1fr; }
+    .dc-actions { flex-direction: column; }
+  }
 </style>
 
-<div class="decision-header">
-    <h1>📊 Make Decision</h1>
-    <p>Review and decide on this application</p>
-</div>
+<div class="dc-page">
 
-<div class="decision-container">
-    <div class="application-summary">
+  <!-- Hero -->
+  <div class="dc-hero">
+    <div class="dc-hero-left">
+      <div class="dc-hero-badge">
+        <i class="fa-solid fa-scale-balanced"></i>
+        Decision Panel
+      </div>
+      <h1>Make a Decision</h1>
+      <p>Review and decide on this application</p>
+    </div>
+    <div class="dc-hero-right">
+      <div class="dc-warning-pill">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span><strong>Irreversible Action</strong>This decision will be communicated to the student immediately.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="dc-wrap">
+
+    <!-- Application Summary -->
+    <div class="dc-card">
+      <div class="dc-card-head">
+        <div class="dc-icon-box indigo"><i class="fa-solid fa-file-lines"></i></div>
         <h2>Application Summary</h2>
-        <div class="summary-grid">
-            <div class="summary-item">
-                <div class="summary-label">Student Name</div>
-                <div class="summary-value">{{ application.student.full_name }}</div>
-            </div>
-            <div class="summary-item">
-                <div class="summary-label">Scholarship</div>
-                <div class="summary-value">{{ application.scholarship.name }}</div>
-            </div>
-            <div class="summary-item">
-                <div class="summary-label">Applied On</div>
-                <div class="summary-value">{{ application.last_action_date|date:"M d, Y" }}</div>
-            </div>
-            <div class="summary-item">
-                <div class="summary-label">Current Status</div>
-                <div class="summary-value">{{ application.get_status_display }}</div>
-            </div>
+      </div>
+      <div class="dc-card-body">
+        <div class="dc-summary-grid">
+          <div class="dc-summary-item">
+            <div class="dc-summary-label"><i class="fa-solid fa-user"></i> Student Name</div>
+            <div class="dc-summary-value">{{ application.student.full_name }}</div>
+          </div>
+          <div class="dc-summary-item">
+            <div class="dc-summary-label"><i class="fa-solid fa-graduation-cap"></i> Scholarship</div>
+            <div class="dc-summary-value" style="font-size:13px;line-height:1.3;">{{ application.scholarship.name }}</div>
+          </div>
+          <div class="dc-summary-item">
+            <div class="dc-summary-label"><i class="fa-regular fa-calendar"></i> Applied On</div>
+            <div class="dc-summary-value">{{ application.last_action_date|date:"M d, Y" }}</div>
+          </div>
+          <div class="dc-summary-item">
+            <div class="dc-summary-label"><i class="fa-solid fa-circle-dot"></i> Current Status</div>
+            <div class="dc-summary-value">{{ application.get_status_display }}</div>
+          </div>
         </div>
+      </div>
     </div>
 
-    <div class="decision-form">
+    <!-- Decision Form -->
+    <div class="dc-card">
+      <div class="dc-card-head">
+        <div class="dc-icon-box amber"><i class="fa-solid fa-pen-to-square"></i></div>
         <h2>Your Decision</h2>
-
+      </div>
+      <div class="dc-card-body">
         <form method="post">
-            {% csrf_token %}
+          {% csrf_token %}
 
-            <div class="form-group">
-                <label>Select Decision</label>
-                <div class="radio-group">
-                    <label class="radio-option approve">
-                        <input type="radio" name="decision" value="APPROVED" required>
-                        <span class="radio-label">✅ Approve Application</span>
-                    </label>
+          <span class="dc-form-label">Select Decision</span>
+          <div class="dc-radio-group">
 
-                    <label class="radio-option reject">
-                        <input type="radio" name="decision" value="REJECTED" required>
-                        <span class="radio-label">❌ Reject Application</span>
-                    </label>
-                </div>
-            </div>
+            <label class="dc-radio-option">
+              <input type="radio" name="decision" value="APPROVED" required>
+              <div class="dc-radio-indicator"></div>
+              <div class="dc-radio-content">
+                <div class="dc-radio-title">Approve Application</div>
+                <div class="dc-radio-sub">Student will be notified and awarded the scholarship.</div>
+              </div>
+              <div class="dc-radio-icon approve"><i class="fa-solid fa-circle-check"></i></div>
+            </label>
 
-            <div class="form-group">
-                <label for="id_notes">Feedback/Notes (Optional)</label>
-                <textarea name="notes" id="id_notes" rows="4" class="form-control"
-                    placeholder="Add any feedback or instructions for the student..."></textarea>
-            </div>
+            <label class="dc-radio-option">
+              <input type="radio" name="decision" value="REJECTED" required>
+              <div class="dc-radio-indicator"></div>
+              <div class="dc-radio-content">
+                <div class="dc-radio-title">Reject Application</div>
+                <div class="dc-radio-sub">Student will be notified of the rejection.</div>
+              </div>
+              <div class="dc-radio-icon reject"><i class="fa-solid fa-circle-xmark"></i></div>
+            </label>
 
-            <div class="action-buttons">
-                <a href="{% url 'funder_portal:application_detail' pk=application.pk %}" class="btn-cancel">
-                    Cancel
-                </a>
-                <button type="submit" class="btn-submit">
-                    Submit Decision
-                </button>
-            </div>
+          </div>
+
+          <span class="dc-form-label">
+            <i class="fa-solid fa-message" style="margin-right:5px;color:#3D2B8A;"></i>
+            Feedback / Notes <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#B0B0B0;">(Optional)</span>
+          </span>
+          <textarea name="notes" id="id_notes" rows="4" class="dc-textarea"
+            placeholder="Add any feedback or instructions for the student..."></textarea>
+
+          <div class="dc-actions">
+            <a href="{% url 'funder_portal:application_detail' pk=application.pk %}" class="dc-btn dc-btn-outline">
+              <i class="fa-solid fa-xmark"></i> Cancel
+            </a>
+            <button type="submit" class="dc-btn dc-btn-primary">
+              <i class="fa-solid fa-paper-plane"></i> Submit Decision
+            </button>
+          </div>
+
         </form>
+      </div>
     </div>
+
+  </div>
 </div>
 
 {% endblock %}

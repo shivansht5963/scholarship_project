@@ -2,440 +2,1127 @@
 {% block title %}Create Scholarship — Step 3: Financials{% endblock %}
 
 {% block content %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
 <style>
-    .wizard-container {
-        max-width: 780px;
-        margin: 2.5rem auto;
-        padding: 0 1.5rem;
-    }
+/* ── ROOT ─────────────────────────────────────────────────── */
+.wiz-root {
+    font-family: 'DM Sans', sans-serif;
+    background: #F0F0EE;
+    background-image: radial-gradient(circle, #C8C8C8 1px, transparent 1px);
+    background-size: 20px 20px;
+    min-height: 100vh;
+    padding: 2.5rem 2rem;
+}
 
-    .wizard-progress {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0;
-        margin-bottom: 2.5rem;
-    }
+.wiz-wrap { max-width: 1300px; margin: 0 auto; }
 
-    .wp-step {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
+/* ── BREADCRUMB ───────────────────────────────────────────── */
+.page-header { margin-bottom: 1.75rem; }
 
-    .wp-circle {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 1.1rem;
-        border: 3px solid #e0e0e0;
-        background: white;
-        color: #aaa;
-        transition: all .3s;
-    }
+.page-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: #999;
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+}
 
-    .wp-step.active .wp-circle {
-        background: linear-gradient(135deg, #6A1B9A, #AB47BC);
-        border-color: #6A1B9A;
-        color: white;
-        box-shadow: 0 4px 16px rgba(106, 27, 154, .4);
-    }
+.page-breadcrumb a { color: #999; text-decoration: none; transition: color 0.15s; }
+.page-breadcrumb a:hover { color: #6D28D9; }
+.page-breadcrumb i { font-size: 0.6rem; }
 
-    .wp-step.done .wp-circle {
-        background: #4CAF50;
-        border-color: #4CAF50;
-        color: white;
-    }
+.page-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: #111;
+    letter-spacing: -0.5px;
+}
 
-    .wp-label {
-        font-size: .78rem;
-        margin-top: .4rem;
-        font-weight: 600;
-        color: #999;
-    }
+.page-subtitle { font-size: 0.88rem; color: #888; margin-top: 0.15rem; }
 
-    .wp-step.active .wp-label,
-    .wp-step.done .wp-label {
-        color: #6A1B9A;
-    }
+/* ── STEPPER ─────────────────────────────────────────────── */
+.stepper {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 2px solid #E8E8E8;
+    border-radius: 16px;
+    padding: 1.25rem 2rem;
+    margin-bottom: 2rem;
+}
 
-    .wp-step.done .wp-label {
-        color: #2E7D32;
-    }
+.step-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+}
 
-    .wp-line {
-        flex: 1;
-        height: 3px;
-        background: #e0e0e0;
-        margin-bottom: 1.4rem;
-    }
+.step-connector {
+    flex: 1;
+    height: 2px;
+    background: #E8E8E8;
+    margin: 0 0.5rem;
+    margin-bottom: 0.5rem;
+    align-self: flex-start;
+    margin-top: 1.3rem;
+}
 
-    .wp-line.done { background: #4CAF50; }
+.step-connector.done { background: #6D28D9; }
 
-    .wizard-card {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 8px 40px rgba(0, 0, 0, .1);
-        overflow: hidden;
-    }
+.step-circle {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 800;
+    flex-shrink: 0;
+    border: 2px solid #E8E8E8;
+    background: #FAFAFA;
+    color: #CCC;
+}
 
-    .wizard-header {
-        background: linear-gradient(135deg, #4A148C 0%, #7B1FA2 60%, #CE93D8 100%);
-        padding: 2rem 2.5rem;
-        color: white;
-    }
+.step-item.active .step-circle {
+    background: #6D28D9;
+    border-color: #6D28D9;
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(109, 40, 217, 0.35);
+}
 
-    .wizard-header h1 { margin: 0; font-size: 1.8rem; font-weight: 700; }
-    .wizard-header p { margin: .4rem 0 0; opacity: .9; }
+.step-item.done .step-circle {
+    background: #10B981;
+    border-color: #10B981;
+    color: #fff;
+}
 
-    .wizard-step-tag {
-        display: inline-block;
-        background: rgba(255, 255, 255, .2);
-        padding: .25rem .8rem;
-        border-radius: 20px;
-        font-size: .8rem;
-        font-weight: 600;
-        margin-bottom: .75rem;
-        letter-spacing: .5px;
-    }
+.step-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #BBB;
+    display: block;
+    line-height: 1;
+    margin-bottom: 0.2rem;
+}
 
-    .wizard-body { padding: 2.5rem; }
-    .field-group { margin-bottom: 1.8rem; }
+.step-item.active .step-label { color: #6D28D9; }
+.step-item.done .step-label   { color: #10B981; }
 
-    .field-label {
-        display: block;
-        font-weight: 600;
-        color: #6A1B9A;
-        margin-bottom: .5rem;
-        font-size: .95rem;
-    }
+.step-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #CCC;
+}
 
-    .field-help { font-size: .82rem; color: #888; margin-top: .3rem; }
+.step-item.active .step-name { color: #111; }
+.step-item.done .step-name   { color: #555; }
 
-    .form-control {
-        width: 100%;
-        padding: .8rem 1rem;
-        border: 2px solid #F3E5F5;
-        border-radius: 10px;
-        font-size: .97rem;
-        background: #fdfaff;
-        transition: .2s;
-        box-sizing: border-box;
-    }
+/* ── LAYOUT ───────────────────────────────────────────────── */
+.wiz-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 1.75rem;
+    align-items: start;
+}
 
-    .form-control:focus {
-        outline: none;
-        border-color: #AB47BC;
-        box-shadow: 0 0 0 3px rgba(171, 71, 188, .12);
-        background: white;
-    }
+/* ── FORM CARD ────────────────────────────────────────────── */
+.form-card {
+    background: #fff;
+    border: 2px solid #E8E8E8;
+    border-radius: 16px;
+    overflow: hidden;
+}
 
-    .errorlist { list-style: none; padding: 0; margin: .4rem 0 0; }
-    .errorlist li { color: #e53935; font-size: .85rem; }
+.form-card-header {
+    background: linear-gradient(130deg, #3B0FBF 0%, #6D28D9 45%, #8B5CF6 100%);
+    padding: 2rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+}
 
-    .wizard-footer {
-        display: flex;
-        justify-content: space-between;
-        gap: 1rem;
-        padding: 1.5rem 2.5rem;
-        background: #f9f9f9;
-        border-top: 1px solid #f0f0f0;
-    }
+.form-card-header::before {
+    content: '';
+    position: absolute;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    top: -100px; right: -40px;
+}
 
-    .btn-wizard-next {
-        background: linear-gradient(135deg, #6A1B9A, #CE93D8);
-        color: white;
-        border: none;
-        padding: .85rem 2.5rem;
-        border-radius: 10px;
-        font-weight: 700;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: .2s;
-    }
+.form-card-header::after {
+    content: '';
+    position: absolute;
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+    bottom: -50px; right: 120px;
+}
 
-    .btn-wizard-next:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(106, 27, 154, .4);
-    }
+.fch-inner { position: relative; z-index: 2; }
 
-    .btn-wizard-back {
-        background: white;
-        border: 2px solid #e0e0e0;
-        color: #666;
-        padding: .85rem 2rem;
-        border-radius: 10px;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 1rem;
-        display: flex;
-        align-items: center;
-        gap: .5rem;
-        transition: .2s;
-    }
+.fch-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 999px;
+    padding: 0.3rem 0.9rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #fff;
+    margin-bottom: 0.85rem;
+}
 
-    .btn-wizard-back:hover { border-color: #AB47BC; color: #6A1B9A; }
+.form-card-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0 0 0.4rem;
+    letter-spacing: -0.5px;
+}
 
-    .radio-cards {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-        margin-top: .5rem;
-    }
+.form-card-header p {
+    color: rgba(255,255,255,0.75);
+    font-size: 0.9rem;
+    margin: 0;
+}
 
-    .radio-card {
-        border: 2px solid #E1BEE7;
-        border-radius: 12px;
-        padding: 1.2rem;
-        cursor: pointer;
-        transition: .2s;
-        position: relative;
-    }
+.form-card-body {
+    padding: 2.25rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
 
-    .radio-card:hover { border-color: #AB47BC; background: #F3E5F5; }
-    .radio-card input[type=radio] { position: absolute; opacity: 0; width: 0; }
-    .radio-card.selected { border-color: #7B1FA2; background: #F3E5F5; }
-    .radio-card-icon { font-size: 2rem; margin-bottom: .5rem; display: block; }
-    .radio-card-title { font-weight: 700; color: #4A148C; margin-bottom: .25rem; }
-    .radio-card-desc { font-size: .82rem; color: #777; }
+/* ── FIELD LABEL ──────────────────────────────────────────── */
+.field-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: #111;
+    margin-bottom: 0.55rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
 
-    .conditional-section {
-        display: none;
-        background: #FEF9FF;
-        border: 2px solid #E1BEE7;
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-top: 1rem;
-    }
+.field-label i {
+    color: #6D28D9;
+    font-size: 0.8rem;
+    width: 16px;
+    text-align: center;
+}
 
-    .conditional-section.show { display: block; }
+.field-label .req { color: #E11D48; }
 
-    .two-col {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.2rem;
-    }
+.field-help {
+    font-size: 0.78rem;
+    color: #AAA;
+    margin-top: 0.45rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
 
-    .inr-wrap { position: relative; }
+.field-help i { font-size: 0.72rem; color: #6D28D9; opacity: 0.6; }
 
-    .inr-prefix {
-        position: absolute;
-        left: 1rem;
-        top: 50%;
-        transform: translateY(-50%);
-        font-weight: 700;
-        color: #6A1B9A;
-    }
+/* ── INPUTS ───────────────────────────────────────────────── */
+.wiz-input {
+    width: 100%;
+    padding: 0.85rem 1.1rem;
+    border: 2px solid #E8E8E8;
+    border-radius: 10px;
+    font-size: 0.92rem;
+    font-family: 'DM Sans', sans-serif;
+    background: #FAFAFA;
+    color: #111;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    box-sizing: border-box;
+    outline: none;
+}
 
-    .inr-wrap .form-control { padding-left: 2.2rem; }
+.wiz-input:focus {
+    border-color: #6D28D9;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(109, 40, 217, 0.1);
+}
 
-    .budget-preview {
-        background: linear-gradient(135deg, #4A148C, #7B1FA2);
-        color: white;
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-top: 1rem;
-        text-align: center;
-        display: none;
-    }
+.wiz-input::placeholder { color: #C0C0C0; }
 
-    .budget-preview.show { display: block; }
-    .budget-preview .big-num { font-size: 2.5rem; font-weight: 700; }
-    .budget-preview .sub { opacity: .8; font-size: .9rem; }
+/* INR prefix */
+.inr-wrap { position: relative; }
+
+.inr-prefix {
+    position: absolute;
+    left: 1.1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: 700;
+    color: #6D28D9;
+    font-size: 1rem;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.inr-wrap .wiz-input { padding-left: 2.2rem; }
+
+/* ── RADIO CARDS ──────────────────────────────────────────── */
+.radio-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 0.25rem;
+}
+
+.radio-card {
+    border: 2px solid #E8E8E8;
+    border-radius: 12px;
+    padding: 1.4rem 1.25rem;
+    cursor: pointer;
+    transition: all 0.18s;
+    position: relative;
+    background: #FAFAFA;
+}
+
+.radio-card:hover {
+    border-color: #6D28D9;
+    background: #F5F0FF;
+}
+
+.radio-card.selected {
+    border-color: #6D28D9;
+    background: #EDE9FE;
+}
+
+.radio-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.rc-check {
+    position: absolute;
+    top: 0.9rem;
+    right: 0.9rem;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #DDD;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    color: transparent;
+    transition: all 0.18s;
+}
+
+.radio-card.selected .rc-check {
+    background: #6D28D9;
+    border-color: #6D28D9;
+    color: #fff;
+}
+
+.rc-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    margin-bottom: 0.9rem;
+    background: #F0EDFF;
+    color: #6D28D9;
+    transition: background 0.18s;
+}
+
+.radio-card.selected .rc-icon {
+    background: #DDD6FE;
+}
+
+.rc-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.92rem;
+    color: #111;
+    margin-bottom: 0.25rem;
+}
+
+.rc-desc {
+    font-size: 0.78rem;
+    color: #888;
+    line-height: 1.45;
+}
+
+/* ── CONDITIONAL SECTION ──────────────────────────────────── */
+.conditional-box {
+    display: none;
+    background: #FAFAFF;
+    border: 2px solid #E8E8E8;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+}
+
+.conditional-box.show { display: block; }
+
+.cbox-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #888;
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.cbox-label i { color: #6D28D9; font-size: 0.75rem; }
+
+/* ── BUDGET PREVIEW BANNER ────────────────────────────────── */
+.budget-banner {
+    display: none;
+    background: linear-gradient(130deg, #3B0FBF 0%, #6D28D9 100%);
+    border-radius: 12px;
+    padding: 1.4rem 1.75rem;
+    margin-top: 1rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.budget-banner.show { display: flex; }
+
+.bb-left {}
+
+.bb-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.65);
+    display: block;
+    margin-bottom: 0.2rem;
+}
+
+.bb-amount {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
+}
+
+.bb-right {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.7);
+    text-align: right;
+    max-width: 200px;
+    line-height: 1.4;
+}
+
+/* ── MATH MSG ─────────────────────────────────────────────── */
+.math-msg {
+    margin-top: 0.75rem;
+    font-size: 0.84rem;
+    font-weight: 600;
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1rem;
+    border-radius: 8px;
+}
+
+.math-msg.show { display: flex; }
+.math-msg.ok   { background: #DCFCE7; color: #16A34A; }
+.math-msg.warn { background: #FEF2F2; color: #DC2626; }
+.math-msg i    { font-size: 0.82rem; }
+
+/* ── NON-FIELD ERRORS ─────────────────────────────────────── */
+.non-field-errors {
+    background: #FEF2F2;
+    border: 2px solid #FECACA;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    color: #DC2626;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* ── ERROR LIST ───────────────────────────────────────────── */
+.errorlist { list-style: none; padding: 0; margin: 0.4rem 0 0; }
+
+.errorlist li {
+    color: #E11D48;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.errorlist li::before {
+    content: '\f06a';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 0.72rem;
+}
+
+/* ── FORM FOOTER ──────────────────────────────────────────── */
+.form-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.4rem 2.5rem;
+    border-top: 2px solid #F0F0F0;
+    background: #FAFAFA;
+}
+
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: #fff;
+    border: 2px solid #E8E8E8;
+    color: #666;
+    padding: 0.7rem 1.4rem;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.15s;
+}
+
+.btn-back:hover { border-color: #CCC; color: #333; }
+
+.btn-next {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #111;
+    color: #FFD700;
+    padding: 0.8rem 2rem;
+    border-radius: 10px;
+    border: none;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.18s;
+}
+
+.btn-next:hover {
+    background: #FFD700;
+    color: #111;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+/* ── SIDEBAR ──────────────────────────────────────────────── */
+.side-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    position: sticky;
+    top: 1.5rem;
+}
+
+.info-card {
+    background: #fff;
+    border: 2px solid #E8E8E8;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.info-card-header {
+    padding: 1rem 1.4rem;
+    border-bottom: 2px solid #F0F0F0;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.info-card-header i { color: #6D28D9; font-size: 0.88rem; }
+
+.info-card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #111;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.info-card-body { padding: 1.25rem 1.4rem; }
+
+/* live summary */
+.live-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.ls-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #F5F5F5;
+}
+
+.ls-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+.ls-key {
+    font-size: 0.78rem;
+    color: #999;
+    font-weight: 600;
+}
+
+.ls-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: #111;
+    text-align: right;
+}
+
+.ls-val.highlight { color: #6D28D9; }
+
+/* Escrow note */
+.escrow-note {
+    background: #EDE9FE;
+    border-radius: 10px;
+    padding: 1rem;
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+}
+
+.en-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #6D28D9;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+    margin-top: 0.05rem;
+}
+
+.en-text {
+    font-size: 0.79rem;
+    color: #4C1D95;
+    line-height: 1.5;
+}
+
+.en-text strong {
+    display: block;
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: #3B0082;
+    margin-bottom: 0.15rem;
+}
+
+/* Tips */
+.tips-list { display: flex; flex-direction: column; gap: 1rem; }
+
+.tip-item { display: flex; align-items: flex-start; gap: 0.75rem; }
+
+.tip-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: #EDE9FE;
+    color: #6D28D9;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.tip-text { font-size: 0.82rem; color: #555; line-height: 1.5; }
+.tip-text strong { color: #111; font-weight: 700; display: block; margin-bottom: 0.1rem; }
+
+/* ── RESPONSIVE ───────────────────────────────────────────── */
+@media (max-width: 1100px) {
+    .wiz-layout { grid-template-columns: 1fr; }
+    .side-panel { position: static; }
+}
+
+@media (max-width: 768px) {
+    .wiz-root { padding: 1rem; }
+    .form-card-body { padding: 1.5rem 1.25rem; }
+    .form-card-footer { padding: 1.25rem; flex-direction: column-reverse; gap: 0.75rem; }
+    .btn-back, .btn-next { width: 100%; justify-content: center; }
+    .radio-grid { grid-template-columns: 1fr; }
+    .budget-banner { flex-direction: column; align-items: flex-start; }
+    .bb-right { text-align: left; }
+}
 </style>
 
-<div class="wizard-container">
-    <div class="wizard-progress">
-        <div class="wp-step done">
-            <div class="wp-circle">✓</div>
-            <div class="wp-label">Basics</div>
+<div class="wiz-root">
+<div class="wiz-wrap">
+
+    <!-- HEADER -->
+    <div class="page-header">
+        <div class="page-breadcrumb">
+            <a href="{% url 'funder_portal:funder_dashboard' %}">Dashboard</a>
+            <i class="fa-solid fa-chevron-right"></i>
+            <span>Create Scholarship</span>
+            <i class="fa-solid fa-chevron-right"></i>
+            <span style="color:#6D28D9;font-weight:700;">Step 3 — Financials</span>
         </div>
-        <div class="wp-line done"></div>
-        <div class="wp-step done">
-            <div class="wp-circle">✓</div>
-            <div class="wp-label">Eligibility</div>
+        <div class="page-title">Create New Scholarship</div>
+        <div class="page-subtitle">Set the budget and decide how funds are distributed to winners.</div>
+    </div>
+
+    <!-- STEPPER -->
+    <div class="stepper">
+        <div class="step-item done">
+            <div class="step-circle"><i class="fa-solid fa-check" style="font-size:0.85rem;"></i></div>
+            <div class="step-text">
+                <span class="step-label">Step 1</span>
+                <span class="step-name">Basics</span>
+            </div>
         </div>
-        <div class="wp-line done"></div>
-        <div class="wp-step active">
-            <div class="wp-circle">3</div>
-            <div class="wp-label">Financials</div>
+
+        <div class="step-connector done"></div>
+
+        <div class="step-item done">
+            <div class="step-circle"><i class="fa-solid fa-check" style="font-size:0.85rem;"></i></div>
+            <div class="step-text">
+                <span class="step-label">Step 2</span>
+                <span class="step-name">Eligibility</span>
+            </div>
         </div>
-        <div class="wp-line"></div>
-        <div class="wp-step">
-            <div class="wp-circle">4</div>
-            <div class="wp-label">Filters</div>
+
+        <div class="step-connector done"></div>
+
+        <div class="step-item active">
+            <div class="step-circle">3</div>
+            <div class="step-text">
+                <span class="step-label">Step 3</span>
+                <span class="step-name">Financials</span>
+            </div>
+        </div>
+
+        <div class="step-connector"></div>
+
+        <div class="step-item">
+            <div class="step-circle">4</div>
+            <div class="step-text">
+                <span class="step-label">Step 4</span>
+                <span class="step-name">Filters</span>
+            </div>
         </div>
     </div>
 
-    <div class="wizard-card">
-        <div class="wizard-header">
-            <div class="wizard-step-tag">STEP 3 OF 4</div>
-            <h1>💰 Financials & Distribution</h1>
-            <p>Set your total budget and how it will be split among winners</p>
-        </div>
+    <!-- MAIN LAYOUT -->
+    <div class="wiz-layout">
 
-        <form method="post">
-            {% csrf_token %}
-            <div class="wizard-body">
-
-                <!-- Total Budget -->
-                <div class="field-group">
-                    <label class="field-label">Total Budget to Deposit <span style="color:#e53935;">*</span></label>
-                    <div class="inr-wrap">
-                        <span class="inr-prefix">₹</span>
-                        <input type="number" name="{{ form.total_budget.html_name }}" id="id_total_budget"
-                            value="{{ form.total_budget.value|default:'' }}" class="form-control"
-                            placeholder="e.g. 10000" min="100" oninput="updateBudgetPreview()" required>
+        <!-- FORM CARD -->
+        <div class="form-card">
+            <div class="form-card-header">
+                <div class="fch-inner">
+                    <div class="fch-pill">
+                        <i class="fa-solid fa-indian-rupee-sign"></i>
+                        Step 3 of 4
                     </div>
-                    <div class="field-help">This exact amount will be deposited into our escrow via Razorpay in the next step.</div>
-                    {{ form.total_budget.errors }}
-                    <div class="budget-preview" id="budget-preview">
-                        <div class="big-num" id="budget-preview-num">₹0</div>
-                        <div class="sub">will be held in escrow until winners are selected</div>
-                    </div>
+                    <h2>Financials & Distribution</h2>
+                    <p>Set your total budget and how it will be split among winners.</p>
                 </div>
+            </div>
 
-                <!-- Distribution Type -->
-                <div class="field-group">
-                    <label class="field-label">Distribution Logic <span style="color:#e53935;">*</span></label>
-                    <div class="radio-cards">
+            <form method="post">
+                {% csrf_token %}
 
-                        <div class="radio-card {% if form.distribution_type.value == 'FIXED' or not form.distribution_type.value %}selected{% endif %}" id="card-FIXED" onclick="selectDist('FIXED')">
-                            <span class="radio-card-icon">🎯</span>
-                            <div class="radio-card-title">Fixed Amount</div>
-                            <div class="radio-card-desc">e.g. ₹2,000 each to the Top 5 students</div>
-                            <input type="radio" name="{{ form.distribution_type.html_name }}" value="FIXED" id="dist_FIXED" {% if form.distribution_type.value == 'FIXED' or not form.distribution_type.value %}checked{% endif %}>
-                        </div>
+                <div class="form-card-body">
 
-                        <div class="radio-card {% if form.distribution_type.value == 'DYNAMIC' %}selected{% endif %}" id="card-DYNAMIC" onclick="selectDist('DYNAMIC')">
-                            <span class="radio-card-icon">📊</span>
-                            <div class="radio-card-title">Dynamic / Proportional</div>
-                            <div class="radio-card-desc">Distribute proportionally based on need score</div>
-                            <input type="radio" name="{{ form.distribution_type.html_name }}" value="DYNAMIC" id="dist_DYNAMIC" {% if form.distribution_type.value == 'DYNAMIC' %}checked{% endif %}>
-                        </div>
-
+                    {% if form.non_field_errors %}
+                    <div class="non-field-errors">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        {{ form.non_field_errors }}
                     </div>
-                    {{ form.distribution_type.errors }}
+                    {% endif %}
 
-                    <!-- Fixed fields -->
-                    <div class="conditional-section {% if form.distribution_type.value == 'FIXED' or not form.distribution_type.value %}show{% endif %}" id="fixed-section">
-                        <div>
-                            <label class="field-label" style="font-size:.88rem;">Amount per Winner (₹) <span style="color:#e53935;">*</span></label>
+                    <!-- Total Budget -->
+                    <div>
+                        <label class="field-label">
+                            <i class="fa-solid fa-wallet"></i>
+                            Total Budget to Deposit
+                            <span class="req">*</span>
+                        </label>
+                        <div class="inr-wrap">
+                            <span class="inr-prefix">₹</span>
+                            <input
+                                type="number"
+                                name="{{ form.total_budget.html_name }}"
+                                id="id_total_budget"
+                                value="{{ form.total_budget.value|default:'' }}"
+                                class="wiz-input"
+                                placeholder="e.g. 100000"
+                                min="100"
+                                oninput="updatePreview()"
+                                required
+                            >
+                        </div>
+                        {{ form.total_budget.errors }}
+                        <div class="field-help">
+                            <i class="fa-solid fa-circle-info"></i>
+                            This exact amount will be deposited into escrow via Razorpay in the next step.
+                        </div>
+
+                        <!-- Live budget banner -->
+                        <div class="budget-banner" id="budget-banner">
+                            <div class="bb-left">
+                                <span class="bb-label">Total Escrow Amount</span>
+                                <span class="bb-amount" id="bb-amount">₹0</span>
+                            </div>
+                            <div class="bb-right">
+                                Held securely in escrow until winners are selected and verified.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Distribution Type -->
+                    <div>
+                        <label class="field-label">
+                            <i class="fa-solid fa-code-branch"></i>
+                            Distribution Logic
+                            <span class="req">*</span>
+                        </label>
+
+                        <div class="radio-grid">
+                            <div class="radio-card {% if form.distribution_type.value == 'FIXED' or not form.distribution_type.value %}selected{% endif %}"
+                                 id="card-FIXED" onclick="selectDist('FIXED')">
+                                <input type="radio" name="{{ form.distribution_type.html_name }}" value="FIXED"
+                                    id="dist_FIXED"
+                                    {% if form.distribution_type.value == 'FIXED' or not form.distribution_type.value %}checked{% endif %}>
+                                <div class="rc-check"><i class="fa-solid fa-check"></i></div>
+                                <div class="rc-icon"><i class="fa-solid fa-bullseye"></i></div>
+                                <div class="rc-title">Fixed Amount</div>
+                                <div class="rc-desc">Equal fixed amount to each winner — e.g. ₹2,000 each to the top 5 students.</div>
+                            </div>
+
+                            <div class="radio-card {% if form.distribution_type.value == 'DYNAMIC' %}selected{% endif %}"
+                                 id="card-DYNAMIC" onclick="selectDist('DYNAMIC')">
+                                <input type="radio" name="{{ form.distribution_type.html_name }}" value="DYNAMIC"
+                                    id="dist_DYNAMIC"
+                                    {% if form.distribution_type.value == 'DYNAMIC' %}checked{% endif %}>
+                                <div class="rc-check"><i class="fa-solid fa-check"></i></div>
+                                <div class="rc-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                                <div class="rc-title">Dynamic / Proportional</div>
+                                <div class="rc-desc">Distributed proportionally based on each student's need score.</div>
+                            </div>
+                        </div>
+
+                        {{ form.distribution_type.errors }}
+
+                        <!-- Fixed conditional -->
+                        <div class="conditional-box {% if form.distribution_type.value == 'FIXED' or not form.distribution_type.value %}show{% endif %}"
+                             id="fixed-section">
+                            <div class="cbox-label">
+                                <i class="fa-solid fa-indian-rupee-sign"></i>
+                                Amount per Winner
+                            </div>
                             <div class="inr-wrap">
-                                <span class="inr-prefix">&#x20B9;</span>
-                                <input type="number" name="{{ form.fixed_amount.html_name }}" id="id_fixed_amount"
-                                    value="{{ form.fixed_amount.value|default:'' }}" class="form-control"
-                                    placeholder="e.g. 2000" min="1" oninput="updateBudgetPreview()">
+                                <span class="inr-prefix">₹</span>
+                                <input
+                                    type="number"
+                                    name="{{ form.fixed_amount.html_name }}"
+                                    id="id_fixed_amount"
+                                    value="{{ form.fixed_amount.value|default:'' }}"
+                                    class="wiz-input"
+                                    placeholder="e.g. 2000"
+                                    min="1"
+                                    oninput="updatePreview()"
+                                >
                             </div>
                             {{ form.fixed_amount.errors }}
+                            <div class="math-msg" id="math-msg">
+                                <i class="fa-solid fa-circle-info"></i>
+                                <span id="math-msg-text"></span>
+                            </div>
                         </div>
-                        <div id="budget-math-msg" style="margin-top:.75rem;font-size:.88rem;"></div>
+
+                        <!-- Dynamic info -->
+                        <div class="conditional-box {% if form.distribution_type.value == 'DYNAMIC' %}show{% endif %}"
+                             id="dynamic-section">
+                            <div style="display:flex; align-items:flex-start; gap:0.75rem;">
+                                <div style="width:32px;height:32px;border-radius:8px;background:#EDE9FE;color:#6D28D9;display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0;">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                </div>
+                                <div style="font-size:0.82rem;color:#4C1D95;line-height:1.55;">
+                                    The total budget will be split proportionally — students with higher need scores receive a larger share. You still set the number of winners below.
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Dynamic fields -->
-                    <div class="conditional-section {% if form.distribution_type.value == 'DYNAMIC' %}show{% endif %}" id="dynamic-section">
-                        <div class="field-help" style="color:#6A1B9A;font-weight:600;margin-bottom:.5rem;">
-                            The total budget will be split proportionally based on each winner's need score.
+                    <!-- Number of Winners -->
+                    <div>
+                        <label class="field-label">
+                            <i class="fa-solid fa-trophy"></i>
+                            Number of Winners
+                            <span class="req">*</span>
+                        </label>
+                        <input
+                            type="number"
+                            name="{{ form.num_winners.html_name }}"
+                            id="id_num_winners"
+                            value="{{ form.num_winners.value|default:'' }}"
+                            class="wiz-input"
+                            placeholder="e.g. 5"
+                            min="1"
+                            oninput="updatePreview()"
+                            style="max-width:280px;"
+                        >
+                        {{ form.num_winners.errors }}
+                        <div class="field-help">
+                            <i class="fa-solid fa-circle-info"></i>
+                            Top-ranked applicants by merit score will be selected.
+                        </div>
+                    </div>
+
+                    <!-- Disbursement Method -->
+                    <div>
+                        <label class="field-label">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            Disbursement Method
+                            <span class="req">*</span>
+                        </label>
+
+                        <div class="radio-grid">
+                            <div class="radio-card {% if form.disbursement_method.value == 'BANK_TRANSFER' or not form.disbursement_method.value %}selected{% endif %}"
+                                 id="card-BANK" onclick="selectDisb('BANK_TRANSFER')">
+                                <input type="radio" name="{{ form.disbursement_method.html_name }}" value="BANK_TRANSFER"
+                                    id="disb_BANK"
+                                    {% if form.disbursement_method.value == 'BANK_TRANSFER' or not form.disbursement_method.value %}checked{% endif %}>
+                                <div class="rc-check"><i class="fa-solid fa-check"></i></div>
+                                <div class="rc-icon"><i class="fa-solid fa-building-columns"></i></div>
+                                <div class="rc-title">Direct Bank Transfer</div>
+                                <div class="rc-desc">Via Razorpay Route to the student's linked bank account.</div>
+                            </div>
+
+                            <div class="radio-card {% if form.disbursement_method.value == 'VOUCHER' %}selected{% endif %}"
+                                 id="card-VOUCHER" onclick="selectDisb('VOUCHER')">
+                                <input type="radio" name="{{ form.disbursement_method.html_name }}" value="VOUCHER"
+                                    id="disb_VOUCHER"
+                                    {% if form.disbursement_method.value == 'VOUCHER' %}checked{% endif %}>
+                                <div class="rc-check"><i class="fa-solid fa-check"></i></div>
+                                <div class="rc-icon"><i class="fa-solid fa-ticket"></i></div>
+                                <div class="rc-title">Educational Vouchers</div>
+                                <div class="rc-desc">Platform vouchers redeemable for books and courses only.</div>
+                            </div>
+                        </div>
+
+                        {{ form.disbursement_method.errors }}
+                    </div>
+
+                </div>
+
+                <!-- FOOTER -->
+                <div class="form-card-footer">
+                    <a href="{% url 'funder_portal:create_step2' draft_id=scholarship.pk %}" class="btn-back">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        Back
+                    </a>
+                    <button type="submit" class="btn-next">
+                        Next: Platform Filters
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- SIDEBAR -->
+        <div class="side-panel">
+
+            <!-- Live Summary -->
+            <div class="info-card">
+                <div class="info-card-header">
+                    <i class="fa-solid fa-calculator"></i>
+                    <span class="info-card-title">Live Budget Summary</span>
+                </div>
+                <div class="info-card-body">
+                    <div class="live-summary">
+                        <div class="ls-row">
+                            <span class="ls-key">Total Budget</span>
+                            <span class="ls-val highlight" id="sb-budget">—</span>
+                        </div>
+                        <div class="ls-row">
+                            <span class="ls-key">Amount per Winner</span>
+                            <span class="ls-val" id="sb-per-winner">—</span>
+                        </div>
+                        <div class="ls-row">
+                            <span class="ls-key">No. of Winners</span>
+                            <span class="ls-val" id="sb-winners">—</span>
+                        </div>
+                        <div class="ls-row">
+                            <span class="ls-key">Total Disbursed</span>
+                            <span class="ls-val highlight" id="sb-total">—</span>
                         </div>
                     </div>
                 </div>
-
-                <!-- Number of Winners -->
-                <div class="field-group" id="num-winners-row">
-                    <label class="field-label">Number of Winners <span style="color:#e53935;">*</span></label>
-                    <input type="number" name="{{ form.num_winners.html_name }}" id="id_num_winners"
-                        value="{{ form.num_winners.value|default:'' }}" class="form-control" placeholder="e.g. 5"
-                        min="1" oninput="updateBudgetPreview()">
-                    {{ form.num_winners.errors }}
-                </div>
-
-                <!-- Disbursement Method -->
-                <div class="field-group">
-                    <label class="field-label">Disbursement Method <span style="color:#e53935;">*</span></label>
-                    <div class="radio-cards">
-
-                        <div class="radio-card {% if form.disbursement_method.value == 'BANK_TRANSFER' or not form.disbursement_method.value %}selected{% endif %}" id="card-BANK" onclick="selectDisb('BANK_TRANSFER')">
-                            <span class="radio-card-icon">🏦</span>
-                            <div class="radio-card-title">Direct Bank Transfer</div>
-                            <div class="radio-card-desc">Via Razorpay Route to student's linked account</div>
-                            <input type="radio" name="{{ form.disbursement_method.html_name }}" value="BANK_TRANSFER" id="disb_BANK" {% if form.disbursement_method.value == 'BANK_TRANSFER' or not form.disbursement_method.value %}checked{% endif %}>
-                        </div>
-
-                        <div class="radio-card {% if form.disbursement_method.value == 'VOUCHER' %}selected{% endif %}" id="card-VOUCHER" onclick="selectDisb('VOUCHER')">
-                            <span class="radio-card-icon">🎫</span>
-                            <div class="radio-card-title">Educational Vouchers</div>
-                            <div class="radio-card-desc">Platform vouchers redeemable for books/courses only</div>
-                            <input type="radio" name="{{ form.disbursement_method.html_name }}" value="VOUCHER" id="disb_VOUCHER" {% if form.disbursement_method.value == 'VOUCHER' %}checked{% endif %}>
-                        </div>
-
-                    </div>
-                    {{ form.disbursement_method.errors }}
-                </div>
-
-                {% if form.non_field_errors %}
-                <div style="background:#fff3f3;border:2px solid #ffcdd2;border-radius:10px;padding:1rem;margin-bottom:1rem;color:#e53935;">
-                    {{ form.non_field_errors }}
-                </div>
-                {% endif %}
-
             </div>
 
-            <div class="wizard-footer">
-                <a href="{% url 'funder_portal:create_step2' draft_id=scholarship.pk %}" class="btn-wizard-back">← Back</a>
-                <button type="submit" class="btn-wizard-next">Next: Platform Filters →</button>
+            <!-- Escrow Note -->
+            <div class="info-card">
+                <div class="info-card-header">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span class="info-card-title">About Escrow</span>
+                </div>
+                <div class="info-card-body">
+                    <div class="escrow-note">
+                        <div class="en-icon"><i class="fa-solid fa-lock"></i></div>
+                        <div class="en-text">
+                            <strong>Funds held securely</strong>
+                            Your deposit is held in an escrow account and only released to winners after you approve the merit list. No money leaves without your confirmation.
+                        </div>
+                    </div>
+                </div>
             </div>
-        </form>
+
+            <!-- Tips -->
+            <div class="info-card">
+                <div class="info-card-header">
+                    <i class="fa-solid fa-lightbulb"></i>
+                    <span class="info-card-title">Tips</span>
+                </div>
+                <div class="info-card-body">
+                    <div class="tips-list">
+                        <div class="tip-item">
+                            <div class="tip-num">1</div>
+                            <div class="tip-text">
+                                <strong>Fixed vs Dynamic</strong>
+                                Use Fixed for transparency. Use Dynamic when need varies significantly across applicants.
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-num">2</div>
+                            <div class="tip-text">
+                                <strong>Budget check</strong>
+                                Ensure Fixed Amount × Winners does not exceed your total budget.
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-num">3</div>
+                            <div class="tip-text">
+                                <strong>Bank transfer recommended</strong>
+                                Direct bank transfer ensures funds reach students fastest with full audit trail.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
+</div>
 </div>
 
 <script>
-    function selectDist(val) {
-        document.querySelectorAll('.radio-card[id^="card-FIXED"], .radio-card[id^="card-DYNAMIC"]').forEach(c => c.classList.remove('selected'));
-        document.getElementById('card-' + val).classList.add('selected');
-        document.getElementById('dist_' + val).checked = true;
-        document.getElementById('fixed-section').classList.toggle('show', val === 'FIXED');
-        document.getElementById('dynamic-section').classList.toggle('show', val === 'DYNAMIC');
+function selectDist(val) {
+    ['FIXED','DYNAMIC'].forEach(v => {
+        document.getElementById('card-' + v).classList.toggle('selected', v === val);
+    });
+    document.getElementById('dist_' + val).checked = true;
+    document.getElementById('fixed-section').classList.toggle('show', val === 'FIXED');
+    document.getElementById('dynamic-section').classList.toggle('show', val === 'DYNAMIC');
+    updatePreview();
+}
+
+function selectDisb(val) {
+    const keyMap = { 'BANK_TRANSFER': 'BANK', 'VOUCHER': 'VOUCHER' };
+    ['BANK','VOUCHER'].forEach(k => {
+        document.getElementById('card-' + k).classList.remove('selected');
+    });
+    document.getElementById('card-' + keyMap[val]).classList.add('selected');
+    document.getElementById('disb_' + keyMap[val]).checked = true;
+}
+
+function fmt(n) {
+    return '₹' + n.toLocaleString('en-IN');
+}
+
+function updatePreview() {
+    const budget  = parseFloat(document.getElementById('id_total_budget')?.value) || 0;
+    const fixedEl = document.getElementById('id_fixed_amount');
+    const fixed   = fixedEl ? (parseFloat(fixedEl.value) || 0) : 0;
+    const winners = parseFloat(document.getElementById('id_num_winners')?.value) || 0;
+
+    // budget banner
+    const banner = document.getElementById('budget-banner');
+    if (budget > 0) {
+        banner.classList.add('show');
+        document.getElementById('bb-amount').textContent = fmt(budget);
+    } else {
+        banner.classList.remove('show');
     }
 
-    function selectDisb(val) {
-        document.querySelectorAll('.radio-card[id^="card-BANK"], .radio-card[id^="card-VOUCHER"]').forEach(c => c.classList.remove('selected'));
-        document.getElementById('card-' + (val === 'BANK_TRANSFER' ? 'BANK' : 'VOUCHER')).classList.add('selected');
-        document.getElementById('disb_' + (val === 'BANK_TRANSFER' ? 'BANK' : 'VOUCHER')).checked = true;
-    }
+    // sidebar summary
+    document.getElementById('sb-budget').textContent      = budget  > 0 ? fmt(budget)  : '—';
+    document.getElementById('sb-per-winner').textContent  = fixed   > 0 ? fmt(fixed)   : '—';
+    document.getElementById('sb-winners').textContent     = winners > 0 ? winners      : '—';
 
-    function updateBudgetPreview() {
-        const budget = parseFloat(document.getElementById('id_total_budget').value) || 0;
-        const fixedEl = document.getElementById('id_fixed_amount');
-        const winnersEl = document.getElementById('id_num_winners');
-        const fixed = fixedEl ? parseFloat(fixedEl.value) || 0 : 0;
-        const winners = winnersEl ? parseFloat(winnersEl.value) || 0 : 0;
-        const preview = document.getElementById('budget-preview');
-        const numEl = document.getElementById('budget-preview-num');
-        const mathMsg = document.getElementById('budget-math-msg');
+    if (fixed > 0 && winners > 0) {
+        const total = fixed * winners;
+        document.getElementById('sb-total').textContent = fmt(total);
+        document.getElementById('sb-total').style.color = total > budget && budget > 0 ? '#DC2626' : '#6D28D9';
 
-        if (budget > 0) {
-            preview.classList.add('show');
-            numEl.textContent = '₹' + budget.toLocaleString('en-IN');
+        const msg = document.getElementById('math-msg');
+        const msgText = document.getElementById('math-msg-text');
+        msg.classList.add('show');
+
+        if (budget > 0 && total > budget) {
+            msg.className = 'math-msg show warn';
+            msgText.textContent = `${fmt(fixed)} × ${winners} = ${fmt(total)} — exceeds budget!`;
+        } else if (budget > 0) {
+            msg.className = 'math-msg show ok';
+            msgText.textContent = `${fmt(fixed)} × ${winners} = ${fmt(total)} — fits within budget.`;
         } else {
-            preview.classList.remove('show');
+            msg.className = 'math-msg show';
+            msgText.textContent = `${fmt(fixed)} × ${winners} = ${fmt(total)}`;
         }
-
-        if (fixed > 0 && winners > 0 && mathMsg) {
-            const total = fixed * winners;
-            if (total > budget) {
-                mathMsg.style.color = '#e53935';
-                mathMsg.textContent = `⚠️ ₹${fixed.toLocaleString('en-IN')} × ${winners} winners = ₹${total.toLocaleString('en-IN')} — exceeds budget!`;
-            } else {
-                mathMsg.style.color = '#2E7D32';
-                mathMsg.textContent = `✅ ₹${fixed.toLocaleString('en-IN')} × ${winners} winners = ₹${total.toLocaleString('en-IN')} (fits within budget)`;
-            }
-        }
+    } else {
+        document.getElementById('sb-total').textContent = '—';
+        document.getElementById('math-msg')?.classList.remove('show');
     }
+}
 
-    updateBudgetPreview();
+// init
+updatePreview();
 </script>
+
 {% endblock %}

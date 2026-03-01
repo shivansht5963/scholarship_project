@@ -2,372 +2,917 @@
 {% block title %}Create Scholarship — Step 1: The Basics{% endblock %}
 
 {% block content %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
 <style>
-    /* ── Wizard Shell ── */
-    .wizard-container {
-        max-width: 780px;
-        margin: 2.5rem auto;
-        padding: 0 1.5rem;
-        font-family: 'Segoe UI', sans-serif;
-    }
+/* ── ROOT ─────────────────────────────────────────────────── */
+.wiz-root {
+    font-family: 'DM Sans', sans-serif;
+    background: #F0F0EE;
+    background-image: radial-gradient(circle, #C8C8C8 1px, transparent 1px);
+    background-size: 20px 20px;
+    min-height: 100vh;
+    padding: 2.5rem 2rem;
+}
 
-    /* ── Progress Bar ── */
-    .wizard-progress {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0;
-        margin-bottom: 2.5rem;
-    }
+.wiz-wrap {
+    max-width: 1300px;
+    margin: 0 auto;
+}
 
-    .wp-step {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        position: relative;
-        z-index: 1;
-    }
+/* ── PAGE HEADER ──────────────────────────────────────────── */
+.page-header {
+    margin-bottom: 1.75rem;
+}
 
-    .wp-circle {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 1.1rem;
-        border: 3px solid #e0e0e0;
-        background: white;
-        color: #aaa;
-        transition: all .3s;
-    }
+.page-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: #999;
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+}
 
-    .wp-step.active .wp-circle {
-        background: linear-gradient(135deg, #2E7D32, #66BB6A);
-        border-color: #2E7D32;
-        color: white;
-        box-shadow: 0 4px 16px rgba(76, 175, 80, .4);
-    }
+.page-breadcrumb a {
+    color: #999;
+    text-decoration: none;
+    transition: color 0.15s;
+}
 
-    .wp-step.done .wp-circle {
-        background: #4CAF50;
-        border-color: #4CAF50;
-        color: white;
-    }
+.page-breadcrumb a:hover { color: #6D28D9; }
+.page-breadcrumb i { font-size: 0.6rem; }
 
-    .wp-label {
-        font-size: .78rem;
-        margin-top: .4rem;
-        font-weight: 600;
-        color: #999;
-    }
+.page-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: #111;
+    letter-spacing: -0.5px;
+}
 
-    .wp-step.active .wp-label,
-    .wp-step.done .wp-label {
-        color: #2E7D32;
-    }
+.page-subtitle {
+    font-size: 0.88rem;
+    color: #888;
+    margin-top: 0.15rem;
+}
 
-    .wp-line {
-        flex: 1;
-        height: 3px;
-        background: #e0e0e0;
-        margin-bottom: 1.4rem;
-        transition: background .3s;
-    }
+/* ── STEPPER ─────────────────────────────────────────────── */
+.stepper {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 2px solid #E8E8E8;
+    border-radius: 16px;
+    padding: 1.25rem 2rem;
+    margin-bottom: 2rem;
+}
 
-    .wp-line.done {
-        background: #4CAF50;
-    }
+.step-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+    position: relative;
+}
 
-    /* ── Card ── */
-    .wizard-card {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 8px 40px rgba(0, 0, 0, .1);
-        overflow: hidden;
-    }
+/* connector line between steps */
+.step-item:not(:last-child) {
+    padding-right: 1rem;
+}
 
-    .wizard-header {
-        background: linear-gradient(135deg, #2E7D32 0%, #4CAF50 60%, #81C784 100%);
-        padding: 2rem 2.5rem;
-        color: white;
-    }
+.step-connector {
+    flex: 1;
+    height: 2px;
+    background: #E8E8E8;
+    margin: 0 0.5rem;
+    margin-bottom: 0.5rem;
+    align-self: flex-start;
+    margin-top: 1.25rem;
+}
 
-    .wizard-header h1 {
-        margin: 0;
-        font-size: 1.8rem;
-        font-weight: 700;
-    }
+.step-connector.done { background: #6D28D9; }
 
-    .wizard-header p {
-        margin: .4rem 0 0;
-        opacity: .9;
-        font-size: 1rem;
-    }
+.step-circle {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 800;
+    flex-shrink: 0;
+    border: 2px solid #E8E8E8;
+    background: #FAFAFA;
+    color: #CCC;
+    transition: all 0.3s;
+}
 
-    .wizard-step-tag {
-        display: inline-block;
-        background: rgba(255, 255, 255, .2);
-        padding: .25rem .8rem;
-        border-radius: 20px;
-        font-size: .8rem;
-        font-weight: 600;
-        margin-bottom: .75rem;
-        letter-spacing: .5px;
-    }
+.step-item.active .step-circle {
+    background: #6D28D9;
+    border-color: #6D28D9;
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(109, 40, 217, 0.35);
+}
 
-    .wizard-body {
-        padding: 2.5rem;
-    }
+.step-item.done .step-circle {
+    background: #10B981;
+    border-color: #10B981;
+    color: #fff;
+}
 
-    /* ── Form Fields ── */
-    .field-group {
-        margin-bottom: 1.8rem;
-    }
+.step-text {}
 
-    .field-label {
-        display: block;
-        font-weight: 600;
-        color: #2E7D32;
-        margin-bottom: .5rem;
-        font-size: .95rem;
-    }
+.step-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #BBB;
+    display: block;
+    line-height: 1;
+    margin-bottom: 0.2rem;
+}
 
-    .field-label span.req {
-        color: #e53935;
-        margin-left: 2px;
-    }
+.step-item.active .step-label { color: #6D28D9; }
+.step-item.done .step-label   { color: #10B981; }
 
-    .field-help {
-        font-size: .82rem;
-        color: #888;
-        margin-top: .3rem;
-    }
+.step-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #CCC;
+}
 
-    .form-control,
-    .form-select,
-    textarea.form-control {
-        width: 100%;
-        padding: .8rem 1rem;
-        border: 2px solid #e8f5e9;
-        border-radius: 10px;
-        font-size: .97rem;
-        background: #fafffe;
-        transition: border-color .2s, box-shadow .2s;
-        box-sizing: border-box;
-    }
+.step-item.active .step-name { color: #111; }
+.step-item.done .step-name   { color: #555; }
 
-    .form-control:focus,
-    .form-select:focus,
-    textarea.form-control:focus {
-        outline: none;
-        border-color: #4CAF50;
-        box-shadow: 0 0 0 3px rgba(76, 175, 80, .15);
-        background: white;
-    }
+/* ── MAIN LAYOUT ──────────────────────────────────────────── */
+.wiz-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 1.75rem;
+    align-items: start;
+}
 
-    textarea.form-control {
-        resize: vertical;
-        min-height: 140px;
-    }
+/* ── FORM CARD ────────────────────────────────────────────── */
+.form-card {
+    background: #fff;
+    border: 2px solid #E8E8E8;
+    border-radius: 16px;
+    overflow: hidden;
+}
 
-    /* file upload */
-    .file-upload-wrap {
-        border: 2px dashed #a5d6a7;
-        border-radius: 10px;
-        padding: 2rem;
-        text-align: center;
-        background: #f9fff9;
-        cursor: pointer;
-        transition: .2s;
-    }
+.form-card-header {
+    background: linear-gradient(130deg, #3B0FBF 0%, #6D28D9 45%, #8B5CF6 100%);
+    padding: 2rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+}
 
-    .file-upload-wrap:hover {
-        border-color: #4CAF50;
-        background: #f1f8f1;
-    }
+.form-card-header::before {
+    content: '';
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    top: -100px;
+    right: -40px;
+}
 
-    .file-upload-wrap input {
-        display: none;
-    }
+.form-card-header::after {
+    content: '';
+    position: absolute;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+    bottom: -50px;
+    right: 120px;
+}
 
-    .file-upload-icon {
-        font-size: 2.5rem;
-        display: block;
-        margin-bottom: .5rem;
-    }
+.fch-inner { position: relative; z-index: 2; }
 
-    /* error messages */
-    .errorlist {
-        list-style: none;
-        padding: 0;
-        margin: .4rem 0 0;
-    }
+.fch-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 999px;
+    padding: 0.3rem 0.9rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #fff;
+    margin-bottom: 0.85rem;
+}
 
-    .errorlist li {
-        color: #e53935;
-        font-size: .85rem;
-    }
+.form-card-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0 0 0.4rem;
+    letter-spacing: -0.5px;
+}
 
-    /* ── Footer Buttons ── */
-    .wizard-footer {
-        display: flex;
-        justify-content: flex-end;
-        gap: 1rem;
-        padding: 1.5rem 2.5rem;
-        background: #f9f9f9;
-        border-top: 1px solid #f0f0f0;
-    }
+.form-card-header p {
+    color: rgba(255,255,255,0.75);
+    font-size: 0.9rem;
+    margin: 0;
+}
 
-    .btn-wizard-next {
-        background: linear-gradient(135deg, #2E7D32, #66BB6A);
-        color: white;
-        border: none;
-        padding: .85rem 2.5rem;
-        border-radius: 10px;
-        font-weight: 700;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: .2s;
-        display: flex;
-        align-items: center;
-        gap: .5rem;
-    }
+.form-card-body {
+    padding: 2.25rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+}
 
-    .btn-wizard-next:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(76, 175, 80, .4);
-    }
+/* ── FIELD GROUP ──────────────────────────────────────────── */
+.field-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: #111;
+    margin-bottom: 0.55rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
 
-    .btn-wizard-back {
-        background: white;
-        border: 2px solid #e0e0e0;
-        color: #666;
-        padding: .85rem 2rem;
-        border-radius: 10px;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 1rem;
-        display: flex;
-        align-items: center;
-        gap: .5rem;
-        transition: .2s;
-    }
+.field-label i {
+    color: #6D28D9;
+    font-size: 0.8rem;
+    width: 16px;
+    text-align: center;
+}
 
-    .btn-wizard-back:hover {
-        border-color: #4CAF50;
-        color: #2E7D32;
-    }
+.field-label .req { color: #E11D48; }
+
+.field-label .opt-tag {
+    background: #F3F4F6;
+    color: #888;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.field-help {
+    font-size: 0.78rem;
+    color: #AAA;
+    margin-top: 0.45rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.field-help i { font-size: 0.72rem; color: #6D28D9; opacity: 0.6; }
+
+/* ── INPUTS ───────────────────────────────────────────────── */
+.wiz-input,
+.wiz-textarea {
+    width: 100%;
+    padding: 0.85rem 1.1rem;
+    border: 2px solid #E8E8E8;
+    border-radius: 10px;
+    font-size: 0.92rem;
+    font-family: 'DM Sans', sans-serif;
+    background: #FAFAFA;
+    color: #111;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.wiz-input:focus,
+.wiz-textarea:focus {
+    border-color: #6D28D9;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(109, 40, 217, 0.1);
+}
+
+.wiz-input::placeholder,
+.wiz-textarea::placeholder { color: #C0C0C0; }
+
+.wiz-textarea {
+    resize: vertical;
+    min-height: 150px;
+    line-height: 1.6;
+}
+
+input[type="datetime-local"].wiz-input {
+    color: #111;
+    font-family: 'DM Sans', sans-serif;
+}
+
+/* ── FILE UPLOAD ──────────────────────────────────────────── */
+.file-drop {
+    border: 2px dashed #D8D0F0;
+    border-radius: 12px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    background: #FAFAFF;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.file-drop:hover {
+    border-color: #6D28D9;
+    background: #F5F0FF;
+}
+
+.file-drop input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+}
+
+.file-drop-icon {
+    width: 48px;
+    height: 48px;
+    background: #EDE9FE;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 0.85rem;
+    font-size: 1.2rem;
+    color: #6D28D9;
+    transition: background 0.2s;
+}
+
+.file-drop:hover .file-drop-icon { background: #DDD6FE; }
+
+.file-drop-title {
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: #111;
+    margin-bottom: 0.25rem;
+}
+
+.file-drop-sub {
+    font-size: 0.76rem;
+    color: #AAA;
+}
+
+.file-drop-sub span { color: #6D28D9; font-weight: 600; }
+
+/* ── ERROR LIST ───────────────────────────────────────────── */
+.errorlist {
+    list-style: none;
+    padding: 0;
+    margin: 0.4rem 0 0;
+}
+
+.errorlist li {
+    color: #E11D48;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.errorlist li::before {
+    content: '\f06a';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 0.72rem;
+}
+
+/* ── FORM FOOTER ──────────────────────────────────────────── */
+.form-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.4rem 2.5rem;
+    border-top: 2px solid #F0F0F0;
+    background: #FAFAFA;
+}
+
+.btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: #fff;
+    border: 2px solid #E8E8E8;
+    color: #666;
+    padding: 0.7rem 1.4rem;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.15s;
+}
+
+.btn-cancel:hover {
+    border-color: #CCC;
+    color: #333;
+}
+
+.btn-next {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #111;
+    color: #FFD700;
+    padding: 0.8rem 2rem;
+    border-radius: 10px;
+    border: none;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.18s;
+}
+
+.btn-next:hover {
+    background: #FFD700;
+    color: #111;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+/* ── SIDEBAR ──────────────────────────────────────────────── */
+.side-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    position: sticky;
+    top: 1.5rem;
+}
+
+.info-card {
+    background: #fff;
+    border: 2px solid #E8E8E8;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.info-card-header {
+    padding: 1rem 1.4rem;
+    border-bottom: 2px solid #F0F0F0;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.info-card-header i { color: #6D28D9; font-size: 0.88rem; }
+
+.info-card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #111;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.info-card-body { padding: 1.25rem 1.4rem; }
+
+/* Required fields */
+.req-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+
+.req-item {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    font-size: 0.84rem;
+    color: #444;
+    font-weight: 500;
+}
+
+.req-item i.required { color: #E11D48; font-size: 0.65rem; }
+.req-item i.optional { color: #10B981; font-size: 0.75rem; }
+
+/* Tips */
+.tips-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.tip-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.tip-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: #EDE9FE;
+    color: #6D28D9;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 0.05rem;
+}
+
+.tip-text {
+    font-size: 0.82rem;
+    color: #555;
+    line-height: 1.5;
+}
+
+.tip-text strong {
+    color: #111;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 0.1rem;
+}
+
+/* What's next card */
+.whats-next-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.wn-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid #F5F5F5;
+}
+
+.wn-item:last-child { border-bottom: none; }
+
+.wn-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #E8E8E8;
+    flex-shrink: 0;
+}
+
+.wn-dot.upcoming { background: #DDD6FE; }
+
+.wn-step-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #BBB;
+    display: block;
+    margin-bottom: 0.1rem;
+}
+
+.wn-step-name {
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: #888;
+}
+
+/* ── RESPONSIVE ───────────────────────────────────────────── */
+@media (max-width: 1100px) {
+    .wiz-layout { grid-template-columns: 1fr; }
+    .side-panel { position: static; }
+}
+
+@media (max-width: 768px) {
+    .wiz-root { padding: 1rem; }
+    .form-card-body { padding: 1.5rem 1.25rem; }
+    .form-card-footer { padding: 1.25rem; flex-direction: column-reverse; gap: 0.75rem; }
+    .btn-cancel, .btn-next { width: 100%; justify-content: center; }
+    .two-col { grid-template-columns: 1fr !important; }
+}
 </style>
 
-<div class="wizard-container">
+<div class="wiz-root">
+<div class="wiz-wrap">
 
-    <!-- Progress Bar -->
-    <div class="wizard-progress">
-        <div class="wp-step active">
-            <div class="wp-circle">1</div>
-            <div class="wp-label">Basics</div>
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+        <div class="page-breadcrumb">
+            <a href="{% url 'funder_portal:funder_dashboard' %}">Dashboard</a>
+            <i class="fa-solid fa-chevron-right"></i>
+            <span>Create Scholarship</span>
+            <i class="fa-solid fa-chevron-right"></i>
+            <span style="color:#6D28D9;font-weight:700;">Step 1 — Basics</span>
         </div>
-        <div class="wp-line"></div>
-        <div class="wp-step">
-            <div class="wp-circle">2</div>
-            <div class="wp-label">Eligibility</div>
+        <div class="page-title">Create New Scholarship</div>
+        <div class="page-subtitle">Complete all 4 steps to publish your scholarship.</div>
+    </div>
+
+    <!-- STEPPER — appears once, here at the top -->
+    <div class="stepper">
+        <div class="step-item active">
+            <div class="step-circle">1</div>
+            <div class="step-text">
+                <span class="step-label">Step 1</span>
+                <span class="step-name">Basics</span>
+            </div>
         </div>
-        <div class="wp-line"></div>
-        <div class="wp-step">
-            <div class="wp-circle">3</div>
-            <div class="wp-label">Financials</div>
+
+        <div class="step-connector"></div>
+
+        <div class="step-item">
+            <div class="step-circle">2</div>
+            <div class="step-text">
+                <span class="step-label">Step 2</span>
+                <span class="step-name">Eligibility</span>
+            </div>
         </div>
-        <div class="wp-line"></div>
-        <div class="wp-step">
-            <div class="wp-circle">4</div>
-            <div class="wp-label">Filters</div>
+
+        <div class="step-connector"></div>
+
+        <div class="step-item">
+            <div class="step-circle">3</div>
+            <div class="step-text">
+                <span class="step-label">Step 3</span>
+                <span class="step-name">Financials</span>
+            </div>
+        </div>
+
+        <div class="step-connector"></div>
+
+        <div class="step-item">
+            <div class="step-circle">4</div>
+            <div class="step-text">
+                <span class="step-label">Step 4</span>
+                <span class="step-name">Filters</span>
+            </div>
         </div>
     </div>
 
-    <!-- Card -->
-    <div class="wizard-card">
-        <div class="wizard-header">
-            <div class="wizard-step-tag">STEP 1 OF 4</div>
-            <h1>📋 The Basics</h1>
-            <p>Tell students what this scholarship is about</p>
-        </div>
+    <!-- MAIN LAYOUT -->
+    <div class="wiz-layout">
 
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="wizard-body">
-
-                <!-- Title -->
-                <div class="field-group">
-                    <label class="field-label" for="{{ form.title.id_for_label }}">
-                        Scholarship Title <span class="req">*</span>
-                    </label>
-                    <input type="text" name="{{ form.title.html_name }}" id="{{ form.title.id_for_label }}"
-                        value="{{ form.title.value|default:'' }}" class="form-control"
-                        placeholder="e.g. Future Innovators Tech Grant 2026" required>
-                    {{ form.title.errors }}
-                </div>
-
-                <!-- Logo -->
-                <div class="field-group">
-                    <label class="field-label">Organization Logo <span
-                            style="font-weight:400;color:#999;">(Optional)</span></label>
-                    <div class="file-upload-wrap" onclick="document.getElementById('id_logo').click()">
-                        <span class="file-upload-icon">🖼️</span>
-                        <div id="logo-label" style="font-weight:600;color:#2E7D32;">Click to upload logo</div>
-                        <div style="font-size:.82rem;color:#999;margin-top:.25rem;">PNG, JPG up to 2MB</div>
-                        <input type="file" name="{{ form.logo.html_name }}" id="id_logo" accept="image/*"
-                            onchange="updateLogoLabel(this)">
+        <!-- FORM CARD -->
+        <div class="form-card">
+            <div class="form-card-header">
+                <div class="fch-inner">
+                    <div class="fch-pill">
+                        <i class="fa-solid fa-file-pen"></i>
+                        Step 1 of 4
                     </div>
-                    {{ form.logo.errors }}
+                    <h2>The Basics</h2>
+                    <p>Tell students what this scholarship is about and when to apply.</p>
                 </div>
-
-                <!-- Description -->
-                <div class="field-group">
-                    <label class="field-label" for="{{ form.description.id_for_label }}">
-                        About the Scholarship <span class="req">*</span>
-                    </label>
-                    <textarea name="{{ form.description.html_name }}" id="{{ form.description.id_for_label }}"
-                        class="form-control"
-                        placeholder="Tell students why you are giving this scholarship and the impact you want to make..."
-                        required>{{ form.description.value|default:'' }}</textarea>
-                    <div class="field-help">This will be displayed on the scholarship detail page.</div>
-                    {{ form.description.errors }}
-                </div>
-
-                <!-- Deadline -->
-                <div class="field-group">
-                    <label class="field-label" for="{{ form.deadline.id_for_label }}">
-                        Application Deadline <span class="req">*</span>
-                    </label>
-                    <input type="datetime-local" name="{{ form.deadline.html_name }}"
-                        id="{{ form.deadline.id_for_label }}" value="{{ form.deadline.value|default:'' }}"
-                        class="form-control" required>
-                    <div class="field-help">Applications automatically close at this exact date & time.</div>
-                    {{ form.deadline.errors }}
-                </div>
-
             </div>
 
-            <div class="wizard-footer">
-                <a href="{% url 'funder_portal:funder_dashboard' %}" class="btn-wizard-back">
-                    ← Cancel
-                </a>
-                <button type="submit" class="btn-wizard-next">
-                    Next: Eligibility →
-                </button>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="form-card-body">
+
+                    <!-- Title -->
+                    <div>
+                        <label class="field-label" for="{{ form.title.id_for_label }}">
+                            <i class="fa-solid fa-heading"></i>
+                            Scholarship Title
+                            <span class="req">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            name="{{ form.title.html_name }}"
+                            id="{{ form.title.id_for_label }}"
+                            value="{{ form.title.value|default:'' }}"
+                            class="wiz-input"
+                            placeholder="e.g. Future Innovators Tech Grant 2026"
+                            required
+                        >
+                        {{ form.title.errors }}
+                        <div class="field-help">
+                            <i class="fa-solid fa-circle-info"></i>
+                            A clear, specific title helps students find your scholarship faster.
+                        </div>
+                    </div>
+
+                    <!-- Logo + Deadline side by side -->
+                    <div class="two-col" style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+
+                        <!-- Logo -->
+                        <div>
+                            <label class="field-label">
+                                <i class="fa-solid fa-image"></i>
+                                Organization Logo
+                                <span class="opt-tag">Optional</span>
+                            </label>
+                            <div class="file-drop" onclick="document.getElementById('id_logo').click()">
+                                <input
+                                    type="file"
+                                    name="{{ form.logo.html_name }}"
+                                    id="id_logo"
+                                    accept="image/*"
+                                    onchange="updateLogoLabel(this)"
+                                    onclick="event.stopPropagation()"
+                                >
+                                <div class="file-drop-icon">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                                </div>
+                                <div class="file-drop-title" id="logo-label">Click to upload</div>
+                                <div class="file-drop-sub">PNG, JPG — <span>max 2MB</span></div>
+                            </div>
+                            {{ form.logo.errors }}
+                        </div>
+
+                        <!-- Deadline -->
+                        <div>
+                            <label class="field-label" for="{{ form.deadline.id_for_label }}">
+                                <i class="fa-solid fa-calendar-days"></i>
+                                Application Deadline
+                                <span class="req">*</span>
+                            </label>
+                            <input
+                                type="datetime-local"
+                                name="{{ form.deadline.html_name }}"
+                                id="{{ form.deadline.id_for_label }}"
+                                value="{{ form.deadline.value|default:'' }}"
+                                class="wiz-input"
+                                required
+                            >
+                            {{ form.deadline.errors }}
+                            <div class="field-help">
+                                <i class="fa-solid fa-circle-info"></i>
+                                Applications close automatically at this date &amp; time.
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <label class="field-label" for="{{ form.description.id_for_label }}">
+                            <i class="fa-solid fa-align-left"></i>
+                            About the Scholarship
+                            <span class="req">*</span>
+                        </label>
+                        <textarea
+                            name="{{ form.description.html_name }}"
+                            id="{{ form.description.id_for_label }}"
+                            class="wiz-textarea"
+                            placeholder="Tell students why you are giving this scholarship and the impact you want to make..."
+                            required
+                        >{{ form.description.value|default:'' }}</textarea>
+                        {{ form.description.errors }}
+                        <div class="field-help">
+                            <i class="fa-solid fa-circle-info"></i>
+                            This appears on the scholarship detail page. Be specific about goals and selection criteria.
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- FOOTER -->
+                <div class="form-card-footer">
+                    <a href="{% url 'funder_portal:funder_dashboard' %}" class="btn-cancel">
+                        <i class="fa-solid fa-xmark"></i>
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn-next">
+                        Next: Eligibility
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- SIDEBAR — no duplicate step list here -->
+        <div class="side-panel">
+
+            <!-- Required Fields -->
+            <div class="info-card">
+                <div class="info-card-header">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span class="info-card-title">Required This Step</span>
+                </div>
+                <div class="info-card-body">
+                    <div class="req-list">
+                        <div class="req-item">
+                            <i class="fa-solid fa-asterisk required"></i>
+                            Scholarship title
+                        </div>
+                        <div class="req-item">
+                            <i class="fa-solid fa-asterisk required"></i>
+                            About / description
+                        </div>
+                        <div class="req-item">
+                            <i class="fa-solid fa-asterisk required"></i>
+                            Application deadline
+                        </div>
+                        <div class="req-item">
+                            <i class="fa-solid fa-circle-check optional"></i>
+                            Organization logo
+                        </div>
+                    </div>
+                </div>
             </div>
-        </form>
+
+            <!-- What's Coming Next -->
+            <div class="info-card">
+                <div class="info-card-header">
+                    <i class="fa-solid fa-forward"></i>
+                    <span class="info-card-title">What's Coming Next</span>
+                </div>
+                <div class="info-card-body">
+                    <div class="whats-next-list">
+                        <div class="wn-item">
+                            <div class="wn-dot upcoming"></div>
+                            <div>
+                                <span class="wn-step-label">Step 2</span>
+                                <span class="wn-step-name">Eligibility criteria &amp; course filters</span>
+                            </div>
+                        </div>
+                        <div class="wn-item">
+                            <div class="wn-dot upcoming"></div>
+                            <div>
+                                <span class="wn-step-label">Step 3</span>
+                                <span class="wn-step-name">Budget, amount per student &amp; funding</span>
+                            </div>
+                        </div>
+                        <div class="wn-item">
+                            <div class="wn-dot upcoming"></div>
+                            <div>
+                                <span class="wn-step-label">Step 4</span>
+                                <span class="wn-step-name">Advanced filters &amp; merit scoring</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tips -->
+            <div class="info-card">
+                <div class="info-card-header">
+                    <i class="fa-solid fa-lightbulb"></i>
+                    <span class="info-card-title">Tips for Better Results</span>
+                </div>
+                <div class="info-card-body">
+                    <div class="tips-list">
+                        <div class="tip-item">
+                            <div class="tip-num">1</div>
+                            <div class="tip-text">
+                                <strong>Use a specific title</strong>
+                                Include the year and domain — e.g. "STEM Excellence Grant 2026".
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-num">2</div>
+                            <div class="tip-text">
+                                <strong>Be clear in description</strong>
+                                Explain your mission, who qualifies, and what the scholarship funds.
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-num">3</div>
+                            <div class="tip-text">
+                                <strong>Set a realistic deadline</strong>
+                                Give students at least 3–4 weeks to gather documents and apply.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
+
+</div>
 </div>
 
 <script>
-    function updateLogoLabel(input) {
-        const label = document.getElementById('logo-label');
-        if (input.files && input.files[0]) {
-            label.textContent = '✅ ' + input.files[0].name;
-        }
+function updateLogoLabel(input) {
+    const label = document.getElementById('logo-label');
+    if (input.files && input.files[0]) {
+        label.textContent = input.files[0].name;
+        label.style.color = '#6D28D9';
     }
+}
 </script>
+
 {% endblock %}
